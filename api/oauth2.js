@@ -225,10 +225,10 @@ nanobar.go(100);
                 );
               }
             } else {
-              return res.send("api.client.bot.joinguild.guildid is not an array nor a string.");
+              return res.send("api.client.bot.joinguild.guildid is not an array not a string.");
             }
           } else {
-            return res.send("api.client.bot.joinguild.guildid is not an array nor a string.");
+            return res.send("api.client.bot.joinguild.guildid is not an array not a string.");
           }
         }
 	      
