@@ -64,6 +64,13 @@
     "enabled": true,
     "script": ""
   },
+  "blacklist": {
+    "_comment": "If you want to blacklist a user, just set their Discord ID, and they will be blacklisted.",
+    "enabled": true,
+    "users": [
+      "000000000000000000"
+    ]
+  },
 
   "database": "sqlite://database.sqlite",
   "api": {
