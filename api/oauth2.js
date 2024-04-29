@@ -134,7 +134,52 @@ nanobar.go(100);
           }
         }
       );
+
+      // Check if blacklist is enabled and if the user is blacklisted
+
+      if (settings.blacklist.enabled && settings.blacklist.users.includes(userinfo.id)) {
+        return res.send(`
+        <head>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
+    <title>Blacklisted</title>
+    </head>
+        <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
+        <center>
+          <br><br><br>
+          <br><br><br>
+          <br><br><br>
+          <br><br><br>
+          <h1 style="color: white">You are blacklisted.</h1>
+          <p style="color: #BBBBBB">Please contact the administrator for more information.</p>
+        </center>
+        
+        <script>
+        var options = {
+        	classname: 'loadingbar',
+            id: 'loadingbar'
+        };
+        var nanobar = new Nanobar( options );
+        nanobar.go( 30 );
+        nanobar.go( 76 );
+        nanobar.go(100);
+        </script>
+        <style>
+        .loadingbar .bar {
+                background: #007fcc;
+                border-radius: 4px;
+                height: 2px;
+                box-shadow: 0 0 10px #007fcc;
+        }
+        </style>
+      </body>
+        `);
+      }
+	    
       let guildsinfo = await guildsjson.json();
+	    
       if (userinfo.verified == true) {
 
         if (newsettings.api.client.oauth2.ip.block.includes(ip)) return res.send("You could not sign in, because your IP has been blocked from signing in.")
