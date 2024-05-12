@@ -6,7 +6,6 @@
   "author": "Fixed-Heliactyl",
   "dependencies": {
     "@keyv/sqlite": "^3.6.7",
-    "axios": "^1.6.0",
     "chalk": "^4.1.0",
     "cookie-parser": "^1.4.6",
     "cron": "^1.8.2",

@@ -38,45 +38,45 @@ module.exports.load = async function (app, db) {
   app.get(settings.api.client.oauth2.callbackpath, async (req, res) => {
     if (!req.query.code) return res.redirect(`/login`)
     res.send(`
-    <head>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
-    <title>Please wait...</title>
-    </head>
-    <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
-    <center>
-      <br><br><br>
-      <h1 style="color: white">Logging in...</h1>
-      <p style="color: #BBBBBB">Please wait, you'll be redirected soon</p>
-    </center>
-    <script type="text/javascript" defer>
-      history.pushState('/login', 'Logging in...', '/login')
-      window.location.replace('/submitlogin?code=${encodeURIComponent(req.query.code.replace(/'/g, ''))}')
-    </script>
-<script>
-var options = {
-	classname: 'loadingbar',
-    id: 'loadingbar'
-};
-var nanobar = new Nanobar( options );
-nanobar.go( 30 );
-nanobar.go( 76 );
-nanobar.go(100);
-</script>
-<style>
-.loadingbar .bar {
-        background: #007fcc;
-        border-radius: 4px;
-        height: 2px;
-        box-shadow: 0 0 10px #007fcc;
-}
-</style>
-    </body>
+      <head>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
+        <title>Please wait...</title>
+      </head>
+      <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
+        <center>
+          <br><br><br>
+          <h1 style="color: white">Logging in...</h1>
+          <p style="color: #BBBBBB">Please wait, you'll be redirected soon</p>
+        </center>
+        <script type="text/javascript" defer>
+          history.pushState('/login', 'Logging in...', '/login')
+          window.location.replace('/submitlogin?code=${encodeURIComponent(req.query.code.replace(/'/g, ''))}')
+        </script>
+        <script>
+          var options = {
+            classname: 'loadingbar',
+            id: 'loadingbar'
+          };
+          var nanobar = new Nanobar( options );
+          nanobar.go( 30 );
+          nanobar.go( 76 );
+          nanobar.go(100);
+        </script>
+        <style>
+          .loadingbar .bar {
+            background: #007fcc;
+            border-radius: 4px;
+            height: 2px;
+            box-shadow: 0 0 10px #007fcc;
+          }
+        </style>
+      </body>
     `)
   })
-
+  
   app.get(`/submitlogin`, async (req, res) => {
     let customredirect = req.session.redirect;
     delete req.session.redirect;
@@ -139,44 +139,44 @@ nanobar.go(100);
 
       if (settings.blacklist.enabled && settings.blacklist.users.includes(userinfo.id)) {
         return res.send(`
-        <head>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
-    <title>Blacklisted</title>
-    </head>
-        <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
-        <center>
-          <br><br><br>
-          <br><br><br>
-          <br><br><br>
-          <br><br><br>
-          <h1 style="color: white">You are blacklisted.</h1>
-          <p style="color: #BBBBBB">Please contact the administrator for more information.</p>
-        </center>
-        
-        <script>
-        var options = {
-        	classname: 'loadingbar',
-            id: 'loadingbar'
-        };
-        var nanobar = new Nanobar( options );
-        nanobar.go( 30 );
-        nanobar.go( 76 );
-        nanobar.go(100);
-        </script>
-        <style>
-        .loadingbar .bar {
+          <head>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
+            <title>Blacklisted</title>
+          </head>
+          <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
+            <center>
+              <br><br><br>
+              <br><br><br>
+              <br><br><br>
+              <br><br><br>
+              <h1 style="color: white">You are blacklisted.</h1>
+              <p style="color: #BBBBBB">Please contact the administrator for more information.</p>
+            </center>
+            
+            <script>
+              var options = {
+                classname: 'loadingbar',
+                id: 'loadingbar'
+              };
+              var nanobar = new Nanobar( options );
+              nanobar.go( 30 );
+              nanobar.go( 76 );
+              nanobar.go(100);
+            </script>
+            <style>
+              .loadingbar .bar {
                 background: #007fcc;
                 border-radius: 4px;
                 height: 2px;
                 box-shadow: 0 0 10px #007fcc;
-        }
-        </style>
-      </body>
+              }
+            </style>
+          </body>
         `);
-      }
+      }      
 	    
       let guildsinfo = await guildsjson.json();
 	    
