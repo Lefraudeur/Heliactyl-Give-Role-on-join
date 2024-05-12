@@ -98,7 +98,14 @@ app.use(session({
   saveUninitialized: false
 }));
 
-app.use(express.json());
+app.use(express.json({
+  inflate: true,
+  limit: '500kb',
+  reviver: null,
+  strict: true,
+  type: 'application/json',
+  verify: undefined
+}));
 
 // Load the console
 
