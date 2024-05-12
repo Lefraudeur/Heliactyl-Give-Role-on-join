@@ -11,7 +11,6 @@
 const fs = require("fs");
 const fetch = require("node-fetch");
 const chalk = require("chalk");
-const axios = require("axios");
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
@@ -84,8 +83,6 @@ const cookieParser = require("cookie-parser");
 const express = require("express");
 const app = express();
 
-require('express-ws')(app);
-
 const ejs = require("ejs");
 const session = require("express-session");
 const indexjs = require("./index.js");
@@ -94,22 +91,14 @@ const indexjs = require("./index.js");
 
 module.exports.app = app;
 
+app.use(cookieParser());
 app.use(session({
   secret: settings.website.secret,
   resave: false,
   saveUninitialized: false
-  }));
-
-app.use(express.json({
-  inflate: true,
-  limit: '500kb',
-  reviver: null,
-  strict: true,
-  type: 'application/json',
-  verify: undefined
 }));
 
-app.use(cookieParser());
+app.use(express.json());
 
 // Load the console
 
@@ -121,9 +110,10 @@ const listener = app.listen(settings.website.port, async function() {
   console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(" Checking for updates..."));
 
   try {
-    let newsettings = JSON.parse(require("fs").readFileSync("./settings.json"));;
-    const response = await axios.get(`https://api.github.com/repos/OvernodeProjets/Fixed-Heliactyl/releases/latest`);
-    const latestVersion = response.data.tag_name;
+    let newsettings = JSON.parse(require("fs").readFileSync("./settings.json"));
+    const response = await fetch(`https://api.github.com/repos/OvernodeProjets/Fixed-Heliactyl/releases/latest`);
+    const data = await response.json();
+    const latestVersion = data.tag_name;
 
     if (latestVersion !== newsettings.version) {
       console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.yellow(" New version available!"));

@@ -1,6 +1,4 @@
-# Inside .gitignore
 node_modules/
 database.sqlite
 settings.json
 package-lock.json
-commit
