@@ -11874,13 +11874,16 @@ input[type="button"].btn-block {
     color: #5e6061; }
 
 .alert-success {
-  color: #006d2f;
-  background-color: #ccf6de;
-  border-color: #b8f2d1; }
+  color: #006d2f !important;
+  background-color: #ccf6de !important;
+  border-color: #b8f2d1 !important; 
+}
   .alert-success hr {
-    border-top-color: #a2eec3; }
+    border-top-color: #a2eec3 !important;
+  }
   .alert-success .alert-link {
-    color: #003a19; }
+    color: #003a19 !important; 
+  }
 
 .alert-info {
   color: #4a3179;
