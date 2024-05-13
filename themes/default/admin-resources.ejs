@@ -29,19 +29,19 @@
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="Enter user ID" id="IDSet">
                       </div>
                       <div class="form-group">
-                        <label for="SetCPU">CPU (Cores):</label><BR>
+                        <label for="SetCPU">CPU (Cores):</label><br>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="1" id="SetCPU">
                       </div>
                       <div class="form-group">
-                        <label for="SetRAM">RAM (GBs):</label><BR>
+                        <label for="SetRAM">RAM (GBs):</label><br>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="2" id="SetRAM">
                       </div>
                       <div class="form-group">
-                        <label for="SetDisk">Disk (GBs):</label><BR>
+                        <label for="SetDisk">Disk (GBs):</label><br>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="10" id="SetDisk">
                       </div>
                       <div class="form-group">
-                        <label for="SetServers">Servers:</label><BR>
+                        <label for="SetServers">Servers:</label><br>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="1" id="SetServers">
                       </div>
                       <a role="button" class="btn btn-primary btn-lg" href="javascript: submitSet()">Apply Changes</a>
@@ -59,19 +59,19 @@
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="Enter user ID" id="IDAdd">
                       </div>
                       <div class="form-group">
-                        <label for="SetCPU">CPU (Cores):</label><BR>
+                        <label for="SetCPU">CPU (Cores):</label><br>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="1" id="AddCPU">
                       </div>
                       <div class="form-group">
-                        <label for="SetRAM">RAM (GBs):</label><BR>
+                        <label for="SetRAM">RAM (GBs):</label><br>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="2" id="AddRAM">
                       </div>
                       <div class="form-group">
-                        <label for="SetDisk">Disk (GBs):</label><BR>
+                        <label for="SetDisk">Disk (GBs):</label><br>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="10" id="AddDisk">
                       </div>
                       <div class="form-group">
-                        <label for="SetServers">Servers:</label><BR>
+                        <label for="SetServers">Servers:</label><br>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" placeholder="1" id="AddServers">
                       </div>
                       <a role="button" class="btn btn-primary btn-lg" href="javascript: submitAdd()">Apply Changes</a>
@@ -106,7 +106,6 @@
             let ram = encodeURIComponent(document.getElementById("AddRAM").value * 1024);
             let disk = encodeURIComponent(document.getElementById("AddDisk").value * 1024);
             let servers = encodeURIComponent(document.getElementById("AddServers").value);
-            
             window.location.href = "/addresources?id=" + id + "&cpu=" + cpu + "&ram=" + ram + "&disk=" + disk + "&servers=" + servers
         }
         async function submitRemove() {
