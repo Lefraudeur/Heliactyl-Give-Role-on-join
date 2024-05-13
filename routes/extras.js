@@ -1,7 +1,7 @@
 const settings = require("../settings.json");
 const fs = require('fs');
 const fetch = require('node-fetch');
-const getPteroUser = require('../misc/getPteroUser.js');
+const getPteroUser = require('../handlers/getPteroUser.js');
 
 module.exports.load = async function(app, db) {
   const redirectToPanel = (req, res) => res.redirect(settings.pterodactyl.domain);

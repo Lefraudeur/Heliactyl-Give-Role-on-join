@@ -2,7 +2,7 @@ const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
 const fs = require("fs");
 const ejs = require("ejs");
-const log = require('../misc/log');
+const log = require('../handlers/log');
 const path = require("path");
 
 module.exports.load = async function(app, db) {

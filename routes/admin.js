@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const settings = require("../settings.json");
 const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
-const log = require("../misc/log.js");
+const log = require("../handlers/log.js");
 
 module.exports.load = async function (app, db) {
 

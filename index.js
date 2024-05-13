@@ -2,7 +2,7 @@
 //  * Fixed-Heliactyl
 // 
 //  * Heliactyl 12.7, Codename Gekyume
-//  * Copyright SrydenCloud Limited & Pine Platforms Ltd
+//  * Copyright SRYDEN, Inc. & Overnode
 //
 "use strict";
 
@@ -82,6 +82,7 @@ module.exports.db = db;
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const app = express();
+require('express-ws')(app)
 
 const ejs = require("ejs");
 const session = require("express-session");
@@ -161,12 +162,12 @@ app.use(function(req, res, next) {
   next();
 });
 
-// Load the API files.
+// Load the routes.
 
-let apifiles = fs.readdirSync('./api').filter(file => file.endsWith('.js'));
+let apifiles = fs.readdirSync('./routes').filter(file => file.endsWith('.js'));
 
 apifiles.forEach(file => {
-  let apifile = require(`./api/${file}`);
+  let apifile = require(`./routes/${file}`);
 	apifile.load(app, db);
 });
 

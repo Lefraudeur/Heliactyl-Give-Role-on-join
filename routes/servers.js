@@ -1,9 +1,9 @@
 const settings = require("../settings.json");
 const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
-const getPteroUser = require("../misc/getPteroUser.js");
-const Queue = require("../misc/Queue.js");
-const log = require("../misc/log.js");
+const getPteroUser = require("../handlers/getPteroUser.js");
+const Queue = require("../handlers/Queue.js");
+const log = require("../handlers/log.js");
 
 const fetch = require("node-fetch");
 const fs = require("fs");

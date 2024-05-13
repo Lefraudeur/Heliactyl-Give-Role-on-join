@@ -13,8 +13,8 @@ if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.
 }
 
 const indexjs = require("../index.js");
-const log = require('../misc/log');
-const vpnCheck = require("../misc/vpnCheck");
+const log = require('../handlers/log');
+const vpnCheck = require("../handlers/vpnCheck");
 
 const { renderFile } = require('ejs');
 const fetch = require('node-fetch');
