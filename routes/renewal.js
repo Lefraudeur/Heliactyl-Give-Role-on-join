@@ -1,6 +1,6 @@
-const settings = require("../settings.json");
+const settings = require('../handlers/readSettings').settings(); 
 const { CronJob } = require("cron");
-const getAllServers = require("../misc/getAllServers");
+const getAllServers = require("../handlers/getAllServers");
 const fetch = require("node-fetch");
 const chalk = require("chalk");
 

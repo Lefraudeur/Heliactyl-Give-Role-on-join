@@ -41,7 +41,7 @@ module.exports.load = async function (app, db) {
   
     if (!(await db.get("users-" + req.query.id))) return res.send({ status: "invalid id" });
   
-    let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+    const newsettings = require('../handlers/readSettings').settings(); 
   
     if (newsettings.api.client.oauth2.link.slice(-1) == "/")
       newsettings.api.client.oauth2.link = newsettings.api.client.oauth2.link.slice(0, -1);
@@ -128,7 +128,7 @@ module.exports.load = async function (app, db) {
   app.get("/api/updateCoins", async (req, res) => {
     if (!req.session.pterodactyl) return res.redirect("/login");
   
-    let newSettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+    const newSettings = require('../handlers/readSettings').settings(); 
     let userInfo = req.session.userinfo;
     let initialCoins = await db.get(`coins-${req.session.userinfo.id}`);
   
@@ -240,7 +240,7 @@ app.post("/api/createcoupon", async (req, res) => {
       adminjs.suspend(req.body.id);
       return res.send({ status: "success" });
     } else {
-      let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+      const newsettings = require('../handlers/readSettings').settings(); 
       if (!newsettings.api.client.packages.list[req.body.package]) return res.send({ status: "invalid package" });
       await db.set("package-" + req.body.id, req.body.package);
       adminjs.suspend(req.body.id);
@@ -334,7 +334,7 @@ app.post("/api/createcoupon", async (req, res) => {
    */
 
   async function check(req, res) {
-    let settings = JSON.parse(fs.readFileSync("./settings.json").toString());
+    const settings = require('../handlers/readSettings').settings(); 
     if (settings.api.client.api.enabled == true) {
       let auth = req.headers['authorization'];
       if (auth) {

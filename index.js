@@ -2,7 +2,7 @@
 //  * Fixed-Heliactyl
 // 
 //  * Heliactyl 12.7, Codename Gekyume
-//  * Copyright SrydenCloud Limited & Pine Platforms Ltd
+//  * Copyright SRYDEN, Inc. & Overnode
 //
 "use strict";
 
@@ -27,7 +27,7 @@ if (typeof atob === 'undefined') {
 
 // Load settings.
 
-const settings = require("./settings.json");
+const settings = require('./handlers/readSettings').settings(); 
 
 if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
   settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
@@ -44,7 +44,7 @@ const themesettings = {
 };
 
 module.exports.renderdataeval = async function(req) {
-  let newsettings = JSON.parse(require("fs").readFileSync("./settings.json"));
+  const newsettings = require('./handlers/readSettings').settings(); 
   let theme = indexjs.get(req);
   return {
     req: req,
@@ -82,6 +82,7 @@ module.exports.db = db;
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const app = express();
+require('express-ws')(app)
 
 const ejs = require("ejs");
 const session = require("express-session");
@@ -117,7 +118,7 @@ const listener = app.listen(settings.website.port, async function() {
   console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(" Checking for updates..."));
 
   try {
-    let newsettings = JSON.parse(require("fs").readFileSync("./settings.json"));
+    const newsettings = require('./handlers/readSettings').settings(); 
     const response = await fetch(`https://api.github.com/repos/OvernodeProjets/Fixed-Heliactyl/releases/latest`);
     const data = await response.json();
     const latestVersion = data.tag_name;
@@ -138,8 +139,8 @@ const listener = app.listen(settings.website.port, async function() {
 var cache = false;
 
 app.use(function(req, res, next) {
-  let manager = (JSON.parse(fs.readFileSync("./settings.json").toString())).api.client.ratelimits;
-  if (manager[req._parsedUrl.pathname]) {
+  const manager = require('./handlers/readSettings').settings(); 
+  if (manager.api.client.ratelimits[req._parsedUrl.pathname]) {
     if (cache == true) {
       setTimeout(async () => {
         let allqueries = Object.entries(req.query);
@@ -161,12 +162,12 @@ app.use(function(req, res, next) {
   next();
 });
 
-// Load the API files.
+// Load the routes.
 
-let apifiles = fs.readdirSync('./api').filter(file => file.endsWith('.js'));
+let apifiles = fs.readdirSync('./routes').filter(file => file.endsWith('.js'));
 
 apifiles.forEach(file => {
-  let apifile = require(`./api/${file}`);
+  let apifile = require(`./routes/${file}`);
 	apifile.load(app, db);
 });
 
@@ -268,14 +269,14 @@ app.all("*", async (req, res) => {
 });
 
 module.exports.get = function(req) {
-  let theme = JSON.parse(fs.readFileSync("./settings.json")).theme;
+  const settings = require('./handlers/readSettings').settings(); 
   let tname = encodeURIComponent(req.cookies.theme);
   let name = (
     tname ?
       fs.existsSync(`./themes/${tname}`) ?
         tname
-      : theme
-    : theme
+      : settings.theme
+    : settings.theme
   )
   return {
     settings: (

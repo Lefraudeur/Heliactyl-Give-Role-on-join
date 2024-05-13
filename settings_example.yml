@@ -1,0 +1,270 @@
+version: 12.7.10
+name: Heliactyl
+letter: H
+# It's recommended to use an image of size 128x128 pixels. And for the thumbnail discord modify in handlers/log.js
+icon: https://avatars.githubusercontent.com/u/122883790
+theme: default
+# https://en.wikipedia.org/wiki/List_of_tz_database_time_zones (tz identifier).
+timezone: Europe/Paris
+resources:
+# Options: MB, GB. This is only used on the user side, admin will use GB.
+  typeRessources: MB
+# Options: Core, %. This is only used on the userside, admin will use Core
+  typeCPU: Core
+
+website:
+  port: 25000
+  secret: "Default Secret (Change this to any string you want)"
+
+pterodactyl:
+  domain: https://panel.example.com
+  key: ptla_0000000000000000000000000000000000000000000
+
+linkvertise:
+  userid: 50000
+  coins: 5
+  timeToExpire: null
+  cooldown: null
+  dailyLimit: null
+  minTimeToComplete: null
+
+storelimits:
+  ram: 8192
+  disk: 10240
+  cpu: 400
+  servers: 8
+
+stripe:
+  enabled: true
+# The key is the Stripe API key, and the coins are the amount per £1. If the Stripe API key is invalid and Stripe purchases are enabled, Heliactyl will crash when attempting to do transactions.
+  key: 100000000000000
+  coins: 100
+
+category:
+  management: true
+  coins & resources: true
+  miscellaneous: true
+
+pages:
+# Management
+  dashboard: true
+  your servers: true
+  account settings: true
+# Coins & Resources
+  redeem coupon: true
+  linkvertise: true
+# Category miscellaneous
+  panel: true
+  admin: true
+
+adsense:
+# Works only halfway, unreliable, better to add it directly to the code
+# This feature facilitates the integration of AdSense, adsterra, and other similar applications into Heliactyl.
+  enabled: false
+  script: ''
+
+blacklist:
+# If you want to blacklist a user, just set their Discord ID, and they will be blacklisted.
+  enabled: true
+  users:
+  - 000000000000000000
+  - 000000000000000000
+
+database: sqlite://database.sqlite
+api:
+  client:
+    api:
+      enabled: true
+      key: API KEY
+    j4r: 
+      enabled: true
+      ads:
+      - name: Example Server 1
+        id: 000000000000000000
+        invite: https://discord.gg/example1
+        coins: 100
+      - name: Example Server 2
+        id: 000000000000000000
+        invite: https://discord.gg/example2
+        coins: 200
+
+    bot:
+      token: "Discord bot token here"
+      joinguild:
+        enabled: true
+# The Discord bot must be on these servers and have invite permissions. Automatic guild joining will not work unless role packages are configured correctly. You can always just set it to a random role & package so that only this works.
+        guildid:
+        - Guild ID 1
+      giverole: 
+        enabled: true
+        guildid: "000000000000000000" # The Discord bot must be on the server. Automatically assign a role to the user when he logs in
+        roleid: "000000000000000000"
+ 
+    oauth2: # Go to https://discord.dev/ and create an application to set these up
+      id: "0000000000000000000"
+      secret: "0000000000000000000000000000"
+      link: "https://client.example.com"
+      callbackpath: "/callback"
+      prompt: true
+      ip:
+        trust x-forwarded-for: true
+        block: []
+        duplicate check: true
+
+
+    passwordgenerator:
+      signup: true # Use this to disable signups
+      length: 16
+
+    allow:
+      newusers: true
+      regen: true
+      server:
+        create: true
+        modify: true
+        delete: true
+      overresourcessuspend: false
+
+    ratelimits:
+      /callback: 2
+      /create: 1
+      /delete: 1
+      /modify: 1
+      /updateinfo: 1
+      /setplan: 2
+      /admin: 1
+      /regen: 1
+      /renew: 1
+      /api/userinfo: 1
+
+    packages:
+      default: default
+      list:
+        default:
+          ram: 1024
+          disk: 1024
+          cpu: 100
+          servers: 1
+
+      rolePackages:
+# This allows you to set a different plan for people who have a specific role however this requires the Discord bot to be configured and functioning. This is mainly used to Boost rewards.
+        roleServer: Server ID
+        roles:
+          Role ID: Package Name 
+
+    locations:
+      '1':
+        name: Default Location 1
+        package: null
+      '2':
+        name: Default Location 2
+        package: null
+
+    eggs:
+      bungeecord:
+        display: Minecraft Java | BungeeCord # Please switch to Velocity
+        minimum:
+          ram: 512
+          disk: 512
+          cpu: 75
+        maximum:
+          ram: null
+          disk: null
+          cpu: null
+        info:
+          egg: 4
+          docker_image: ghcr.io/pterodactyl/yolks:java_17
+          startup: "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}"
+          environment:
+            BUNGEE_VERSION: "latest"
+            SERVER_JARFILE: "bungeecord.jar"
+          feature_limits:
+            databases: 4
+            backups: 4
+      paper:
+        display: Minecraft Java | Paper # Please switch to Velocity
+        minimum:
+          ram: 1024
+          disk: 1024
+          cpu: 100
+        maximum:
+          ram: null
+          disk: null
+          cpu: null
+        info:
+          egg: 1
+          docker_image: ghcr.io/pterodactyl/yolks:java_17
+          startup: "java -Xms128M -Xmx{{SERVER_MEMORY}}M -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}"
+          environment:
+            BUILD_NUMBER: "latest"
+            SERVER_JARFILE: "bungeecord.jar"
+          feature_limits:
+            databases: 4
+            backups: 4
+
+    coins:
+      enabled: true
+      store:
+        enabled: true
+        ram:
+          cost: 100
+          per: 1024
+        disk:
+          cost: 100
+          per: 5120
+        cpu:
+          cost: 100
+          per: 75
+        servers:
+          cost: 100
+          per: 2
+
+  afk page:
+    enabled: true 
+    every: 5 # This afk page will give the users [coins variable] coins every [every variable] seconds.
+    coins: 1 # The coins variable is meant to not be under 1. There may be bugs if the coins variable is less than 1.
+
+whitelist:
+  status: false
+  users:
+  - User ID
+  - User ID
+
+servercreation:
+  cost: 0
+
+renewals:
+# It's not advisable to use the renewals system, as it's unstable and doesn't work all the time.
+# The cost is the amount of coins required to renew, and the delay is the amount of days before they need to renew. New servers after the first one will also cost the renewal amount. This has been fixed to suspend servers instead of deleting them as of v12.7.0.
+  cost: 0
+  delay: 14
+
+logging:
+  status: false
+  webhook: "Webhook URL"
+  actions:
+    user:
+      signup: true
+      created server: true
+      deleted server: true
+      coupon redeemed: true
+      modify server: true
+      resources purchased: true
+    admin:
+      set coins: true
+      add coins: true
+      add resources: true
+      set resources: true
+      set plan: true
+      create coupon: true
+      revoke coupon: true
+# Remove account hasn't been defined so it's useless but I'll add a system to use it.
+      remove account: true
+      view ip: true
+
+antivpn:
+  status: false
+  APIKey: "Proxycheck APIKey"
+  whitelistedIPs:
+    - IP Address
+    - IP Address

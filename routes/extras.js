@@ -1,7 +1,7 @@
-const settings = require("../settings.json");
+const settings = require('../handlers/readSettings').settings(); 
 const fs = require('fs');
 const fetch = require('node-fetch');
-const getPteroUser = require('../misc/getPteroUser.js');
+const getPteroUser = require('../handlers/getPteroUser.js');
 
 module.exports.load = async function(app, db) {
   const redirectToPanel = (req, res) => res.redirect(settings.pterodactyl.domain);
@@ -27,7 +27,7 @@ module.exports.load = async function(app, db) {
   const regeneratePassword = async (req, res) => {
     try {
     if (!req.session.pterodactyl) return res.redirect("/login");
-    let newsettings = JSON.parse(fs.readFileSync("./settings.json"));
+    const newsettings = require('../handlers/readSettings').settings(); 
     if (newsettings.api.client.allow.regen !== true) return res.send("You cannot regenerate your password currently.");
 
 

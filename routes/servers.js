@@ -1,9 +1,9 @@
-const settings = require("../settings.json");
+const settings = require('../handlers/readSettings').settings(); 
 const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
-const getPteroUser = require("../misc/getPteroUser.js");
-const Queue = require("../misc/Queue.js");
-const log = require("../misc/log.js");
+const getPteroUser = require("../handlers/getPteroUser.js");
+const Queue = require("../handlers/Queue.js");
+const log = require("../handlers/log.js");
 
 const fetch = require("node-fetch");
 const fs = require("fs");
@@ -20,7 +20,7 @@ module.exports.load = async function (app, db) {
 
     let theme = indexjs.get(req);
 
-    let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+    const newsettings = require('../handlers/readSettings').settings(); 
     if (newsettings.api.client.allow.server.create == true) {
       queue.addJob(async (cb) => {
         let redirectlink = theme.settings.redirect.failedcreateserver ?? "/"; // fail redirect link
@@ -234,7 +234,7 @@ module.exports.load = async function (app, db) {
 
     let theme = indexjs.get(req);
 
-    let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+    const newsettings = require('../handlers/readSettings').settings(); 
     if (newsettings.api.client.allow.server.modify == true) {
       if (!req.query.id) return res.send("Missing server id.");
 
@@ -255,7 +255,7 @@ module.exports.load = async function (app, db) {
       let cpu = req.query.cpu ? (isNaN(parseFloat(req.query.cpu)) ? undefined : parseFloat(req.query.cpu)) : undefined;
 
       if (ram || disk || cpu) {
-        let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+        const newsettings = require('../handlers/readSettings').settings(); 
 
         let packagename = await db.get("package-" + req.session.userinfo.id);
         let package = newsettings.api.client.packages.list[packagename ? packagename : newsettings.api.client.packages.default];
@@ -350,7 +350,7 @@ module.exports.load = async function (app, db) {
   
     let theme = indexjs.get(req);
   
-    let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+    const newsettings = require('../handlers/readSettings').settings(); 
     if (newsettings.api.client.allow.server.delete == true) {
       if (req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) return res.send("Could not find server with that ID.");
   

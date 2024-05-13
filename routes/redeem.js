@@ -1,5 +1,5 @@
 const indexjs = require("../index.js");
-const log = require('../misc/log.js');
+const log = require('../handlers/log.js');
 
 module.exports.load = async function(app, db) {
   app.get("/coupon_redeem", async (req, res) => {

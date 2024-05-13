@@ -1,4 +1,5 @@
 node_modules/
 database.sqlite
 settings.json
+settings.yml
 package-lock.json
