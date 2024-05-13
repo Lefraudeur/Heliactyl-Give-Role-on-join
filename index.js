@@ -1,7 +1,7 @@
 //
 //  * Fixed-Heliactyl
 // 
-//  * Heliactyl 12.7, Codename Gekyume
+//  * Heliactyl 12.8 (Based off of 12.7), Codename Gekyume
 //  * Copyright SRYDEN, Inc. & Overnode
 //
 "use strict";
@@ -50,15 +50,15 @@ module.exports.renderdataeval = async function(req) {
     req: req,
     settings: newsettings,
     userinfo: req.session.userinfo,
-    packagename: req.session.userinfo ? await db.get("package-" + req.session.userinfo.id) ? await db.get("package-" + req.session.userinfo.id) : newsettings.api.client.packages.default : null,
+    packagename: req.session.userinfo ? await db.get("package-" + req.session.userinfo.id) ? await db.get("package-" + req.session.userinfo.id) : newsettings.packages.default : null,
     extraresources: !req.session.userinfo ? null : (await db.get("extra-" + req.session.userinfo.id) ? await db.get("extra-" + req.session.userinfo.id) : {
       ram: 0,
       disk: 0,
       cpu: 0,
       servers: 0
     }),
-    packages: req.session.userinfo ? newsettings.api.client.packages.list[await db.get("package-" + req.session.userinfo.id) ? await db.get("package-" + req.session.userinfo.id) : newsettings.api.client.packages.default] : null,
-    coins: newsettings.api.client.coins.enabled == true ? (req.session.userinfo ? (await db.get("coins-" + req.session.userinfo.id) ? await db.get("coins-" + req.session.userinfo.id) : 0) : null) : null,
+    packages: req.session.userinfo ? newsettings.packages.list[await db.get("package-" + req.session.userinfo.id) ? await db.get("package-" + req.session.userinfo.id) : newsettings.packages.default] : null,
+    coins: newsettings.coins.enabled == true ? (req.session.userinfo ? (await db.get("coins-" + req.session.userinfo.id) ? await db.get("coins-" + req.session.userinfo.id) : 0) : null) : null,
     pterodactyl: req.session.pterodactyl,
     theme: theme.name,
     extra: theme.settings.variables,
@@ -132,7 +132,7 @@ const listener = app.listen(settings.website.port, async function() {
   } catch (error) {
     console.error(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.red(" Error checking for updates:"), error.message);
   }
-  console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(" You can now access the dashboard at ") + chalk.underline(settings.api.client.oauth2.link + "/"));
+  console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(" You can now access the dashboard at ") + chalk.underline(settings.oauth2.link + "/"));
 
 });
 
@@ -140,7 +140,7 @@ var cache = false;
 
 app.use(function(req, res, next) {
   const manager = require('./handlers/readSettings').settings(); 
-  if (manager.api.client.ratelimits[req._parsedUrl.pathname]) {
+  if (manager.ratelimits[req._parsedUrl.pathname]) {
     if (cache == true) {
       setTimeout(async () => {
         let allqueries = Object.entries(req.query);

@@ -49,8 +49,8 @@
                       <div class="form-group">
                         <label style="font-weight: bold;">CPU:</label><BR>
                         <select name="amount" id="cpuAmount" class="form-control" style="border-radius: 15px; padding: 8px;">
-                          <option value=1><%= settings.api.client.coins.store.cpu.per %>% CPU - <%= settings.api.client.coins.store.cpu.cost %> coins</option>
-                          <option value=2><%= settings.api.client.coins.store.cpu.per * 2 %>% CPU - <%= settings.api.client.coins.store.cpu.cost * 2 %> coins</option>
+                          <option value=1><%= settings.coins.store.cpu.per %>% CPU - <%= settings.coins.store.cpu.cost %> coins</option>
+                          <option value=2><%= settings.coins.store.cpu.per * 2 %>% CPU - <%= settings.coins.store.cpu.cost * 2 %> coins</option>
                         </select>
                       </div><br>
                       <a class="button" href="javascript: buyCPU()" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
@@ -65,10 +65,10 @@
                       <div class="form-group">
                         <label style="font-weight: bold;">RAM:</label><BR>
                         <select id="ramAmount" class="form-control" style="border-radius: 15px; padding: 8px;">
-                          <option value=1><%= settings.api.client.coins.store.ram.per %>MB RAM - <%= settings.api.client.coins.store.ram.cost %> coins</option>
-                          <option value=2><%= settings.api.client.coins.store.ram.per * 2 %>MB RAM - <%= settings.api.client.coins.store.ram.cost * 2 %> coins</option>
-                          <option value=3><%= settings.api.client.coins.store.ram.per * 3 %>MB RAM - <%= settings.api.client.coins.store.ram.cost * 3 %> coins</option>
-                          <option value=4><%= settings.api.client.coins.store.ram.per * 4 %>MB RAM - <%= settings.api.client.coins.store.ram.cost * 4 %> coins</option>
+                          <option value=1><%= settings.coins.store.ram.per %>MB RAM - <%= settings.coins.store.ram.cost %> coins</option>
+                          <option value=2><%= settings.coins.store.ram.per * 2 %>MB RAM - <%= settings.coins.store.ram.cost * 2 %> coins</option>
+                          <option value=3><%= settings.coins.store.ram.per * 3 %>MB RAM - <%= settings.coins.store.ram.cost * 3 %> coins</option>
+                          <option value=4><%= settings.coins.store.ram.per * 4 %>MB RAM - <%= settings.coins.store.ram.cost * 4 %> coins</option>
                         </select>
                       </div><br>
                       <a class="button" href="javascript: buyRAM()" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
@@ -83,11 +83,11 @@
                       <div class="form-group">
                         <label style="font-weight: bold;">Disk:</label><BR>
                         <select id="diskAmount" class="form-control" style="border-radius: 15px; padding: 8px;">
-                          <option value=1><%= settings.api.client.coins.store.disk.per %>MB Disk - <%= settings.api.client.coins.store.disk.cost %> coins</option>
-                          <option value=2><%= settings.api.client.coins.store.disk.per * 2 %>MB Disk - <%= settings.api.client.coins.store.disk.cost * 2 %> coins</option>
-                          <option value=3><%= settings.api.client.coins.store.disk.per * 3 %>MB Disk - <%= settings.api.client.coins.store.disk.cost * 3 %> coins</option>
-                          <option value=4><%= settings.api.client.coins.store.disk.per * 4 %>MB Disk - <%= settings.api.client.coins.store.disk.cost * 4 %> coins</option>
-                          <option value=5><%= settings.api.client.coins.store.disk.per * 5 %>MB Disk - <%= settings.api.client.coins.store.disk.cost * 5 %> coins</option>
+                          <option value=1><%= settings.coins.store.disk.per %>MB Disk - <%= settings.coins.store.disk.cost %> coins</option>
+                          <option value=2><%= settings.coins.store.disk.per * 2 %>MB Disk - <%= settings.coins.store.disk.cost * 2 %> coins</option>
+                          <option value=3><%= settings.coins.store.disk.per * 3 %>MB Disk - <%= settings.coins.store.disk.cost * 3 %> coins</option>
+                          <option value=4><%= settings.coins.store.disk.per * 4 %>MB Disk - <%= settings.coins.store.disk.cost * 4 %> coins</option>
+                          <option value=5><%= settings.coins.store.disk.per * 5 %>MB Disk - <%= settings.coins.store.disk.cost * 5 %> coins</option>
                         </select>
                       </div><br>
                       <a class="button" href="javascript: buyDisk()" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
@@ -102,10 +102,10 @@
                       <div class="form-group">
                         <label style="font-weight: bold;">Servers:</label><BR>
                         <select id="serversAmount" class="form-control" style="border-radius: 15px; padding: 8px;">
-                          <option value=1><%= settings.api.client.coins.store.servers.per %> Server - <%= settings.api.client.coins.store.servers.cost %> coins</option>
-                          <option value=2><%= settings.api.client.coins.store.servers.per * 2 %> Servers - <%= settings.api.client.coins.store.servers.cost * 2 %> coins</option>
-                          <option value=3><%= settings.api.client.coins.store.servers.per * 3 %> Servers - <%= settings.api.client.coins.store.servers.cost * 3 %> coins</option>
-                          <option value=4><%= settings.api.client.coins.store.servers.per * 4 %> Servers - <%= settings.api.client.coins.store.servers.cost * 4 %> coins</option>
+                          <option value=1><%= settings.coins.store.servers.per %> Server - <%= settings.coins.store.servers.cost %> coins</option>
+                          <option value=2><%= settings.coins.store.servers.per * 2 %> Servers - <%= settings.coins.store.servers.cost * 2 %> coins</option>
+                          <option value=3><%= settings.coins.store.servers.per * 3 %> Servers - <%= settings.coins.store.servers.cost * 3 %> coins</option>
+                          <option value=4><%= settings.coins.store.servers.per * 4 %> Servers - <%= settings.coins.store.servers.cost * 4 %> coins</option>
                         </select>
                       </div><br>
                       <a class="button" href="javascript: buyServers()" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>

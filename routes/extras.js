@@ -28,13 +28,13 @@ module.exports.load = async function(app, db) {
     try {
     if (!req.session.pterodactyl) return res.redirect("/login");
     const newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.api.client.allow.regen !== true) return res.send("You cannot regenerate your password currently.");
+    if (newsettings.allow.regen !== true) return res.send("You cannot regenerate your password currently.");
 
 
     if (newsettings.pterodactyl.domain.slice(-1) == "/")
     newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
 
-    let newpassword = generateRandomPassword(newsettings.api.client.passwordgenerator["length"]);
+    let newpassword = generateRandomPassword(newsettings.passwordgenerator["length"]);
     req.session.password = newpassword;
 
     await fetch(

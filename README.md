@@ -2,7 +2,10 @@
 
 <hr>
 
-# This is a fork of Heliactyl v12,
+> [!WARNING]  
+> Fixed Heliactyl 12.8 and above are not compatible with older files (themes) due to major settings modifications. To fix this replace all of the settings.api.client with settings. Thank you for understanding.
+
+# This is a fork of Heliactyl v12
 
 # Heliactyl • The modern client panel for Pterodactyl
 

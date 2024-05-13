@@ -31,7 +31,7 @@
                       <div class="form-group">
                         <label for="InputPackage">Plan:</label><BR>
                         <select class="form-control" style="border-radius: 15px; padding: 8px;" id="package">
-                          <% for (let [name, value] of Object.entries(settings.api.client.packages.list)) { %>
+                          <% for (let [name, value] of Object.entries(settings.packages.list)) { %>
                             <option value="<%= name %>"><%= name %> (RAM: <%= value.ram %>MB, Disk: <%= value.disk %>MB, CPU: <%= value.cpu %>%, Servers: <%= value.servers %>)</option>
                           <% } %>
                         </select>
