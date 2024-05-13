@@ -23,7 +23,7 @@
                   <div class="card">
                     <div class="card-body text-center">
                       <p>Every <%= settings["afk page"].every !== 1 ? settings["afk page"].every + " seconds" : "second" %>, you will get <%= settings["afk page"].coins %> <%= settings["afk page"].coins === 1 ? "coin" : "coins" %></p>
-                      <p2>This earning session you have earned <code id="sessionEarn">0 coins</code>.<p>
+                      <p2>This earning session you have earned <code id="sessionEarn">0 coins</code>.</p2>
 
                         <script>
                           let totalCoins = 0;
@@ -40,7 +40,7 @@
                                   }
                                   setInterval(() => {
                                   socket.send(JSON.stringify({})); 
-                                }, );
+                                }, 1000);
                               };
 
                               socket.onmessage = (event) => {
