@@ -13,7 +13,7 @@ resources:
   typeCPU: Core
 
 website:
-  port: 25000
+  port: 25002
   secret: "Default Secret (Change this to any string you want)"
 
 pterodactyl:
