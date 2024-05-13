@@ -376,7 +376,7 @@ module.exports.load = async function (app, db) {
             return res.redirect(successredirect + "?err=none");
         } else {
             const newsettings = require('../handlers/readSettings').settings(); 
-            if (!newsettings.api.client.packages.list[req.query.package]) return res.redirect(`${failredirect}?err=INVALIDPACKAGE`);
+            if (!newsettings.packages.list[req.query.package]) return res.redirect(`${failredirect}?err=INVALIDPACKAGE`);
             await db.set("package-" + req.query.id, req.query.package);
             adminjs.suspend(req.query.id);
 
@@ -611,17 +611,17 @@ module.exports.load = async function (app, db) {
 
         const newsettings = require('../handlers/readSettings').settings(); 
 
-        if (newsettings.api.client.oauth2.link.slice(-1) == "/")
-            newsettings.api.client.oauth2.link = newsettings.api.client.oauth2.link.slice(0, -1);
+        if (newsettings.oauth2.link.slice(-1) == "/")
+            newsettings.oauth2.link = newsettings.oauth2.link.slice(0, -1);
 
-        if (newsettings.api.client.oauth2.callbackpath.slice(0, 1) !== "/")
-            newsettings.api.client.oauth2.callbackpath = "/" + newsettings.api.client.oauth2.callbackpath;
+        if (newsettings.oauth2.callbackpath.slice(0, 1) !== "/")
+            newsettings.oauth2.callbackpath = "/" + newsettings.oauth2.callbackpath;
 
         if (newsettings.pterodactyl.domain.slice(-1) == "/")
             newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
 
         let packagename = await db.get("package-" + req.query.id);
-        let package = newsettings.api.client.packages.list[packagename ? packagename : newsettings.api.client.packages.default];
+        let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
         if (!package) package = {
             ram: 0,
             disk: 0,
@@ -657,7 +657,7 @@ module.exports.load = async function (app, db) {
                 servers: 0
             },
             userinfo: userinfo,
-            coins: newsettings.api.client.coins.enabled == true ? (await db.get("coins-" + req.query.id) ? await db.get("coins-" + req.query.id) : 0) : null
+            coins: newsettings.coins.enabled == true ? (await db.get("coins-" + req.query.id) ? await db.get("coins-" + req.query.id) : 0) : null
         });
     });
 
@@ -680,7 +680,7 @@ module.exports.load = async function (app, db) {
 
     module.exports.suspend = async function (discordid) {
         const newsettings = require('../handlers/readSettings').settings(); 
-        if (newsettings.api.client.allow.overresourcessuspend !== true) return;
+        if (newsettings.allow.overresourcessuspend !== true) return;
 
         let canpass = await indexjs.islimited();
         if (canpass == false) {
@@ -710,7 +710,7 @@ module.exports.load = async function (app, db) {
         let userinfo = JSON.parse(await userinforeq.text());
 
         let packagename = await db.get("package-" + discordid);
-        let package = newsettings.api.client.packages.list[packagename || newsettings.api.client.packages.default];
+        let package = newsettings.packages.list[packagename || newsettings.packages.default];
 
         let extra =
             await db.get("extra-" + discordid) ||

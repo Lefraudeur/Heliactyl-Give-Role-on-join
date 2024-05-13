@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <%- include('./components/head') %>
@@ -70,9 +71,9 @@
                 let serverinfo = pterodactyl.relationships.servers.data.filter(name => name.attributes.id == req.query.id)[0];
                 let attemptegg = null;
                 let attemptname = null;
-                for (let [name, value] of Object.entries(settings.api.client.eggs)) {
-                    if (settings.api.client.eggs[name].info.egg == serverinfo.attributes.egg) {
-                        attemptegg = settings.api.client.eggs[name];
+                for (let [name, value] of Object.entries(settings.eggs)) {
+                    if (settings.eggs[name].info.egg == serverinfo.attributes.egg) {
+                        attemptegg = settings.eggs[name];
                         attemptname = name;
                     };
                 };
@@ -103,7 +104,7 @@
                       <div class="form-group">
                         <label for="InputEgg">Egg:</label><BR>
                         <select class="btn btn-secondary dropdown-toggle" style="background-color: #2a3038; border: 1px solid #2c2e33; color: #e4eaec; border-radius: 15px; padding: 8px;" disabled>
-                          <% for (let [name, value] of Object.entries(settings.api.client.eggs)) { %>
+                          <% for (let [name, value] of Object.entries(settings.eggs)) { %>
                             <option value="<%= name %>"><%= value.display %></option>
                           <% } %>
                         </select>

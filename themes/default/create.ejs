@@ -95,7 +95,7 @@
                       <div class="form-group">
                         <label for="InputLoc">Location:</label><BR>
                         <select class="btn btn-secondary dropdown-toggle" style="background-color: #2a3038; border: 1px solid #2c2e33; color: #e4eaec; border-radius: 15px; padding: 8px;" id="InputLoc">
-                          <% for (let [name, value] of Object.entries(settings.api.client.locations)) { %>
+                          <% for (let [name, value] of Object.entries(settings.locations)) { %>
                             <option value="<%= name %>"><%= value.name %></option>
                           <% } %>
                         </select>
@@ -103,7 +103,7 @@
                       <div class="form-group">
                         <label for="InputEgg">Egg:</label><BR>
                         <select class="btn btn-secondary dropdown-toggle" style="background-color: #2a3038; border: 1px solid #2c2e33; color: #e4eaec; border-radius: 15px; padding: 8px;" id="InputEgg">
-                          <% for (let [name, value] of Object.entries(settings.api.client.eggs)) { %>
+                          <% for (let [name, value] of Object.entries(settings.eggs)) { %>
                             <option value="<%= name %>"><%= value.display %></option>
                           <% } %>
                         </select>

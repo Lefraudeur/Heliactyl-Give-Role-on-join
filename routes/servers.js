@@ -21,7 +21,7 @@ module.exports.load = async function (app, db) {
     let theme = indexjs.get(req);
 
     const newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.api.client.allow.server.create == true) {
+    if (newsettings.allow.server.create == true) {
       queue.addJob(async (cb) => {
         let redirectlink = theme.settings.redirect.failedcreateserver ?? "/"; // fail redirect link
 
@@ -45,7 +45,7 @@ module.exports.load = async function (app, db) {
           }
 
           let packagename = await db.get("package-" + req.session.userinfo.id);
-          let package = newsettings.api.client.packages.list[packagename ? packagename : newsettings.api.client.packages.default];
+          let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
 
           let extra =
             await db.get("extra-" + req.session.userinfo.id) ||
@@ -83,20 +83,20 @@ module.exports.load = async function (app, db) {
 
           let location = req.query.location;
 
-          if (Object.entries(newsettings.api.client.locations).filter(vname => vname[0] == location).length !== 1) {
+          if (Object.entries(newsettings.locations).filter(vname => vname[0] == location).length !== 1) {
             cb()
             return res.redirect(`${redirectlink}?err=INVALIDLOCATION`);
           }
 
-          let requiredpackage = Object.entries(newsettings.api.client.locations).filter(vname => vname[0] == location)[0][1].package;
-          if (requiredpackage) if (!requiredpackage.includes(packagename ? packagename : newsettings.api.client.packages.default)) {
+          let requiredpackage = Object.entries(newsettings.locations).filter(vname => vname[0] == location)[0][1].package;
+          if (requiredpackage) if (!requiredpackage.includes(packagename ? packagename : newsettings.packages.default)) {
             cb()
             return res.redirect(`${redirectlink}?err=PREMIUMLOCATION`);
           }
 
           let egg = req.query.egg;
 
-          let egginfo = newsettings.api.client.eggs[egg];
+          let egginfo = newsettings.eggs[egg];
           if (!egginfo) {
             cb();
             return res.redirect(`${redirectlink}?err=INVALIDEGG`);
@@ -235,7 +235,7 @@ module.exports.load = async function (app, db) {
     let theme = indexjs.get(req);
 
     const newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.api.client.allow.server.modify == true) {
+    if (newsettings.allow.server.modify == true) {
       if (!req.query.id) return res.send("Missing server id.");
 
       const cacheaccount = await getPteroUser(req.session.userinfo.id, db)
@@ -258,7 +258,7 @@ module.exports.load = async function (app, db) {
         const newsettings = require('../handlers/readSettings').settings(); 
 
         let packagename = await db.get("package-" + req.session.userinfo.id);
-        let package = newsettings.api.client.packages.list[packagename ? packagename : newsettings.api.client.packages.default];
+        let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
 
         let pterorelationshipsserverdata = req.session.pterodactyl.relationships.servers.data.filter(name => name.attributes.id.toString() !== req.query.id);
 
@@ -273,9 +273,9 @@ module.exports.load = async function (app, db) {
         let attemptegg = null;
         //let attemptname = null;
 
-        for (let [name, value] of Object.entries(newsettings.api.client.eggs)) {
+        for (let [name, value] of Object.entries(newsettings.eggs)) {
           if (value.info.egg == checkexist[0].attributes.egg) {
-            attemptegg = newsettings.api.client.eggs[name];
+            attemptegg = newsettings.eggs[name];
             //attemptname = name;
           };
         };
@@ -351,7 +351,7 @@ module.exports.load = async function (app, db) {
     let theme = indexjs.get(req);
   
     const newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.api.client.allow.server.delete == true) {
+    if (newsettings.allow.server.delete == true) {
       if (req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) return res.send("Could not find server with that ID.");
   
       let deletionresults = await fetch(

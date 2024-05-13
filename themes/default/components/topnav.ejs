@@ -20,7 +20,7 @@
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
 
           <div class="dropdown-divider"></div>
-          <% if (settings.api.client.coins.enabled === true) { %>
+          <% if (settings.coins.enabled === true) { %>
           <a class="dropdown-item preview-item" href="/afk">
             <div class="preview-item-content">
               <p class="preview-subject mb-1">Coins: <span id="balance"><%= Math.floor(coins * 100) / 100 %></span></p>
@@ -51,7 +51,7 @@
     </button>
   </div>
 </nav>
-<% if (settings.api.client.coins.enabled === true) { %>
+<% if (settings.coins.enabled === true) { %>
   <script>
     let balance = document.getElementById("balance");
     balance.textContent = <%= Math.floor(coins * 100) / 100 %>;

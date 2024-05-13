@@ -21,8 +21,8 @@ module.exports.load = async function(app, db) {
     const userCoins = (await db.get(`coins-${req.session.userinfo.id}`)) || 0;
     const resourceCap = (await db.get(`${resourceType}-${req.session.userinfo.id}`)) || 0;
 
-    const per = newsettings.api.client.coins.store[resourceType].per * amount;
-    const cost = newsettings.api.client.coins.store[resourceType].cost * amount;
+    const per = newsettings.coins.store[resourceType].per * amount;
+    const cost = newsettings.coins.store[resourceType].cost * amount;
 
     if (userCoins < cost) return res.redirect(`${failedCallback}?err=CANNOTAFFORD`);
 
@@ -59,7 +59,7 @@ module.exports.load = async function(app, db) {
 
   async function enabledCheck(req, res) {
     const newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.api.client.coins.store.enabled === true) return newsettings;
+    if (newsettings.coins.store.enabled === true) return newsettings;
 
     const theme = indexjs.get(req);
     ejs.renderFile(

@@ -43,17 +43,17 @@ module.exports.load = async function (app, db) {
   
     const newsettings = require('../handlers/readSettings').settings(); 
   
-    if (newsettings.api.client.oauth2.link.slice(-1) == "/")
-      newsettings.api.client.oauth2.link = newsettings.api.client.oauth2.link.slice(0, -1);
+    if (newsettings.oauth2.link.slice(-1) == "/")
+      newsettings.oauth2.link = newsettings.oauth2.link.slice(0, -1);
   
-    if (newsettings.api.client.oauth2.callbackpath.slice(0, 1) !== "/")
-    newsettings.api.client.oauth2.callbackpath = "/" + newsettings.api.client.oauth2.callbackpath
+    if (newsettings.oauth2.callbackpath.slice(0, 1) !== "/")
+    newsettings.oauth2.callbackpath = "/" + newsettings.oauth2.callbackpath
 
     if (newsettings.pterodactyl.domain.slice(-1) == "/")
     newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
 
     let packagename = await db.get("package-" + req.query.id);
-    let package = newsettings.api.client.packages.list[packagename ? packagename : newsettings.api.client.packages.default];
+    let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
     if (!package) package = {  
       ram: 0,  
       disk: 0,  
@@ -90,7 +90,7 @@ module.exports.load = async function (app, db) {
         servers: 0
       },
       userinfo: userinfo,  
-      coins: newsettings.api.client.coins.enabled == true ? (await db.get("coins-" + req.query.id) ? await db.get("coins-" + req.query.id) : 0) : null
+      coins: newsettings.coins.enabled == true ? (await db.get("coins-" + req.query.id) ? await db.get("coins-" + req.query.id) : 0) : null
     });
   });  
 
@@ -141,7 +141,7 @@ module.exports.load = async function (app, db) {
       await db.set(`coins-${userInfo.id}`, 0);
     } else {
       let currentCoins = await db.get(`coins-${userInfo.id}`);
-      currentCoins = currentCoins + newSettings.api["afk page"].coins;
+      currentCoins = currentCoins + newSettings["afk page"].coins;
       await db.set(`coins-${userInfo.id}`, currentCoins);
     }
   
@@ -241,7 +241,7 @@ app.post("/api/createcoupon", async (req, res) => {
       return res.send({ status: "success" });
     } else {
       const newsettings = require('../handlers/readSettings').settings(); 
-      if (!newsettings.api.client.packages.list[req.body.package]) return res.send({ status: "invalid package" });
+      if (!newsettings.packages.list[req.body.package]) return res.send({ status: "invalid package" });
       await db.set("package-" + req.body.id, req.body.package);
       adminjs.suspend(req.body.id);
       return res.send({ status: "success" });
@@ -325,6 +325,7 @@ app.post("/api/createcoupon", async (req, res) => {
     }
   });
 
+
   /**
    * Checks the authorization and returns the settings if authorized.
    * Renders the file based on the theme and sends the response.
@@ -335,10 +336,10 @@ app.post("/api/createcoupon", async (req, res) => {
 
   async function check(req, res) {
     const settings = require('../handlers/readSettings').settings(); 
-    if (settings.api.client.api.enabled == true) {
+    if (settings.api.enabled == true) {
       let auth = req.headers['authorization'];
       if (auth) {
-        if (auth == "Bearer " + settings.api.client.api.code) {
+        if (auth == "Bearer " + settings.api.code) {
           return settings;
         };
       };
