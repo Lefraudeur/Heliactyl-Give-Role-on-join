@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const { renderFile } = require('ejs');
 const fs = require('fs');
 
-let newsettings = JSON.parse(fs.readFileSync("./settings.json"));
+const newsettings = require('../handlers/readSettings').settings(); 
 
 module.exports = async (key, db, ip) => {
     return new Promise(async (resolve, reject) => {

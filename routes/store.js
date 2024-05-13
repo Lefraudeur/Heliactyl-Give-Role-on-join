@@ -58,7 +58,7 @@ module.exports.load = async function(app, db) {
   app.get("/buyservers", async (req, res) => buyResource(req, res, "servers", "Servers"));
 
   async function enabledCheck(req, res) {
-    const newsettings = JSON.parse(fs.readFileSync(path.join(__dirname, "../settings.json")).toString());
+    const newsettings = require('../handlers/readSettings').settings(); 
     if (newsettings.api.client.coins.store.enabled === true) return newsettings;
 
     const theme = indexjs.get(req);

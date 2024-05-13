@@ -1,7 +1,7 @@
 const ejs = require("ejs");
 const fs = require("fs");
 const fetch = require("node-fetch");
-const settings = require("../settings.json");
+const settings = require('../handlers/readSettings').settings(); 
 const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
 const log = require("../handlers/log.js");
@@ -375,7 +375,7 @@ module.exports.load = async function (app, db) {
             log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the plan of the user with the ID \`${req.query.id}\`.`)
             return res.redirect(successredirect + "?err=none");
         } else {
-            let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+            const newsettings = require('../handlers/readSettings').settings(); 
             if (!newsettings.api.client.packages.list[req.query.package]) return res.redirect(`${failredirect}?err=INVALIDPACKAGE`);
             await db.set("package-" + req.query.id, req.query.package);
             adminjs.suspend(req.query.id);
@@ -609,7 +609,7 @@ module.exports.load = async function (app, db) {
 
         if (!(await db.get("users-" + req.query.id))) return res.send({ status: "invalid id" });
 
-        let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+        const newsettings = require('../handlers/readSettings').settings(); 
 
         if (newsettings.api.client.oauth2.link.slice(-1) == "/")
             newsettings.api.client.oauth2.link = newsettings.api.client.oauth2.link.slice(0, -1);
@@ -679,7 +679,7 @@ module.exports.load = async function (app, db) {
     }
 
     module.exports.suspend = async function (discordid) {
-        let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+        const newsettings = require('../handlers/readSettings').settings(); 
         if (newsettings.api.client.allow.overresourcessuspend !== true) return;
 
         let canpass = await indexjs.islimited();

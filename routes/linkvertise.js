@@ -1,4 +1,4 @@
-const settings = require('../settings.json');
+const settings = require('../handlers/readSettings').settings(); 
 
 module.exports.load = async function (app, db) {
 

@@ -8,7 +8,7 @@ module.exports.load = async function(app, db) {
 
     if (!req.session.pterodactyl) return res.redirect("/login");
 
-    let newsettings = JSON.parse(fs.readFileSync("./settings.json"));
+    const newsettings = require('../handlers/readSettings').settings(); 
 
     if (newsettings.api["afk page"].enabled !== true || !req.session || !req.session.userinfo) {
       return ws.close();

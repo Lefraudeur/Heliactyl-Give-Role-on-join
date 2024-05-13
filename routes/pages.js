@@ -1,4 +1,4 @@
-  const settings = require("../settings.json");
+  const settings = require('../handlers/readSettings').settings(); 
   const indexjs = require("../index.js");
   
   const ejs = require("ejs");

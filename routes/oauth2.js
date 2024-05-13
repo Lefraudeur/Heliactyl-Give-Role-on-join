@@ -1,6 +1,6 @@
 "use strict";
 
-const settings = require("../settings.json");
+const settings = require('../handlers/readSettings').settings(); 
 
 if (settings.api.client.oauth2.link.slice(-1) == "/")
   settings.api.client.oauth2.link = settings.api.client.oauth2.link.slice(0, -1);
@@ -21,7 +21,7 @@ const fetch = require('node-fetch');
 
 
 module.exports.load = async function (app, db) {
-  const settings = require("../settings.json");
+  const settings = require('../handlers/readSettings').settings(); 
   
   app.get("/login", async (req, res) => {
     if (req.query.redirect) req.session.redirect = "/" + req.query.redirect;
@@ -82,7 +82,7 @@ module.exports.load = async function (app, db) {
     delete req.session.redirect;
     if (!req.query.code) return res.send("Missing code.")
 
-    const newsettings = require('../settings.json');
+    const newsettings = require('../handlers/readSettings').settings(); 
 
     let ip = (newsettings.api.client.oauth2.ip["trust x-forwarded-for"] == true ? (req.headers['x-forwarded-for'] || req.connection.remoteAddress) : req.connection.remoteAddress);
     ip = (ip ? ip : "::1").replace(/::1/g, "::ffff:127.0.0.1").replace(/^.*:/, '');
