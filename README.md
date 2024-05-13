@@ -5,6 +5,9 @@
 > [!WARNING]  
 > Fixed Heliactyl 12.8 and above are not compatible with older files (themes) due to major settings modifications. To fix this replace all of the settings.api.client with settings. Thank you for understanding.
 
+> [!WARNING]  
+> Fixed Heliactyl 12.7.10 and above is not compatible with Heliactyl's settings due to newer versions using YAML as its easier to use instead of JSON. You will have to reconfigure all of your settings.
+
 # This is a fork of Heliactyl v12
 
 # Heliactyl • The modern client panel for Pterodactyl
