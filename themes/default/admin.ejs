@@ -41,15 +41,16 @@
                     <form class="forms-sample">
                       <div class="form-group">
                       <p id="latestversion"><span>Fetching...</span></p>
+                      </div>
                     </form>
                     <form class="forms-sample">
                       <div class="form-group">
-                      <a href="https://github.com/OvernodeProjets/Fixed-Heliactyl" class="btn btn-primary btn-lg">View latest version</a> <a href="https://overnode.fr/discord" class="btn btn-primary btn-lg">Get support</a>
+                          <a href="https://github.com/OvernodeProjets/Fixed-Heliactyl" class="btn btn-primary btn-lg">View latest version</a> <a href="https://overnode.fr/discord" class="btn btn-primary btn-lg">Get support</a>
+                      </div>
                     </form>
-                  </div>
-                </div>
-              </div>
-            </div>
+                 </div>
+               </div>
+             </div>
             
             <div class="col-md-6 grid-margin stretch-card">
               <div class="card">
@@ -64,7 +65,6 @@
               </div>
             </div>
 
-                  </div>
                </div>
             </div>
           <!-- content-wrapper ends -->
@@ -96,7 +96,6 @@
        console.error("Error fetching GitHub API:", error);
        document.getElementById("latestversion").innerHTML = "<span>Error checking for updates.</span>";
       });
-      
 
       fetch("/stats")
         .then(response => response.json())
@@ -107,7 +106,6 @@
             console.error("Error fetching stats:", error);
             document.getElementById("userStats").innerHTML = "Error loading statistics."; 
         });
-        
     </script>
     <!-- Custom js for this page -->
     <script src="/assets/js/file-upload.js"></script>
