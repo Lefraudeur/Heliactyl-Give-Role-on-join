@@ -73,7 +73,7 @@ blacklist:
 database: sqlite://database.sqlite
 api:
   enabled: true
-  key: API KEY
+  code: API KEY
 j4r: 
   enabled: true
   ads:

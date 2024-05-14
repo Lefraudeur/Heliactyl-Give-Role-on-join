@@ -222,7 +222,11 @@ module.exports.load = async function (app, db) {
 	    
       if (userinfo.verified == true) {
 
-        if (newsettings.oauth2.ip.block.includes(ip)) return res.send("You could not sign in, because your IP has been blocked from signing in.")
+      // Check if the user is "blacklisted" ip
+
+      if (newsettings.oauth2.ip.block.includes(ip)) return res.send("You could not sign in, because your IP has been blocked from signing in.")
+
+      // Check if the user is has different accounts on the same ip (works 1 time out of 2)
 
         if ((newsettings.oauth2.ip["duplicate check"] == true) && ip !== '127.0.0.1') {
           const ipuser = await db.get(`ipuser-${ip}`)

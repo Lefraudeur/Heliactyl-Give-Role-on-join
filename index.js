@@ -14,12 +14,12 @@ const chalk = require("chalk");
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
-if (typeof btoa === 'undefined') {
+if (!global.btoa) {
   global.btoa = function (str) {
     return Buffer.from(str, 'binary').toString('base64');
   };
 }
-if (typeof atob === 'undefined') {
+if (!global.atob) {
   global.atob = function (b64Encoded) {
     return Buffer.from(b64Encoded, 'base64').toString('binary');
   };
@@ -47,22 +47,17 @@ module.exports.renderdataeval = async function(req) {
   const newsettings = require('./handlers/readSettings').settings(); 
   let theme = indexjs.get(req);
   return {
-    req: req,
+    req,
     settings: newsettings,
     userinfo: req.session.userinfo,
-    packagename: req.session.userinfo ? await db.get("package-" + req.session.userinfo.id) ? await db.get("package-" + req.session.userinfo.id) : newsettings.packages.default : null,
-    extraresources: !req.session.userinfo ? null : (await db.get("extra-" + req.session.userinfo.id) ? await db.get("extra-" + req.session.userinfo.id) : {
-      ram: 0,
-      disk: 0,
-      cpu: 0,
-      servers: 0
-    }),
-    packages: req.session.userinfo ? newsettings.packages.list[await db.get("package-" + req.session.userinfo.id) ? await db.get("package-" + req.session.userinfo.id) : newsettings.packages.default] : null,
-    coins: newsettings.coins.enabled == true ? (req.session.userinfo ? (await db.get("coins-" + req.session.userinfo.id) ? await db.get("coins-" + req.session.userinfo.id) : 0) : null) : null,
+    packagename: req.session.userinfo ? await db.get("package-" + req.session.userinfo.id) || newsettings.packages.default : null,
+    extraresources: !req.session.userinfo ? null : (await db.get("extra-" + req.session.userinfo.id) || { ram: 0, disk: 0, cpu: 0, servers: 0 }),
+    packages: req.session.userinfo ? newsettings.packages.list[await db.get("package-" + req.session.userinfo.id) || newsettings.packages.default] : null,
+    coins: newsettings.coins.enabled == true ? (req.session.userinfo ? await db.get("coins-" + req.session.userinfo.id) || 0 : null) : null,
     pterodactyl: req.session.pterodactyl,
     theme: theme.name,
     extra: theme.settings.variables,
-    db: db
+    db
   };
 };
 
@@ -72,7 +67,7 @@ const Keyv = require("keyv");
 const db = new Keyv(settings.database);
 
 db.on('error', err => {
-  console.log(chalk.red("[Heliactyl] An error has occured when attempting to access the database."))
+  console.log(chalk.red("[Heliactyl] An error occurred when attempting to access the database."));
 });
 
 module.exports.db = db;
@@ -133,7 +128,6 @@ const listener = app.listen(settings.website.port, async function() {
     console.error(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.red(" Error checking for updates:"), error.message);
   }
   console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(" You can now access the dashboard at ") + chalk.underline(settings.oauth2.link + "/"));
-
 });
 
 var cache = false;
@@ -174,14 +168,14 @@ apifiles.forEach(file => {
  // Load route
 
 app.all("*", async (req, res) => {
-  if (req.session.pterodactyl) if ( req.session.pterodactyl.id !== await db.get("users-" + req.session.userinfo.id)) {
+  if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get("users-" + req.session.userinfo.id)) {
     return res.redirect("/login?prompt=none");
   }
 
   let theme = indexjs.get(req);
   
-  if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname)) if (!req.session.userinfo || !req.session.pterodactyl) 
-  return res.redirect("/login" + (req._parsedUrl.pathname.slice(0, 1) == "/" ? "?redirect=" + req._parsedUrl.pathname.slice(1) : ""));
+  if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session.userinfo || !req.session.pterodactyl)) 
+    return res.redirect("/login" + (req._parsedUrl.pathname.slice(0, 1) == "/" ? "?redirect=" + req._parsedUrl.pathname.slice(1) : ""));
 
   if (theme.settings.mustbeadmin.includes(req._parsedUrl.pathname)) {
     ejs.renderFile(
@@ -191,9 +185,9 @@ app.all("*", async (req, res) => {
     async function (err, str) {
       delete req.session.newaccount;
       delete req.session.password;
-      if (!req.session.userinfo || !req.session.pterodactyl) {
+      if (!req.session.userinfo || !req.session.pterodactyl || err) {
         if (err) {
-          console.log(chalk.red(`[Heliactyl] An error has occured on path ${req._parsedUrl.pathname}:`));
+          console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
           console.log(err);
           return res.render("404.ejs", { err });
         };
@@ -211,7 +205,7 @@ app.all("*", async (req, res) => {
 
       if (await cacheaccount.statusText == "Not Found") {
         if (err) {
-          console.log(chalk.red(`[Heliactyl] An error has occured on path ${req._parsedUrl.pathname}:`));
+          console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
           console.log(err);
           return res.render("404.ejs", { err });
         };
@@ -223,7 +217,7 @@ app.all("*", async (req, res) => {
       req.session.pterodactyl = cacheaccountinfo.attributes;
       if (cacheaccountinfo.attributes.root_admin !== true) {
         if (err) {
-          console.log(chalk.red(`[Heliactyl] An error has occured on path ${req._parsedUrl.pathname}:`));
+          console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
           console.log(err);
           return res.render("404.ejs", { err });
         };
@@ -238,7 +232,7 @@ app.all("*", async (req, res) => {
         delete req.session.newaccount;
         delete req.session.password;
         if (err) {
-          console.log(`[Heliactyl] An error has occured on path ${req._parsedUrl.pathname}:`);
+          console.log(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`);
           console.log(err);
           return res.render("404.ejs", { err });
         };
@@ -259,7 +253,7 @@ app.all("*", async (req, res) => {
     delete req.session.newaccount;
     delete req.session.password;
     if (err) {
-      console.log(chalk.red(`[Heliactyl] An error has occured on path ${req._parsedUrl.pathname}:`));
+      console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
       console.log(err);
       return res.render("404.ejs", { err });
     };
