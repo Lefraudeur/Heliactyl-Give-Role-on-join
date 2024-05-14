@@ -91,8 +91,8 @@ bot:
   joinguild:
     enabled: true
 # The Discord bot must be on these servers and have invite permissions. Automatic guild joining will not work unless role packages are configured correctly. You can always just set it to a random role & package so that only this works.
-  guildid:
-  - Guild ID 1
+    guildid:
+    - Guild ID 1
   giverole: 
     enabled: true
     guildid: "000000000000000000" # The Discord bot must be on the server. Automatically assign a role to the user when he logs in
