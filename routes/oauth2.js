@@ -119,12 +119,95 @@ module.exports.load = async function (app, db) {
           }
         }
       );
+
       let userinfo = JSON.parse(await userjson.text());
 
-      if (settings.whitelist.status) {
-        if (!settings.whitelist.users.includes(userinfo.id)) return res.send('Service is under maintenance.')
-      }
+      // Check if whitelist is enabled and if the user is whitelisted
 
+      if (settings.whitelist.status && !settings.whitelist.users.includes(userinfo.id)) {
+        return res.send(`
+        <head>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
+        <title>Whitelisted</title>
+      </head>
+      <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
+        <center>
+          <br><br><br>
+          <br><br><br>
+          <br><br><br>
+          <br><br><br>
+          <h1 style="color: white">You are not whitelisted.</h1>
+          <p style="color: #BBBBBB">Please contact the administrator for more information.</p>
+        </center>
+        
+        <script>
+          var options = {
+            classname: 'loadingbar',
+            id: 'loadingbar'
+          };
+          var nanobar = new Nanobar( options );
+          nanobar.go( 30 );
+          nanobar.go( 76 );
+          nanobar.go(100);
+        </script>
+        <style>
+          .loadingbar .bar {
+            background: #007fcc;
+            border-radius: 4px;
+            height: 2px;
+            box-shadow: 0 0 10px #007fcc;
+          }
+        </style>
+      </body>
+        `);
+      }     
+
+      // Check if blacklist is enabled and if the user is blacklisted
+
+      if (settings.blacklist.enabled && settings.blacklist.users.includes(userinfo.id)) {
+        return res.send(`
+        <head>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
+        <title>Blacklisted</title>
+      </head>
+      <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
+        <center>
+          <br><br><br>
+          <br><br><br>
+          <br><br><br>
+          <br><br><br>
+          <h1 style="color: white">You are blacklisted.</h1>
+          <p style="color: #BBBBBB">Please contact the administrator for more information.</p>
+        </center>
+        
+        <script>
+          var options = {
+            classname: 'loadingbar',
+            id: 'loadingbar'
+          };
+          var nanobar = new Nanobar( options );
+          nanobar.go( 30 );
+          nanobar.go( 76 );
+          nanobar.go(100);
+        </script>
+        <style>
+          .loadingbar .bar {
+            background: #007fcc;
+            border-radius: 4px;
+            height: 2px;
+            box-shadow: 0 0 10px #007fcc;
+          }
+        </style>
+      </body>
+        `);
+      }      
+	    
       let guildsjson = await fetch(
         'https://discord.com/api/users/@me/guilds',
         {
@@ -135,49 +218,6 @@ module.exports.load = async function (app, db) {
         }
       );
 
-      // Check if blacklist is enabled and if the user is blacklisted
-
-      if (settings.blacklist.enabled && settings.blacklist.users.includes(userinfo.id)) {
-        return res.send(`
-          <head>
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
-            <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
-            <title>Blacklisted</title>
-          </head>
-          <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
-            <center>
-              <br><br><br>
-              <br><br><br>
-              <br><br><br>
-              <br><br><br>
-              <h1 style="color: white">You are blacklisted.</h1>
-              <p style="color: #BBBBBB">Please contact the administrator for more information.</p>
-            </center>
-            
-            <script>
-              var options = {
-                classname: 'loadingbar',
-                id: 'loadingbar'
-              };
-              var nanobar = new Nanobar( options );
-              nanobar.go( 30 );
-              nanobar.go( 76 );
-              nanobar.go(100);
-            </script>
-            <style>
-              .loadingbar .bar {
-                background: #007fcc;
-                border-radius: 4px;
-                height: 2px;
-                box-shadow: 0 0 10px #007fcc;
-              }
-            </style>
-          </body>
-        `);
-      }      
-	    
       let guildsinfo = await guildsjson.json();
 	    
       if (userinfo.verified == true) {
@@ -270,10 +310,10 @@ module.exports.load = async function (app, db) {
                 );
               }
             } else {
-              return res.send("api.client.bot.joinguild.guildid is not an array not a string.");
+              return res.send("bot.joinguild.guildid is not an array not a string.");
             }
           } else {
-            return res.send("api.client.bot.joinguild.guildid is not an array not a string.");
+            return res.send("bot.joinguild.guildid is not an array not a string.");
           }
         }
 	      
@@ -291,7 +331,7 @@ module.exports.load = async function (app, db) {
               }
             );
           } else {
-            return res.send("api.client.bot.giverole.guildid or roleid is not a string.")
+            return res.send("bot.giverole.guildid or roleid is not a string.")
           }
         }
 

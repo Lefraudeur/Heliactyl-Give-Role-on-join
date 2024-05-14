@@ -11,7 +11,7 @@ module.exports.load = async function(app, db) {
 
     if (!code) return res.redirect(theme.settings.redirect.missingorinvalidcouponcode + "?err=MISSINGCOUPONCODE");
 
-    let couponinfo = await db.get("coupon-" + code);
+    let couponInfo = await db.get("coupon-" + code);
 
     /*
     {
@@ -23,11 +23,11 @@ module.exports.load = async function(app, db) {
     }
     */
 
-    if (!couponinfo) return res.redirect(theme.settings.redirect.missingorinvalidcouponcode + "?err=INVALIDCOUPONCODE");
+    if (!couponInfo) return res.redirect(theme.settings.redirect.missingorinvalidcouponcode + "?err=INVALIDCOUPONCODE");
 
     await db.delete("coupon-" + code);
 
-    let extra = await db.get("extra-" + req.session.userinfo.id) || {
+    let extra = (await db.get("extra-" + req.session.userinfo.id)) || {
       ram: 0,
       disk: 0,
       cpu: 0,
@@ -35,7 +35,7 @@ module.exports.load = async function(app, db) {
     };
 
     // Assign values to the variables
-    let { ram, disk, cpu, servers, coins } = couponinfo;
+    let { ram, disk, cpu, servers, coins } = couponInfo;
 
     extra.ram = Math.min(extra.ram + (ram || 0), 999999999999999);
     extra.disk = Math.min(extra.disk + (disk || 0), 999999999999999);
@@ -44,8 +44,8 @@ module.exports.load = async function(app, db) {
 
     await db.set("extra-" + req.session.userinfo.id, extra);
 
-    let userCoins = await db.get("coins-" + req.session.userinfo.id) || 0;
-    userCoins = userCoins + coins;
+    let userCoins = (await db.get("coins-" + req.session.userinfo.id)) ?? 0;
+    userCoins += coins;
     await db.set("coins-" + req.session.userinfo.id, userCoins);
 
     log(`coupon redeemed`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} redeemed the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``);

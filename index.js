@@ -82,7 +82,7 @@ module.exports.db = db;
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const app = express();
-require('express-ws')(app)
+require('express-ws')(app);
 
 const ejs = require("ejs");
 const session = require("express-session");

@@ -6,8 +6,6 @@ const Queue = require("../handlers/Queue.js");
 const log = require("../handlers/log.js");
 
 const fetch = require("node-fetch");
-const fs = require("fs");
-
 
 if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
   settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
@@ -27,12 +25,12 @@ module.exports.load = async function (app, db) {
 
         const cacheaccount = await getPteroUser(req.session.userinfo.id, db)
           .catch(() => {
-            cb()
+            cb();
             return res.send("An error has occured while attempting to update your account information and server list.");
           })
         if (!cacheaccount) {
-          cb()
-          return res.send('Heliactyl failed to find an account on the configured panel, try relogging')
+          cb();
+          return res.send('Heliactyl failed to find an account on the configured panel, try relogging');
         }
         req.session.pterodactyl = cacheaccount.attributes;
 
@@ -40,7 +38,7 @@ module.exports.load = async function (app, db) {
           try {
             decodeURIComponent(req.query.name)
           } catch (err) {
-            cb()
+            cb();
             return res.redirect(`${redirectlink}?err=COULDNOTDECODENAME`);
           }
 
@@ -67,30 +65,30 @@ module.exports.load = async function (app, db) {
           };
 
           if (servers2 >= package.servers + extra.servers) {
-            cb()
+            cb();
             return res.redirect(`${redirectlink}?err=TOOMUCHSERVERS`);
           }
 
           let name = decodeURIComponent(req.query.name);
           if (name.length < 1) { 
-            cb()
+            cb();
             return res.redirect(`${redirectlink}?err=LITTLESERVERNAME`);
           }
           if (name.length > 191) {
-            cb()
+            cb();
             return res.redirect(`${redirectlink}?err=BIGSERVERNAME`);
           }
 
           let location = req.query.location;
 
           if (Object.entries(newsettings.locations).filter(vname => vname[0] == location).length !== 1) {
-            cb()
+            cb();
             return res.redirect(`${redirectlink}?err=INVALIDLOCATION`);
           }
 
           let requiredpackage = Object.entries(newsettings.locations).filter(vname => vname[0] == location)[0][1].package;
           if (requiredpackage) if (!requiredpackage.includes(packagename ? packagename : newsettings.packages.default)) {
-            cb()
+            cb();
             return res.redirect(`${redirectlink}?err=PREMIUMLOCATION`);
           }
 
@@ -178,7 +176,7 @@ module.exports.load = async function (app, db) {
             const coins = await db.get("coins-" + req.session.userinfo.id) ?? 0;
             const cost = settings.servercreation.cost
             if (createdStatus && coins < cost) {
-              cb()
+              cb();
               return res.redirect(`/servers/new?err=TOOLITTLECOINS`)
             }
 
@@ -196,7 +194,7 @@ module.exports.load = async function (app, db) {
             await serverinfo
             if (serverinfo.statusText !== "Created") {
               console.log(await serverinfo.text());
-              cb()
+              cb();
               return res.redirect(`${redirectlink}?err=ERRORONCREATE`);
             }
             let serverinfotext = await serverinfo.json();
@@ -212,15 +210,15 @@ module.exports.load = async function (app, db) {
             await db.set(`lastrenewal-${serverinfotext.attributes.id}`, Date.now())
             await db.set(`createdserver-${req.session.userinfo.id}`, true)
 
-            cb()
+            cb();
             log('created server', `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created a new server named \`${name}\` with the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\nLocation ID: ${location}\nEgg: ${egg}\`\`\``)
             return res.redirect("/servers?err=CREATEDSERVER");
           } else {
-            cb()
+            cb();
             res.redirect(`${redirectlink}?err=NOTANUMBER`);
           }
         } else {
-          cb()
+          cb();
           res.redirect(`${redirectlink}?err=MISSINGVARIABLE`);
         }
       })
