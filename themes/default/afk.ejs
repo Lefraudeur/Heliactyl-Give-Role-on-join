@@ -30,7 +30,7 @@
                           let reconnecting = false;
 
                           function connect() {
-                              const socket = new WebSocket(`${window.location.href.startsWith("https://") ? "wss" : "ws"}://${window.location.href.replace("http://","").replace("https://","").split("/")[0]}/afk/ws`);
+                              const socket = new WebSocket(`${window.location.href.startsWith("https://") ? "wss" : "ws"}://${window.location.host}/afk/ws`);
 
                               socket.onopen = () => {
                                   console.log("WebSocket connection opened");
@@ -61,9 +61,7 @@
                               function reconnect() {
                                   reconnecting = true;
                                   document.getElementById("sessionEarn").innerText = `Reconnecting...`;
-                                  setTimeout(() => {
-                                      connect();
-                                  }, 750);
+                                  setTimeout(connect, 750);
                               }
                           }
 

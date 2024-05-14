@@ -1,25 +1,22 @@
-version: 12.8.0
-name: Heliactyl
-letter: H
+version: "12.8.0"
+name: "Heliactyl"
+letter: "H"
 # It's recommended to use an image of size 128x128 pixels. And for the thumbnail discord modify in handlers/log.js
-icon: https://avatars.githubusercontent.com/u/122883790
-theme: default
+icon: "https://avatars.githubusercontent.com/u/122883790"
+theme: "default"
 # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones (tz identifier).
-timezone: Europe/Paris
+timezone: "Europe/Paris"
 resources:
 # Options: MB, GB. This is only used on the user side, admin will use GB.
-  typeRessources: MB
+  typeRessources: "MB"
 # Options: Core, %. This is only used on the userside, admin will use Core
-  typeCPU: Core
-
+  typeCPU: "Core"
 website:
   port: 25002
   secret: "Default Secret (Change this to any string you want)"
-
 pterodactyl:
-  domain: https://panel.example.com
-  key: ptla_0000000000000000000000000000000000000000000
-
+  domain: "https://panel.example.com"
+  key: "ptla_0000000000000000000000000000000000000000000"
 linkvertise:
   userid: 50000
   coins: 5
@@ -27,24 +24,22 @@ linkvertise:
   cooldown: null
   dailyLimit: null
   minTimeToComplete: null
-
 storelimits:
   ram: 8192
   disk: 10240
   cpu: 400
   servers: 8
-
 stripe:
   enabled: true
 # The key is the Stripe API key, and the coins are the amount per £1. If the Stripe API key is invalid and Stripe purchases are enabled, Heliactyl will crash when attempting to do transactions.
-  key: 100000000000000
+  key: "100000000000000"
   coins: 100
-
+# https://docs.stripe.com/currencies
+  currency: "eur"
 category:
   management: true
   coins & resources: true
   miscellaneous: true
-
 pages:
 # Management
   dashboard: true
@@ -56,43 +51,39 @@ pages:
 # Category miscellaneous
   panel: true
   admin: true
-
 adsense:
 # Works only halfway, unreliable, better to add it directly to the code
 # This feature facilitates the integration of AdSense, adsterra, and other similar applications into Heliactyl.
   enabled: false
   script: ''
-
 blacklist:
 # If you want to blacklist a user, just set their Discord ID, and they will be blacklisted.
   enabled: true
   users:
-  - 000000000000000000
-  - 000000000000000000
-
-database: sqlite://database.sqlite
+  - "000000000000000000"
+  - "000000000000000000"
+database: "sqlite://database.sqlite"
 api:
   enabled: true
-  code: API KEY
-j4r: 
+  code: "API KEY"
+j4r:
   enabled: true
   ads:
-  - name: Example Server 1
-    id: 000000000000000000
-    invite: https://discord.gg/example1
+  - name: "Example Server 1"
+    id: "000000000000000000"
+    invite: "https://discord.gg/example1"
     coins: 100
-  - name: Example Server 2
-    id: 000000000000000000
-    invite: https://discord.gg/example2
+  - name: "Example Server 2"
+    id: "000000000000000000"
+    invite: "https://discord.gg/example2"
     coins: 200
-
 bot:
   token: "Discord bot token here"
   joinguild:
     enabled: true
 # The Discord bot must be on these servers and have invite permissions. Automatic guild joining will not work unless role packages are configured correctly. You can always just set it to a random role & package so that only this works.
     guildid:
-    - Guild ID 1
+    - "Guild ID 1"
   giverole: 
     enabled: true
     guildid: "000000000000000000" # The Discord bot must be on the server. Automatically assign a role to the user when he logs in

@@ -1,9 +1,7 @@
 const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
-const fs = require("fs");
 const ejs = require("ejs");
 const log = require('../handlers/log');
-const path = require("path");
 
 module.exports.load = async function(app, db) {
   const buyResource = async (req, res, resourceType, resourceName) => {
@@ -59,7 +57,7 @@ module.exports.load = async function(app, db) {
 
   async function enabledCheck(req, res) {
     const newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.coins.store.enabled === true) return newsettings;
+    if (newsettings.coins.store.enabled) return newsettings;
 
     const theme = indexjs.get(req);
     ejs.renderFile(
