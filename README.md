@@ -127,20 +127,14 @@ server {
 2. Download database.sqlite
 3. Delete all files off the server (or delete and remake the folder if done in ssh)
 4. Upload the latest Heliactyl v12 release and unzip it
-5. Upload database.sqlite and reconfigure settings.json
-
-### From Heliactyl v15:
-
-- This is currently not possible due to major differences between the versions
-- You will have to install Heliactyl v12 and use a new database
+5. Upload database.sqlite and reconfigure settings.yml
 
 ### Move to a newer Heliactyl v12 release:
 
-1. Delete everything except settings.json, database.sqlite
+1. Delete everything except settings.yml, database.sqlite
 2. Put the files that you didn't delete into a zip file
 3. Upload the latest Heliactyl v12 release and unzip it
-4. Remove settings.json and database.sqlite
-5. Unzip the zip with your old settings.json and database.sqlite
+4. Upload database.sqlite and reconfigure settings.yml
 
 <hr>
 
@@ -168,13 +162,6 @@ To stop a currently running Heliactyl instance, use `pm2 stop heliactyl`
 
 <br>
 
-> [!NOTE]
->
-> # What happened to 13.x and 15.x?
->
-> Due to major issues with both versions, we've decided to return to V12 and continue.
-> The latest versions will be on v12 now.
-
 > [!WARNING]
 >
 > We cannot force you to keep "Powered by Heliactyl" in the footer, but please consider keeping it. It helps to get more visibility for the project, which is getting better. We won't > provide technical support for installations without the notice in the footer. We may DMCA the website under certain conditions.
@@ -184,5 +171,6 @@ To stop a currently running Heliactyl instance, use `pm2 stop heliactyl`
 >
 > # Legacy Deprecation Notice
 >
-> Heliactyl v6, v7, v8, v9, v10, v11, v13, v15 is now deprecated as listed in our Discord and should not be used.
-> Please update to Heliactyl v12 or use Heliactyl v14.
+> Heliactyl v6, v7, v8, v9, v10, v11, v13, v15 is now deprecated by the official Heliactyl team.
+> Users have made forks of older Heliactyl version but the Heliactyl team will not give support. 
+> Please update to Heliactyl v12 or use [Heliactyl v14](https://github.com/heliactyloss/heliactyl).
