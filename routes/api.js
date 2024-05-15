@@ -20,7 +20,7 @@ module.exports.load = async function (app, db) {
    * Returns the status of the API.
    */
   app.get("/api", async (req, res) => {
-    /* Check that the API key is valid */
+    /* Check if the API key is valid */
     let auth = await check(req, res);
     if (!auth) return;
     res.send({ "status": true });
@@ -32,13 +32,15 @@ module.exports.load = async function (app, db) {
    */
 
   app.get("/api/userinfo", async (req, res) => {
-    /* Check that the API key is valid */
+    /* Check if the API key is valid */
     let auth = await check(req, res);
     if (!auth) return;
   
-    if (!req.query.id) return res.send({ status: "missing id" });
+    if (!req.query.id) 
+      return res.send({ status: "missing id" });
   
-    if (!(await db.get("users-" + req.query.id))) return res.send({ status: "invalid id" });
+    if (!(await db.get("users-" + req.query.id))) 
+      return res.send({ status: "invalid id" });
   
     const newsettings = require('../handlers/readSettings').settings(); 
   
@@ -99,18 +101,25 @@ module.exports.load = async function (app, db) {
    */
 
   app.post("/api/setcoins", async (req, res) => {	
-    /* Check that the API key is valid */
+    /* Check if the API key is valid */
     let auth = await check(req, res);	
     if (!auth) return;	
 
-    if (typeof req.body !== "object") return res.send({status: "body must be an object"});	
-    if (Array.isArray(req.body)) return res.send({status: "body cannot be an array"});	
+    if (typeof req.body !== "object") 
+      return res.send({status: "body must be an object"});	
+    if (Array.isArray(req.body)) 
+      return res.send({status: "body cannot be an array"});	
+
     let id = req.body.id;	
     let coins = req.body.coins;	
-    if (typeof id !== "string") return res.send({status: "id must be a string"});	
-    if (!(await db.get("users-" + id))) return res.send({status: "invalid id"});	
-    if (typeof coins !== "number") return res.send({status: "coins must be number"});	
-    if (coins < 0 || coins > 999999999999999) return res.send({status: "too small or big coins"});	
+    if (typeof id !== "string") 
+      return res.send({status: "id must be a string"});	
+    if (!(await db.get("users-" + id))) 
+      return res.send({status: "invalid id"});	
+    if (typeof coins !== "number") 
+      return res.send({status: "coins must be number"});	
+    if (coins < 0 || coins > 999999999999999) 
+      return res.send({status: "too small or big coins"});	
     if (coins == 0) {	
       await db.delete("coins-" + id)	
     } else {	
@@ -148,24 +157,25 @@ module.exports.load = async function (app, db) {
     res.send({coins: updatedCoins});
   });
   
-  
-
   /**
    * POST /api/createcoupon
    * Creates a coupon with attributes such as coins, CPU, RAM, disk, and servers.
    */
 
 app.post("/api/createcoupon", async (req, res) => {
-    /* Check that the API key is valid */
+    /* Check if the API key is valid */
     let auth = await check(req, res);
     if (!auth) return;
 
-    if (typeof req.body !== "object") return res.send({status: "body must be an object"});
-    if (Array.isArray(req.body)) return res.send({status: "body cannot be an array"});
+    if (typeof req.body !== "object") 
+      return res.send({status: "body must be an object"});
+    if (Array.isArray(req.body)) 
+      return res.send({status: "body cannot be an array"});
 
     let code = typeof req.body.code == "string" ? req.body.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
 
-    if (!code.match(/^[a-z0-9]+$/i)) return res.json({ status: "illegal characters" });
+    if (!code.match(/^[a-z0-9]+$/i)) 
+      return res.json({ status: "illegal characters" });
 
     let coins = typeof req.body.coins == "number" ? req.body.coins : 0;
     let ram = typeof req.body.ram == "number" ? req.body.ram : 0;
@@ -173,13 +183,19 @@ app.post("/api/createcoupon", async (req, res) => {
     let cpu = typeof req.body.cpu == "number" ? req.body.cpu : 0;
     let servers = typeof req.body.servers == "number" ? req.body.servers : 0;
 
-    if (coins < 0) return res.json({ status: "coins is less than 0" });
-    if (ram < 0) return res.json({ status: "ram is less than 0" });
-    if (disk < 0) return res.json({ status: "disk is less than 0" });
-    if (cpu < 0) return res.json({ status: "cpu is less than 0" });
-    if (servers < 0) return res.json({ status: "servers is less than 0" });
+    if (coins < 0) 
+      return res.json({ status: "coins is less than 0" });
+    if (ram < 0) 
+      return res.json({ status: "ram is less than 0" });
+    if (disk < 0) 
+      return res.json({ status: "disk is less than 0" });
+    if (cpu < 0) 
+      return res.json({ status: "cpu is less than 0" });
+    if (servers < 0) 
+      return res.json({ status: "servers is less than 0" });
 
-    if (!coins && !ram && !disk && !cpu && !servers) return res.json({ status: "cannot create empty coupon" });
+    if (!coins && !ram && !disk && !cpu && !servers) 
+      return res.json({ status: "cannot create empty coupon" });
 
     await db.set("coupon-" + code, {
       coins: coins,
@@ -198,20 +214,24 @@ app.post("/api/createcoupon", async (req, res) => {
    */
 
   app.post("/api/revokecoupon", async (req, res) => {
-    /* Check that the API key is valid */
+    /* Check if the API key is valid */
     let auth = await check(req, res);
     if (!auth) return;
 
-    if (typeof req.body !== "object") return res.send({status: "body must be an object"});
-    if (Array.isArray(req.body)) return res.send({status: "body cannot be an array"});
+    if (typeof req.body !== "object") 
+      return res.send({status: "body must be an object"});
+    if (Array.isArray(req.body)) 
+      return res.send({status: "body cannot be an array"});
 
     let code = req.body.code;
 
     if (!code) return res.json({ status: "missing code" });
 
-    if (!code.match(/^[a-z0-9]+$/i)) return res.json({ status: "invalid code" });
+    if (!code.match(/^[a-z0-9]+$/i)) 
+      return res.json({ status: "invalid code" });
 
-    if (!(await db.get("coupon-" + code))) return res.json({ status: "invalid code" });
+    if (!(await db.get("coupon-" + code))) 
+      return res.json({ status: "invalid code" });
 
     await db.delete("coupon-" + code);
 
@@ -224,15 +244,18 @@ app.post("/api/createcoupon", async (req, res) => {
    */
 
   app.post("/api/setplan", async (req, res) => {
-    /* Check that the API key is valid */
+    /* Check if the API key is valid */
     let auth = await check(req, res);
     if (!auth) return;
 
-    if (!req.body) return res.send({ status: "missing body" });
+    if (!req.body) 
+      return res.send({ status: "missing body" });
 
-    if (typeof req.body.id !== "string") return res.send({ status: "missing id" });
+    if (typeof req.body.id !== "string") 
+      return res.send({ status: "missing id" });
 
-    if (!(await db.get("users-" + req.body.id))) return res.send({ status: "invalid id" });
+    if (!(await db.get("users-" + req.body.id))) 
+      return res.send({ status: "invalid id" });
 
     if (typeof req.body.package !== "string") {
       await db.delete("package-" + req.body.id);
@@ -253,15 +276,18 @@ app.post("/api/createcoupon", async (req, res) => {
    */
 
   app.post("/api/setresources", async (req, res) => {
-    /* Check that the API key is valid */
+    /* Check if the API key is valid */
     let auth = await check(req, res);
     if (!auth) return;
 
-    if (!req.body) return res.send({ status: "missing body" });
+    if (!req.body) 
+      return res.send({ status: "missing body" });
 
-    if (typeof req.body.id !== "string") return res.send({ status: "missing id" });
+    if (typeof req.body.id !== "string") 
+      return res.send({ status: "missing id" });
 
-    if (!(await db.get("users-" + req.body.id))) res.send({ status: "invalid id" });
+    if (!(await db.get("users-" + req.body.id))) 
+      return res.send({ status: "invalid id" });
 
     if (typeof req.body.ram == "number" || typeof req.body.disk == "number" || typeof req.body.cpu == "number" || typeof req.body.servers == "number") {
       let ram = req.body.ram;
@@ -280,7 +306,7 @@ app.post("/api/createcoupon", async (req, res) => {
           disk: 0,
           cpu: 0,
           servers: 0
-        }
+        };
       }
 
       if (typeof ram == "number") {

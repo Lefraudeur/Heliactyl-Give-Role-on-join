@@ -2,6 +2,14 @@
 
 const settings = require('../handlers/readSettings').settings(); 
 
+const indexjs = require("../index.js");
+const log = require('../handlers/log');
+const vpnCheck = require("../handlers/vpnCheck");
+const getTemplate = require('../handlers/getTemplate.js').template;
+
+const { renderFile } = require('ejs');
+const fetch = require('node-fetch');
+
 if (settings.oauth2.link.slice(-1) == "/")
   settings.oauth2.link = settings.oauth2.link.slice(0, -1);
 
@@ -12,14 +20,6 @@ if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.
     settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
 }
 
-const indexjs = require("../index.js");
-const log = require('../handlers/log');
-const vpnCheck = require("../handlers/vpnCheck");
-
-const { renderFile } = require('ejs');
-const fetch = require('node-fetch');
-
-
 module.exports.load = async function (app, db) {
   const settings = require('../handlers/readSettings').settings(); 
   
@@ -28,78 +28,55 @@ module.exports.load = async function (app, db) {
     res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${settings.oauth2.id}&redirect_uri=${encodeURIComponent(settings.oauth2.link + settings.oauth2.callbackpath)}&response_type=code&scope=identify%20email${settings.bot.joinguild.enabled == true ? "%20guilds.join" : ""}${settings.j4r.enabled == true ? "%20guilds" : ""}${settings.oauth2.prompt == false ? "&prompt=none" : (req.query.prompt ? (req.query.prompt == "none" ? "&prompt=none" : "") : "")}`);
 });
 
-  app.get("/logout", (req, res) => {
-    let theme = indexjs.get(req);
-    req.session.destroy(() => {
-      return res.redirect(theme.settings.redirect.logout ? theme.settings.redirect.logout : "/");
-    });
+app.get("/logout", (req, res) => {
+  let theme = indexjs.get(req);
+  req.session.destroy(() => {
+    return res.redirect(theme.settings.redirect.logout || "/");
   });
+});
 
   app.get(settings.oauth2.callbackpath, async (req, res) => {
     if (!req.query.code) return res.redirect(`/login`)
-    res.send(`
-      <head>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
-        <title>Please wait...</title>
-      </head>
-      <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
-        <center>
-          <br><br><br>
-          <h1 style="color: white">Logging in...</h1>
-          <p style="color: #BBBBBB">Please wait, you'll be redirected soon</p>
-        </center>
-        <script type="text/javascript" defer>
-          history.pushState('/login', 'Logging in...', '/login')
-          window.location.replace('/submitlogin?code=${encodeURIComponent(req.query.code.replace(/'/g, ''))}')
-        </script>
-        <script>
-          var options = {
-            classname: 'loadingbar',
-            id: 'loadingbar'
-          };
-          var nanobar = new Nanobar( options );
-          nanobar.go( 30 );
-          nanobar.go( 76 );
-          nanobar.go(100);
-        </script>
-        <style>
-          .loadingbar .bar {
-            background: #007fcc;
-            border-radius: 4px;
-            height: 2px;
-            box-shadow: 0 0 10px #007fcc;
-          }
-        </style>
-      </body>
-    `)
+    const code = encodeURIComponent(req.query.code.replace(/'/g, ''));
+    res.send(getTemplate("Please wait...", "Logging in... Please wait, you'll be redirected soon") + `
+    <script type="text/javascript" defer>
+      history.pushState('/login', 'Logging in...', '/login')
+      window.location.replace('/submitlogin?code=${code}')
+    </script>
+  `);
   })
   
   app.get(`/submitlogin`, async (req, res) => {
+    if (!req.query.code) return res.send("Missing code.")
     let customredirect = req.session.redirect;
     delete req.session.redirect;
-    if (!req.query.code) return res.send("Missing code.")
 
     const newsettings = require('../handlers/readSettings').settings(); 
 
     let ip = (newsettings.oauth2.ip["trust x-forwarded-for"] == true ? (req.headers['x-forwarded-for'] || req.connection.remoteAddress) : req.connection.remoteAddress);
     ip = (ip ? ip : "::1").replace(/::1/g, "::ffff:127.0.0.1").replace(/^.*:/, '');
-    
+
     if (newsettings.antivpn.status && ip !== '127.0.0.1' && !newsettings.antivpn.whitelistedIPs.includes(ip)) {
       const vpn = await vpnCheck(newsettings.antivpn.APIKey, db, ip, res)
-      if (vpn) return
+      if (vpn) return;
     }
 
+    let body = 
+    "client_id=" + encodeURIComponent(settings.oauth2.id) +
+    "&client_secret=" + encodeURIComponent(settings.oauth2.secret) +
+    "&grant_type=authorization_code" +
+    "&code=" + encodeURIComponent(req.query.code) +
+    "&redirect_uri=" + encodeURIComponent(settings.oauth2.link + settings.oauth2.callbackpath);
+  
     let json = await fetch(
       'https://discord.com/api/oauth2/token',
       {
         method: "post",
-        body: "client_id=" + settings.oauth2.id + "&client_secret=" + settings.oauth2.secret + "&grant_type=authorization_code&code=" + encodeURIComponent(req.query.code) + "&redirect_uri=" + encodeURIComponent(settings.oauth2.link + settings.oauth2.callbackpath),
+        body: body,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }
     );
+
     if (json.ok == true) {
       let codeinfo = JSON.parse(await json.text());
       let scopes = codeinfo.scope;
@@ -107,8 +84,8 @@ module.exports.load = async function (app, db) {
 
       if (scopes.replace(/identify/g, "") == scopes) missingscopes.push("identify");
       if (scopes.replace(/email/g, "") == scopes) missingscopes.push("email");
-      if (newsettings.bot.joinguild.enabled == true) if (scopes.replace(/guilds.join/g, "") == scopes) missingscopes.push("guilds.join");
-      if (newsettings.j4r.enabled) if (scopes.replace(/guilds/g, "") == scopes) missingscopes.push("guilds");
+      if (newsettings.bot.joinguild.enabled == true && scopes.replace(/guilds.join/g, "") == scopes) missingscopes.push("guilds.join");
+      if (newsettings.j4r.enabled && scopes.replace(/guilds/g, "") == scopes) missingscopes.push("guilds");
       if (missingscopes.length !== 0) return res.send("Missing scopes: " + missingscopes.join(", "));
       let userjson = await fetch(
         'https://discord.com/api/users/@me',
@@ -124,90 +101,14 @@ module.exports.load = async function (app, db) {
 
       // Check if whitelist is enabled and if the user is whitelisted
 
-      if (settings.whitelist.status && !settings.whitelist.users.includes(userinfo.id)) {
-        return res.send(`
-        <head>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
-        <title>Whitelisted</title>
-      </head>
-      <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
-        <center>
-          <br><br><br>
-          <br><br><br>
-          <br><br><br>
-          <br><br><br>
-          <h1 style="color: white">You are not whitelisted.</h1>
-          <p style="color: #BBBBBB">Please contact the administrator for more information.</p>
-        </center>
-        
-        <script>
-          var options = {
-            classname: 'loadingbar',
-            id: 'loadingbar'
-          };
-          var nanobar = new Nanobar( options );
-          nanobar.go( 30 );
-          nanobar.go( 76 );
-          nanobar.go(100);
-        </script>
-        <style>
-          .loadingbar .bar {
-            background: #007fcc;
-            border-radius: 4px;
-            height: 2px;
-            box-shadow: 0 0 10px #007fcc;
-          }
-        </style>
-      </body>
-        `);
-      }     
+      if (settings.oauth2.whitelist && settings.oauth2.whitelist.status && !settings.oauth2.whitelist.users.includes(userinfo.id)) 
+        return res.send(getTemplate("Whitelisted", "You are not whitelisted. Please contact the administrator for more information.", true));
 
       // Check if blacklist is enabled and if the user is blacklisted
 
-      if (settings.blacklist.enabled && settings.blacklist.users.includes(userinfo.id)) {
-        return res.send(`
-        <head>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.4.2/nanobar.js"></script>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap" rel="stylesheet">
-        <title>Blacklisted</title>
-      </head>
-      <body style="background-color: #111319; font-family: 'IBM Plex Sans', sans-serif;">
-        <center>
-          <br><br><br>
-          <br><br><br>
-          <br><br><br>
-          <br><br><br>
-          <h1 style="color: white">You are blacklisted.</h1>
-          <p style="color: #BBBBBB">Please contact the administrator for more information.</p>
-        </center>
-        
-        <script>
-          var options = {
-            classname: 'loadingbar',
-            id: 'loadingbar'
-          };
-          var nanobar = new Nanobar( options );
-          nanobar.go( 30 );
-          nanobar.go( 76 );
-          nanobar.go(100);
-        </script>
-        <style>
-          .loadingbar .bar {
-            background: #007fcc;
-            border-radius: 4px;
-            height: 2px;
-            box-shadow: 0 0 10px #007fcc;
-          }
-        </style>
-      </body>
-        `);
-      }      
-	    
+      if (settings.oauth2.blacklist.status && settings.oauth2.blacklist.users.includes(userinfo.id)) 
+        return res.send(getTemplate("Blacklisted", "You are blacklisted. Please contact the administrator for more information.", true));
+
       let guildsjson = await fetch(
         'https://discord.com/api/users/@me/guilds',
         {
@@ -219,37 +120,25 @@ module.exports.load = async function (app, db) {
       );
 
       let guildsinfo = await guildsjson.json();
-	    
+
       if (userinfo.verified == true) {
 
       // Check if the user is "blacklisted" ip
 
-      if (newsettings.oauth2.ip.block.includes(ip)) return res.send("You could not sign in, because your IP has been blocked from signing in.")
+      if (newsettings.oauth2.ip.block.includes(ip)) 
+        return res.send(getTemplate("IP Blacklisted", "You could not sign in, because your IP has been blocked from signing in.", true));
 
       // Check if the user is has different accounts on the same ip (works 1 time out of 2)
 
-        if ((newsettings.oauth2.ip["duplicate check"] == true) && ip !== '127.0.0.1') {
-          const ipuser = await db.get(`ipuser-${ip}`)
-          if (ipuser && ipuser !== userinfo.id) {
-            renderFile(
-              `./themes/${newsettings.theme}/alerts/alt.ejs`,
-              {
-                settings: newsettings,
-                db,
-                extra: { home: { name: 'VPN Detected' } }
-              },
-              null,
-              (err, str) => {
-                if (err) return res.send('Another account on your IP has been detected, there can only be one account per IP. Think this is a mistake? <a href="https://discord.gg/halexnodes" target="_blank">Join our discord.</a>')
-                res.status(200);
-                res.send(str);
-              }
-            )
-            return
-          } else if (!ipuser) {
-            await db.set(`ipuser-${ip}`, userinfo.id)
-          }
+      if (newsettings.oauth2.ip["duplicate check"] && ip !== '127.0.0.1') {
+        const ipuser = await db.get(`ipuser-${ip}`);
+        if (ipuser && ipuser !== userinfo.id) {
+          res.status(200).send(getTemplate("Alt Account Detected", `${newsettings.name} detected that you have multiple accounts with us. We do not allow the use of multiple accounts on our services.`, true));
+          return;
+        } else if (!ipuser) {
+          await db.set(`ipuser-${ip}`, userinfo.id);
         }
+      }      
 
         if (newsettings.j4r.enabled) {
           if (guildsinfo.message == '401: Unauthorized') return res.send("Please allow us to know what servers you are in to let the J4R system work properly. <a href='/login'>Login again</a>")
@@ -433,7 +322,10 @@ module.exports.load = async function (app, db) {
           settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + userinfo.id)) + "?include=servers",
           {
             method: "get",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+            headers: {
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${settings.pterodactyl.key}` 
+          }
           }
         );
         if (await cacheaccount.statusText == "Not Found") return res.send("An error has occured while attempting to get your user information.");
@@ -442,8 +334,7 @@ module.exports.load = async function (app, db) {
 
         req.session.userinfo = userinfo;
         let theme = indexjs.get(req);
-        if (customredirect) return res.redirect(customredirect);
-        return res.redirect(theme.settings.redirect.callback ? theme.settings.redirect.callback : "/");
+        return res.redirect(customredirect || theme.settings.redirect.callback || "/");
       };
       res.send("Not verified a Discord account. Please verify the email on your Discord account.");
     } else {

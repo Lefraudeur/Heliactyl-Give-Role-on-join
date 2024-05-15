@@ -20,21 +20,21 @@
           
             <% if (req.query.err) { %>
               <% if (req.query.err !== "none") { %>
-                <div style="border-radius: 15px;" class="alert">
+                <div class="alert">
                   <% if (req.query.err == "CANNOTAFFORD") { %>
                     Insufficient funds.
                   <% } else if (req.query.err == "MAXCPUEXCEETED") { %>
                     You have reached the cpu limit!
                   <% } else if (req.query.err == "MAXRAMEXCEETED") { %>
                     You have reached the RAM limit!
-                  <% } else if (req.query.err == "MAXDISKEXCEETED") { %>
+                  <% } else if (req.query.err == "MAXDiskEXCEETED") { %>
                     You have reached the disk limit!
-                  <% } else if (req.query.err == "MAXSERVERSEXCEETED") { %>
+                  <% } else if (req.query.err == "MAXServersEXCEETED") { %>
                     You have reached the servers limit!
                   <% } %>
                 </div>
               <% } else if (req.query.err == "none") { %>
-                <div class="alert" style="background-color: #00d415; border-radius: 15px;">
+                <div class="alert alert-success">
                   <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
                   Success!
                 </div>

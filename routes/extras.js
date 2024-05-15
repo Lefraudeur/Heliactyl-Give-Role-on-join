@@ -1,5 +1,4 @@
 const settings = require('../handlers/readSettings').settings(); 
-const fs = require('fs');
 const fetch = require('node-fetch');
 const getPteroUser = require('../handlers/getPteroUser.js');
 

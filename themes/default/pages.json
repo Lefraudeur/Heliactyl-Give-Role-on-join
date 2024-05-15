@@ -77,18 +77,5 @@
         "/admin/coupons",
         "/admin/coins",
         "/admin/test"
-    ],
-    "variables": {
-        "home": {
-            "admin": "admin",
-            "buttontext": {
-                "loggedin": {
-                    "link": "/dashboard"
-                },
-                "loggedout": {
-                    "link": "/login"
-                }
-            }
-        }
-    }
+    ]
 }

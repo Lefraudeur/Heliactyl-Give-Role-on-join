@@ -1,5 +1,4 @@
 const ejs = require("ejs");
-const fs = require("fs");
 const fetch = require("node-fetch");
 const settings = require('../handlers/readSettings').settings(); 
 const indexjs = require("../index.js");

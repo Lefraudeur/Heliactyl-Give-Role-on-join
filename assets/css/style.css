@@ -11841,7 +11841,8 @@ input[type="button"].btn-block {
   padding: 0.75rem 1.25rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
-  border-radius: 0.25rem; }
+  border-radius: 15px;
+ }
 
 .alert-heading {
   color: inherit; }
@@ -11878,9 +11879,9 @@ input[type="button"].btn-block {
     color: #5e6061; }
 
 .alert-success {
-  color: #006d2f !important;
-  background-color: #ccf6de !important;
-  border-color: #b8f2d1 !important; 
+  color: black !important;
+  background-color: #00d415 !important;
+  border-color: #003a19 !important; 
 }
   .alert-success hr {
     border-top-color: #a2eec3 !important;

@@ -20,7 +20,7 @@
 
            <% const alertClass = req.query.err === "SUCCESSCOUPONCODE" ? "alert-success" : "alert-danger"; %>
          <% if (req.query.err) { %>
-           <div style="border-radius: 15px;" class="alert <%= alertClass %>">
+           <div class="alert <%= alertClass %>">
              <% if (req.query.err == "MISSINGCOUPONCODE") { %>
                You have not provided a coupon code.
              <% } else if (req.query.err == "INVALIDCOUPONCODE") { %>

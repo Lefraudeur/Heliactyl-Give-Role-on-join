@@ -21,17 +21,17 @@
             
             <%- include('./components/alert') %>
             <% if (req.query.err === "CANNOTAFFORDRENEWAL") { %>
-              <div class="alert" style="background-color: #007fcc; border-radius: 15px;">
+              <div class="alert" style="background-color: #007fcc;">
                 You need at least <%= settings.renewals.cost %> coins to purchase a server renewal!
             </div>
             <% } if (req.query.success === 'RENEWED') { %>
-              <div class="alert" style="background-color: #007fcc; border-radius: 15px;">
+              <div class="alert" style="background-color: #007fcc;">
                 Succesfully purchased renewal for server!
             </div>
             <% } if (req.session.newaccount || req.session.password) { %>
-            <div style="background-color: #007fcc; border-radius: 15px" class="alert">
+            <div class="alert" style="background-color: #007fcc;">
                 <% if (req.session.newaccount) { %>
-                    Welcome! You are a first time user<br>
+                    Welcome! You are a first time <%= pterodactyl.first_name %><br>
                 <% } %>
                 <% if (req.session.password) { %>
                     Your password has been changed to <%= req.session.password %>, however if you do not save that then you can just reset it via the "Account Settings" page

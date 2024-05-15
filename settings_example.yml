@@ -11,12 +11,15 @@ resources:
   typeRessources: "MB"
 # Options: Core, %. This is only used on the userside, admin will use Core
   typeCPU: "Core"
+  
 website:
   port: 25002
   secret: "Default Secret (Change this to any string you want)"
+
 pterodactyl:
   domain: "https://panel.example.com"
   key: "ptla_0000000000000000000000000000000000000000000"
+
 linkvertise:
   userid: 50000
   coins: 5
@@ -24,22 +27,20 @@ linkvertise:
   cooldown: null
   dailyLimit: null
   minTimeToComplete: null
-storelimits:
-  ram: 8192
-  disk: 10240
-  cpu: 400
-  servers: 8
+
 stripe:
   enabled: true
-# The key is the Stripe API key, and the coins are the amount per £1. If the Stripe API key is invalid and Stripe purchases are enabled, Heliactyl will crash when attempting to do transactions.
+# The key is the Stripe API key, and the coins are the amount per 1 in your currency. If the Stripe API key is invalid and Stripe purchases are enabled, Heliactyl will crash when attempting to do transactions.
   key: "100000000000000"
   coins: 100
 # https://docs.stripe.com/currencies
   currency: "eur"
+
 category:
   management: true
   coins & resources: true
   miscellaneous: true
+
 pages:
 # Management
   dashboard: true
@@ -51,21 +52,17 @@ pages:
 # Category miscellaneous
   panel: true
   admin: true
+
 adsense:
 # Works only halfway, unreliable, better to add it directly to the code
 # This feature facilitates the integration of AdSense, adsterra, and other similar applications into Heliactyl.
   enabled: false
   script: ''
-blacklist:
-# If you want to blacklist a user, just set their Discord ID, and they will be blacklisted.
-  enabled: true
-  users:
-  - "000000000000000000"
-  - "000000000000000000"
+
 database: "sqlite://database.sqlite"
 api:
   enabled: true
-  code: "API KEY"
+  code: "Default APIKEY (Change this to any string you want)"
 j4r:
   enabled: true
   ads:
@@ -77,6 +74,7 @@ j4r:
     id: "000000000000000000"
     invite: "https://discord.gg/example2"
     coins: 200
+
 bot:
   token: "Discord bot token here"
   joinguild:
@@ -99,6 +97,16 @@ oauth2: # Go to https://discord.dev/ and create an application to set these up
     trust x-forwarded-for: true
     block: []
     duplicate check: true
+  blacklist:
+    status: true
+    users: # If you want to blacklist a user, just set their Discord ID, and they will be blacklisted.
+    - "000000000000000000"
+    - "000000000000000000"
+  whitelist:
+    status: false
+    users:
+    - "000000000000000000"
+    - "000000000000000000"
 
 passwordgenerator:
   signup: true # Use this to disable signups
@@ -192,6 +200,7 @@ eggs:
 
 coins:
   enabled: true
+  
   store:
     enabled: true
     ram:
@@ -207,16 +216,16 @@ coins:
       cost: 100
       per: 2
 
+    storelimits:
+      ram: 8192
+      disk: 10240
+      cpu: 400
+      servers: 8
+
 afk page:
   enabled: true 
   every: 5 # This afk page will give the users [coins variable] coins every [every variable] seconds.
   coins: 1 # The coins variable is meant to not be under 1. There may be bugs if the coins variable is less than 1.
-
-whitelist:
-  status: false
-  users:
-  - User ID
-  - User ID
 
 servercreation:
   cost: 0
@@ -255,5 +264,5 @@ antivpn:
   status: false
   APIKey: "Proxycheck APIKey"
   whitelistedIPs:
-    - IP Address
-    - IP Address
+    - "IP Address"
+    - "IP Address"

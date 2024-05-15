@@ -19,7 +19,7 @@
            </div>
 
             <% if (req.query.err) { %>
-            <div style="border-radius: 15px;" class="alert">
+            <div class="alert">
                 <% if (req.query.err == "MISSINGVARIABLE") { %>
                     You have not filled out all of the server information.
                 <% } else if (req.query.err == "NOTANUMBER") { %>

@@ -2,13 +2,16 @@ const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
 const ejs = require("ejs");
 const log = require('../handlers/log');
+const settings = require('../handlers/readSettings').settings(); 
 
 module.exports.load = async function(app, db) {
   const buyResource = async (req, res, resourceType, resourceName) => {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl) 
+      return res.redirect("/login");
 
     let newsettings = await enabledCheck(req, res);
-    if (!newsettings) return;
+    if (!newsettings) 
+      return;
 
     const amount = parseInt(req.query.amount);
     if (!amount || isNaN(amount) || amount < 1 || amount > 10) return res.send("Invalid amount");
@@ -18,6 +21,10 @@ module.exports.load = async function(app, db) {
 
     const userCoins = (await db.get(`coins-${req.session.userinfo.id}`)) || 0;
     const resourceCap = (await db.get(`${resourceType}-${req.session.userinfo.id}`)) || 0;
+
+    // idk why don't work, i will see that later
+    if (resourceCap + amount > settings.coins.store.storelimits[resourceType]) 
+      return res.redirect(`${failedCallback}?err=MAX${resourceName}EXCEETED`);
 
     const per = newsettings.coins.store[resourceType].per * amount;
     const cost = newsettings.coins.store[resourceType].cost * amount;
@@ -56,8 +63,9 @@ module.exports.load = async function(app, db) {
   app.get("/buyservers", async (req, res) => buyResource(req, res, "servers", "Servers"));
 
   async function enabledCheck(req, res) {
-    const newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.coins.store.enabled) return newsettings;
+    let newsettings = require('../handlers/readSettings').settings(); 
+    if (newsettings.coins.store.enabled) 
+      return newsettings;
 
     const theme = indexjs.get(req);
     ejs.renderFile(

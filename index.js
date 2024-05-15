@@ -39,8 +39,7 @@ const themesettings = {
   redirect: {},
   pages: {},
   mustbeloggedin: [],
-  mustbeadmin: [],
-  variables: {}
+  mustbeadmin: []
 };
 
 module.exports.renderdataeval = async function(req) {
@@ -56,7 +55,6 @@ module.exports.renderdataeval = async function(req) {
     coins: newsettings.coins.enabled == true ? (req.session.userinfo ? await db.get("coins-" + req.session.userinfo.id) || 0 : null) : null,
     pterodactyl: req.session.pterodactyl,
     theme: theme.name,
-    extra: theme.settings.variables,
     db
   };
 };
