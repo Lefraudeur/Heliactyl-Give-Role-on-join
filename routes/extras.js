@@ -59,6 +59,52 @@ module.exports.load = async function(app, db) {
     }
   };
 
+  const getPing = async (req, res) => {
+    if (!req.session.pterodactyl) 
+        return res.json({ error: true, message: `You must be logged in.` });
+    try {
+        let response = await fetch(settings.pterodactyl.domain + "/api/application/nodes", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${settings.pterodactyl.key}`,
+                "Accept": "application/json" 
+            }
+        });
+
+        const data = await response.json();
+        const nodes = data.data;
+        
+        if (!nodes || !nodes.length) {
+            console.error('No nodes found.');
+            return;
+        }
+
+        let pingData = {};
+
+        for (const node of nodes) {
+            const { attributes } = node;
+            try {
+                const pingStart = performance.now();
+                await fetch(`http://${attributes.ip}`); 
+                const pingEnd = performance.now();
+                const pingTime = pingEnd - pingStart; 
+                pingData[attributes.location_id] = pingTime;
+            } catch (error) {
+                console.error('Error pinging node:', error);
+                pingData[attributes.location_id] = -1; 
+            }
+        }
+
+        return res.json({ pingData });
+    } catch (error) {
+        console.error('Error fetching nodes or calculating ping:', error);
+        res.status(500).send("An error has occurred while processing your request.");
+    }
+};
+
+
+  app.get("/ping", getPing);
   app.get("/panel", redirectToPanel);
   app.get("/updateinfo", updateInfo);
   app.get("/regen", regeneratePassword);

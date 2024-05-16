@@ -12,14 +12,19 @@ module.exports = () => {
         const allServers = []
 
         async function getServersOnPage(page) {
-            return (await fetch(
+            const response = await fetch(
                 settings.pterodactyl.domain + "/api/application/servers/?page=" + page,
                 {
                     headers: {
                         "Authorization": `Bearer ${settings.pterodactyl.key}`
                     }
                 }
-            )).json();
+            );
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Failed to fetch servers on page " + page);
+            }
         };
 
         let currentPage = 1

@@ -92,14 +92,18 @@
                         <label for="InputDisk">Disk (<% if (settings.resources.typeRessources == "GB") { %>GBs<% } else { %>MBs<% } %>):</label>
                         <input style="border-radius: 15px; padding: 8px;" type="number" class="form-control" id="InputDisk" placeholder="<% if (settings.resources.typeRessources == "GB") { %>2<% } else { %>2048<% } %>">
                       </div>
+
                       <div class="form-group">
                         <label for="InputLoc">Location:</label><BR>
                         <select class="btn btn-secondary dropdown-toggle" style="background-color: #2a3038; border: 1px solid #2c2e33; color: #e4eaec; border-radius: 15px; padding: 8px;" id="InputLoc">
                           <% for (let [name, value] of Object.entries(settings.locations)) { %>
-                            <option value="<%= name %>"><%= value.name %></option>
+                            <option value="<%= name %>">
+                              <%= value.name %>- Ping: <span id="ping">Loading...</span>
+                            </option>
                           <% } %>
                         </select>
                       </div>
+
                       <div class="form-group">
                         <label for="InputEgg">Egg:</label><BR>
                         <select class="btn btn-secondary dropdown-toggle" style="background-color: #2a3038; border: 1px solid #2c2e33; color: #e4eaec; border-radius: 15px; padding: 8px;" id="InputEgg">
@@ -156,7 +160,35 @@
 
         document.location.href = `/create?name=${name}&egg=${egg}&ram=${ram}&disk=${disk}&cpu=${cpu}&location=${location}`;
       };
+
+      function fetchPingData(settings) {
+    fetch('/ping')
+    .then(response => response.json())
+    .then(data => {
+        const dropdownOptions = document.querySelectorAll('#InputLoc option');
+        dropdownOptions.forEach(option => {
+            const locationName = option.value;
+            if (data.pingData.hasOwnProperty(locationName) && settings.locations.hasOwnProperty(locationName)) {
+                option.innerHTML = `${settings.locations[locationName].name} - Ping: ${Math.round(data.pingData[locationName])}`;
+            }
+        });
+    })
+    .catch(error => console.error('Data recovery error:', error));
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    fetchPingData(<%- JSON.stringify(settings) %>);
+
+    setInterval(() => {
+        fetchPingData(<%- JSON.stringify(settings) %>);
+    }, 5000);
+});
+
     </script>
+
+
+
+
     <!-- End plugin js for this page -->
     <!-- inject:js -->
     <%- include('./components/scripts') %>

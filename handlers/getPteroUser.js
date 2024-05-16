@@ -6,7 +6,7 @@ if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.
     settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
 }
 
-module.exports = (userid, db) => {
+module.exports = async (userid, db) => {
     return new Promise(async (resolve, err) => {
         let cacheaccount = await fetch(
             settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + userid)) + "?include=servers",
@@ -17,6 +17,6 @@ module.exports = (userid, db) => {
         );
         if (await cacheaccount.statusText === "Not Found") return err('Ptero account not found');
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
-        resolve(cacheaccountinfo)
+        resolve(cacheaccountinfo);
     })
 }

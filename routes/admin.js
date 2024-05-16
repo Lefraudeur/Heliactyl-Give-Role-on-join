@@ -523,7 +523,7 @@ module.exports.load = async function (app, db) {
             await db.delete("ip-" + discordid);
         }
 
-        // Remove user.
+        // Remove user from dashboard.
 
         let userids = await db.get("users") || [];
         userids = userids.filter(user => user !== pteroid);
@@ -541,6 +541,27 @@ module.exports.load = async function (app, db) {
         await db.delete("coins-" + discordid);
         await db.delete("extra-" + discordid);
         await db.delete("package-" + discordid);
+
+        // Remove server and user account
+
+        let servers = cacheaccountinfo.attributes.relationships.servers.data;
+        for (let server of servers) {
+            await fetch(`${settings.pterodactyl.domain}/api/application/servers/${server.id}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${settings.pterodactyl.key}`
+                }
+            });
+        }
+
+        await fetch(`${settings.pterodactyl.domain}/api/application/users/${pteroid}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${settings.pterodactyl.key}`
+            }
+        });
 
         log(`remove account`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the account with the ID \`${discordid}\`.`)
         res.redirect(theme.settings.redirect.removeaccountsuccess + "?success=REMOVEACCOUNT");
@@ -679,15 +700,13 @@ module.exports.load = async function (app, db) {
 
     module.exports.suspend = async function (discordid) {
         const newsettings = require('../handlers/readSettings').settings(); 
-        if (newsettings.allow.overresourcessuspend !== true) return;
+        if (newsettings.allow.server.overresourcessuspend !== true) return;
 
         let canpass = await indexjs.islimited();
         if (canpass == false) {
-            setTimeout(
-                async function () {
+            setTimeout(async function () {
                     adminjs.suspend(discordid);
-                }, 1
-            )
+                }, 1)
             return;
         };
 
@@ -705,7 +724,7 @@ module.exports.load = async function (app, db) {
             console.log("- Discord ID: " + discordid);
             console.log("- Pterodactyl Panel ID: " + pterodactylid);
             return;
-        }
+        };
         let userinfo = JSON.parse(await userinforeq.text());
 
         let packagename = await db.get("package-" + discordid);
@@ -725,14 +744,14 @@ module.exports.load = async function (app, db) {
             disk: package.disk + extra.disk,
             cpu: package.cpu + extra.cpu,
             servers: package.servers + extra.servers
-        }
+        };
 
         let current = {
             ram: 0,
             disk: 0,
             cpu: 0,
             servers: userinfo.attributes.relationships.servers.data.length
-        }
+        };
         for (let i = 0, len = userinfo.attributes.relationships.servers.data.length; i < len; i++) {
             current.ram = current.ram + userinfo.attributes.relationships.servers.data[i].attributes.limits.memory;
             current.disk = current.disk + userinfo.attributes.relationships.servers.data[i].attributes.limits.disk;

@@ -10,7 +10,6 @@ const fetch = require("node-fetch");
 if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
   settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
 }
-
 module.exports.load = async function (app, db) {
   const queue = new Queue()
   app.get("/create", async (req, res) => {
@@ -323,7 +322,8 @@ module.exports.load = async function (app, db) {
             })
           }
         );
-        if (await serverinfo.statusText !== "OK") return res.redirect(`${redirectlink}?id=${req.query.id}&err=ERRORONMODIFY`);
+        if (await serverinfo.statusText !== "OK") 
+          return res.redirect(`${redirectlink}?id=${req.query.id}&err=ERRORONMODIFY`);
         
         let text = JSON.parse(await serverinfo.text());
         log(`modify server`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} modified the server called \`${text.attributes.name}\` to have the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\`\`\``)
@@ -342,15 +342,18 @@ module.exports.load = async function (app, db) {
   });
 
   app.get("/delete", async (req, res) => {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl) 
+      return res.redirect("/login");
   
-    if (!req.query.id) return res.send("Missing id.");
+    if (!req.query.id) 
+      return res.send("Missing id.");
   
     let theme = indexjs.get(req);
   
     const newsettings = require('../handlers/readSettings').settings(); 
     if (newsettings.allow.server.delete == true) {
-      if (req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) return res.send("Could not find server with that ID.");
+      if (req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) 
+        return res.send("Could not find server with that ID.");
   
       let deletionresults = await fetch(
         settings.pterodactyl.domain + "/api/application/servers/" + req.query.id,
@@ -363,7 +366,8 @@ module.exports.load = async function (app, db) {
         }
       );
       let ok = await deletionresults.ok;
-      if (ok !== true) return res.send("An error has occurred while attempting to delete the server.");
+      if (ok !== true) 
+        return res.send("An error has occurred while attempting to delete the server.");
       let pterodactylinfo = req.session.pterodactyl;
   
       pterodactylinfo.relationships.servers.data = pterodactylinfo.relationships.servers.data.filter(server => server.attributes.id.toString() !== req.query.id);
@@ -390,7 +394,8 @@ module.exports.load = async function (app, db) {
   
   
   app.get(`/api/createdServer`, async (req, res) => {
-    if (!req.session.pterodactyl) return res.json({ error: true, message: `You must be logged in.` });
+    if (!req.session.pterodactyl) 
+      return res.json({ error: true, message: `You must be logged in.` });
 
     const createdServer = await db.get(`createdserver-${req.session.userinfo.id}`)
     return res.json({ created: createdServer ?? false, cost: settings.renewals.cost })

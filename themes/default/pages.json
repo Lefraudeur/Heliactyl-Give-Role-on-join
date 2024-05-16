@@ -35,8 +35,8 @@
         "couponcreationsuccess": "/admin",
         "couponrevokefailed": "/admin",
         "couponrevokesuccess": "/admin",
-        "removeaccountfailed": "/admin",
-        "removeaccountsuccess": "/admin"
+        "removeaccountfailed": "/dashboard",
+        "removeaccountsuccess": "/login"
     },
     "pages": {
         "dashboard": "dashboard.ejs",
