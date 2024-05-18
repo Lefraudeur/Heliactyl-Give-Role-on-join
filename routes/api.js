@@ -131,6 +131,7 @@ module.exports.load = async function (app, db) {
   /**
    * POST /api/updateCoins
    * Updates the number of coins for a user.
+   * Never used
    */
 
   app.get("/api/updateCoins", async (req, res) => {

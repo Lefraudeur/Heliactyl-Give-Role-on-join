@@ -61,12 +61,7 @@ module.exports.renderdataeval = async function(req) {
 
 // Load database
 
-const Keyv = require("keyv");
-const db = new Keyv(settings.database);
-
-db.on('error', err => {
-  console.log(chalk.red("[Heliactyl] An error occurred when attempting to access the database."));
-});
+const db = require("./handlers/db.js");
 
 module.exports.db = db;
 
