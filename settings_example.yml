@@ -59,7 +59,7 @@ adsense:
   enabled: false
   script: ''
 
-database: "sqlite://database.sqlite"
+database: "database.db"
 api:
   enabled: true
   code: "Default APIKEY (Change this to any string you want)"
