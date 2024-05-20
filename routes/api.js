@@ -8,12 +8,21 @@ const myCache = new NodeCache({
   stdTTL: 59 
 });
 
+const newsettings = require('../handlers/readSettings').settings();
+if (newsettings.oauth2.link.slice(-1) == "/")
+  newsettings.oauth2.link = newsettings.oauth2.link.slice(0, -1);
+
+if (newsettings.oauth2.callbackpath.slice(0, 1) !== "/")
+  newsettings.oauth2.callbackpath = "/" + newsettings.oauth2.callbackpath;
+
+if (newsettings.pterodactyl.domain.slice(-1) == "/")
+  newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
+
 module.exports.load = async function (app, db) {
   /**
   * Information 
   * A lot of the API information is taken from Heliactyl v14.
   */
-
 
   /**
    * GET /api
@@ -30,7 +39,6 @@ module.exports.load = async function (app, db) {
    * GET /api/userinfo
    * Returns the user information.
    */
-
   app.get("/api/userinfo", async (req, res) => {
     /* Check if the API key is valid */
     let auth = await check(req, res);
@@ -41,17 +49,6 @@ module.exports.load = async function (app, db) {
   
     if (!(await db.get("users-" + req.query.id))) 
       return res.send({ status: "invalid id" });
-  
-    const newsettings = require('../handlers/readSettings').settings(); 
-  
-    if (newsettings.oauth2.link.slice(-1) == "/")
-      newsettings.oauth2.link = newsettings.oauth2.link.slice(0, -1);
-  
-    if (newsettings.oauth2.callbackpath.slice(0, 1) !== "/")
-    newsettings.oauth2.callbackpath = "/" + newsettings.oauth2.callbackpath
-
-    if (newsettings.pterodactyl.domain.slice(-1) == "/")
-    newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
 
     let packagename = await db.get("package-" + req.query.id);
     let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
@@ -99,7 +96,6 @@ module.exports.load = async function (app, db) {
    * POST /api/setcoins
    * Sets the number of coins for a user.
    */
-
   app.post("/api/setcoins", async (req, res) => {	
     /* Check if the API key is valid */
     let auth = await check(req, res);	
@@ -133,11 +129,9 @@ module.exports.load = async function (app, db) {
    * Updates the number of coins for a user.
    * Never used
    */
-
   app.get("/api/updateCoins", async (req, res) => {
     if (!req.session.pterodactyl) return res.redirect("/login");
   
-    const newSettings = require('../handlers/readSettings').settings(); 
     let userInfo = req.session.userinfo;
     let initialCoins = await db.get(`coins-${req.session.userinfo.id}`);
   
@@ -150,7 +144,7 @@ module.exports.load = async function (app, db) {
       await db.set(`coins-${userInfo.id}`, 0);
     } else {
       let currentCoins = await db.get(`coins-${userInfo.id}`);
-      currentCoins = currentCoins + newSettings["afk page"].coins;
+      currentCoins = currentCoins + newsettings["afk page"].coins;
       await db.set(`coins-${userInfo.id}`, currentCoins);
     }
   
@@ -162,8 +156,7 @@ module.exports.load = async function (app, db) {
    * POST /api/createcoupon
    * Creates a coupon with attributes such as coins, CPU, RAM, disk, and servers.
    */
-
-app.post("/api/createcoupon", async (req, res) => {
+  app.post("/api/createcoupon", async (req, res) => {
     /* Check if the API key is valid */
     let auth = await check(req, res);
     if (!auth) return;
@@ -213,7 +206,6 @@ app.post("/api/createcoupon", async (req, res) => {
    * POST /api/revokecoupon
    * Sets the plan for a user.
    */
-
   app.post("/api/revokecoupon", async (req, res) => {
     /* Check if the API key is valid */
     let auth = await check(req, res);
@@ -237,13 +229,12 @@ app.post("/api/createcoupon", async (req, res) => {
     await db.delete("coupon-" + code);
 
     res.json({ status: "success" })
-});
+  });
 
   /**
    * POST /api/setplan
    * Sets the plan for a user.
    */
-
   app.post("/api/setplan", async (req, res) => {
     /* Check if the API key is valid */
     let auth = await check(req, res);
@@ -263,7 +254,6 @@ app.post("/api/createcoupon", async (req, res) => {
       adminjs.suspend(req.body.id);
       return res.send({ status: "success" });
     } else {
-      const newsettings = require('../handlers/readSettings').settings(); 
       if (!newsettings.packages.list[req.body.package]) return res.send({ status: "invalid package" });
       await db.set("package-" + req.body.id, req.body.package);
       adminjs.suspend(req.body.id);
@@ -275,7 +265,6 @@ app.post("/api/createcoupon", async (req, res) => {
    * POST /api/setresources
    * Sets the resources for a user.
    */
-
   app.post("/api/setresources", async (req, res) => {
     /* Check if the API key is valid */
     let auth = await check(req, res);
@@ -351,7 +340,6 @@ app.post("/api/createcoupon", async (req, res) => {
     }
   });
 
-
   /**
    * Checks the authorization and returns the settings if authorized.
    * Renders the file based on the theme and sends the response.
@@ -359,16 +347,14 @@ app.post("/api/createcoupon", async (req, res) => {
    * @param {Object} res - The response object.
    * @returns {Object|null} - The settings object if authorized, otherwise null.
    */
-
   async function check(req, res) {
-    const settings = require('../handlers/readSettings').settings(); 
-    if (settings.api.enabled == true) {
+    if (newsettings.api.enabled == true) {
       let auth = req.headers['authorization'];
       if (auth) {
-        if (auth == "Bearer " + settings.api.code) {
-          return settings;
-        };
-      };
+        if (auth == "Bearer " + newsettings.api.code) {
+          return newsettings;
+        }
+      }
     }
 
     let theme = indexjs.get(req);
@@ -382,10 +368,11 @@ app.post("/api/createcoupon", async (req, res) => {
           console.log(`[WEBSITE] An error has occured on path ${req._parsedUrl.pathname}:`);
           console.log(err);
           return res.render("404.ejs", { err });
-        };
+        }
         res.status(200);
         res.send(str);
-      });
+      }
+    );
     return null;
   }
 };

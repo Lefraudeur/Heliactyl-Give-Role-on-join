@@ -1,9 +1,19 @@
 const ejs = require("ejs");
 const fetch = require("node-fetch");
-const settings = require('../handlers/readSettings').settings(); 
 const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
 const log = require("../handlers/log.js");
+
+const settings = require('../handlers/readSettings').settings();
+if (settings.oauth2.link.slice(-1) == "/")
+  settings.oauth2.link = settings.oauth2.link.slice(0, -1);
+
+if (settings.oauth2.callbackpath.slice(0, 1) !== "/")
+  settings.oauth2.callbackpath = "/" + settings.oauth2.callbackpath;
+
+if (settings.pterodactyl.domain.slice(-1) == "/")
+  settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
+
 
 module.exports.load = async function (app, db) {
 
@@ -218,10 +228,9 @@ module.exports.load = async function (app, db) {
   app.get("/stats", async (req, res) => {
     const theme = indexjs.get(req);
   
-    if (!req.session.pterodactyl || !req.session.pterodactyl.root_admin) {
+    if (!req.session.pterodactyl || !req.session.pterodactyl.root_admin) 
       return four0four(req, res, theme);
-    }
-  
+    
     try {
       const users = await db.get("users") || [];
   
@@ -374,8 +383,8 @@ module.exports.load = async function (app, db) {
             log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the plan of the user with the ID \`${req.query.id}\`.`)
             return res.redirect(successredirect + "?err=none");
         } else {
-            const newsettings = require('../handlers/readSettings').settings(); 
-            if (!newsettings.packages.list[req.query.package]) return res.redirect(`${failredirect}?err=INVALIDPACKAGE`);
+            if (!settings.packages.list[req.query.package]) 
+                return res.redirect(`${failredirect}?err=INVALIDPACKAGE`);
             await db.set("package-" + req.query.id, req.query.package);
             adminjs.suspend(req.query.id);
 
@@ -594,9 +603,11 @@ module.exports.load = async function (app, db) {
         let successredirect = theme.settings.redirect.getip || "/";
         if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
 
-        if (!(await db.get("users-" + req.query.id))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!(await db.get("users-" + req.query.id))) 
+            return res.redirect(`${failredirect}?err=INVALIDID`);
 
-        if (!(await db.get("ip-" + req.query.id))) return res.redirect(`${failredirect}?err=NOIP`);
+        if (!(await db.get("ip-" + req.query.id))) 
+            return res.redirect(`${failredirect}?err=NOIP`);
         let ip = await db.get("ip-" + req.query.id);
         log(`view ip`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${req.query.id}\`.`)
         return res.redirect(successredirect + "?err=NONE&ip=" + ip)
@@ -629,19 +640,8 @@ module.exports.load = async function (app, db) {
 
         if (!(await db.get("users-" + req.query.id))) return res.send({ status: "invalid id" });
 
-        const newsettings = require('../handlers/readSettings').settings(); 
-
-        if (newsettings.oauth2.link.slice(-1) == "/")
-            newsettings.oauth2.link = newsettings.oauth2.link.slice(0, -1);
-
-        if (newsettings.oauth2.callbackpath.slice(0, 1) !== "/")
-            newsettings.oauth2.callbackpath = "/" + newsettings.oauth2.callbackpath;
-
-        if (newsettings.pterodactyl.domain.slice(-1) == "/")
-            newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
-
         let packagename = await db.get("package-" + req.query.id);
-        let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
+        let package = settings.packages.list[packagename ? packagename : settings.packages.default];
         if (!package) package = {
             ram: 0,
             disk: 0,
@@ -653,10 +653,13 @@ module.exports.load = async function (app, db) {
 
         let pterodactylid = await db.get("users-" + req.query.id);
         let userinforeq = await fetch(
-            newsettings.pterodactyl.domain + "/api/application/users/" + pterodactylid + "?include=servers",
+            settings.pterodactyl.domain + "/api/application/users/" + pterodactylid + "?include=servers",
             {
                 method: "get",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${newsettings.pterodactyl.key}` }
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${settings.pterodactyl.key}` 
+                }
             }
         );
         if (await userinforeq.statusText == "Not Found") {
@@ -677,7 +680,7 @@ module.exports.load = async function (app, db) {
                 servers: 0
             },
             userinfo: userinfo,
-            coins: newsettings.coins.enabled == true ? (await db.get("coins-" + req.query.id) ? await db.get("coins-" + req.query.id) : 0) : null
+            coins: settings.coins.enabled == true ? (await db.get("coins-" + req.query.id) ? await db.get("coins-" + req.query.id) : 0) : null
         });
     });
 
@@ -699,8 +702,7 @@ module.exports.load = async function (app, db) {
     }
 
     module.exports.suspend = async function (discordid) {
-        const newsettings = require('../handlers/readSettings').settings(); 
-        if (newsettings.allow.server.overresourcessuspend !== true) return;
+        if (settings.allow.server.overresourcessuspend !== true) return;
 
         let canpass = await indexjs.islimited();
         if (canpass == false) {
@@ -716,7 +718,10 @@ module.exports.load = async function (app, db) {
             settings.pterodactyl.domain + "/api/application/users/" + pterodactylid + "?include=servers",
             {
                 method: "get",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+                headers: { 
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${settings.pterodactyl.key}` 
+                }
             }
         );
         if (await userinforeq.statusText == "Not Found") {
@@ -728,7 +733,7 @@ module.exports.load = async function (app, db) {
         let userinfo = JSON.parse(await userinforeq.text());
 
         let packagename = await db.get("package-" + discordid);
-        let package = newsettings.packages.list[packagename || newsettings.packages.default];
+        let package = settings.packages.list[packagename || settings.packages.default];
 
         let extra =
             await db.get("extra-" + discordid) ||
@@ -766,7 +771,10 @@ module.exports.load = async function (app, db) {
                     settings.pterodactyl.domain + "/api/application/servers/" + suspendid + "/suspend",
                     {
                         method: "post",
-                        headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            "Authorization": `Bearer ${settings.pterodactyl.key}` 
+                        }
                     }
                 );
             }
@@ -778,7 +786,10 @@ module.exports.load = async function (app, db) {
                     settings.pterodactyl.domain + "/api/application/servers/" + suspendid + "/unsuspend",
                     {
                         method: "post",
-                        headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            "Authorization": `Bearer ${settings.pterodactyl.key}` 
+                        }
                     }
                 );
             }

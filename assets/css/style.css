@@ -11892,7 +11892,7 @@ input[type="button"].btn-block {
     color: #5e6061; }
 
 .alert-success {
-  color: black !important;
+  color: white !important;
   background-color: #00d415 !important;
   border-color: #003a19 !important; 
 }

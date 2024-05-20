@@ -52,7 +52,6 @@ module.exports.load = async function (app, db) {
   
       if (currentTime < nextEligibleRenewalTime) 
           return res.redirect(`/dashboard?success=NEXTELIGIBLERENEWALTIME`);
-      
   
       let coins = await db.get(`coins-${req.session.userinfo.id}`);
       coins = coins ? coins : 0;
@@ -60,8 +59,7 @@ module.exports.load = async function (app, db) {
       if (settings.renewals.cost > coins) 
           return res.redirect(`/dashboard?err=CANNOTAFFORDRENEWAL`);
       
-  
-      await db.set("coins-" + req.session.userinfo.id, coins - settings.renewals.cost);
+      await db.set(`coins-${req.session.userinfo.id}`, coins - settings.renewals.cost);
   
       await db.set(`lastrenewal-${req.query.id}`, currentTime);
   
@@ -81,7 +79,7 @@ module.exports.load = async function (app, db) {
                     if ((Date.now() - lastRenewal) > (settings.renewals.delay * 86400000)) {
                         // Server hasn't paid for renewal and gets suspended
                         let deletionresults = await fetch(
-                            settings.pterodactyl.domain + "/api/application/servers/" + id + "/suspend",
+                          `${settings.pterodactyl.domain}/api/application/servers/${id}/suspend`,
                             {
                                 method: "post",
                                 headers: {

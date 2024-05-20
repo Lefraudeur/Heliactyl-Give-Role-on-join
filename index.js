@@ -76,6 +76,10 @@ const ejs = require("ejs");
 const session = require("express-session");
 const indexjs = require("./index.js");
 
+const sqlite = require("better-sqlite3");
+const SqliteStore = require("better-sqlite3-session-store")(session);
+const session_db = new sqlite("sessions.db");
+
 // Load the website.
 
 module.exports.app = app;
@@ -83,8 +87,15 @@ module.exports.app = app;
 app.use(cookieParser());
 app.use(session({
   secret: settings.website.secret,
-  resave: false,
-  saveUninitialized: false
+  resave: true,
+  saveUninitialized: true,
+  store: new SqliteStore({
+    client: session_db, 
+    expired: {
+      clear: true,
+      intervalMs: 900000
+    }
+  })
 }));
 
 app.use(express.json({
