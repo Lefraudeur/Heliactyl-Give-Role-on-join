@@ -59,7 +59,7 @@ adsense:
   enabled: false
   script: ''
 
-database: "sqlite://database.sqlite"
+database: "database.sqlite"
 api:
   enabled: true
   code: "Default APIKEY (Change this to any string you want)"
@@ -174,9 +174,9 @@ eggs:
       environment:
         BUNGEE_VERSION: "latest"
         SERVER_JARFILE: "bungeecord.jar"
-        feature_limits:
-          databases: 4
-          backups: 4
+      feature_limits:
+        databases: 4
+        backups: 4
   paper:
     display: Minecraft Java | Paper # Please switch to Velocity
     minimum:
