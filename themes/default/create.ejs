@@ -98,7 +98,7 @@
                         <select class="btn btn-secondary dropdown-toggle" style="background-color: #2a3038; border: 1px solid #2c2e33; color: #e4eaec; border-radius: 15px; padding: 8px;" id="InputLoc">
                           <% for (let [name, value] of Object.entries(settings.locations)) { %>
                             <option value="<%= name %>">
-                              <%= value.name %>- Ping: <span id="ping">Loading...</span>
+                              <%= value.name %><% if (settings.servercreation.ping == "true") { %>- Ping: <span id="ping">Loading...</span><% } %>
                             </option>
                           <% } %>
                         </select>
@@ -159,8 +159,8 @@
 
         document.location.href = `/create?name=${name}&egg=${egg}&ram=${ram}&disk=${disk}&cpu=${cpu}&location=${location}`;
       };
-
-      function fetchPingData(settings) {
+      <% if (settings.servercreation.ping == "true") { %>
+  function fetchPingData(settings) {
     fetch('/ping')
     .then(response => response.json())
     .then(data => {
@@ -182,6 +182,7 @@ window.addEventListener('DOMContentLoaded', () => {
         fetchPingData(<%- JSON.stringify(settings) %>);
     }, 5000);
 });
+<% } %>
     </script>
     <!-- End plugin js for this page -->
     <!-- inject:js -->

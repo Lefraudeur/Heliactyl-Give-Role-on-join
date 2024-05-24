@@ -11873,6 +11873,10 @@ input[type="button"].btn-block {
     padding: 0.75rem 1.25rem;
     color: inherit; }
 
+.alert-custom {
+  background-color: #007fcc;
+}
+
 .alert-primary {
   color: #004b78;
   background-color: #cce9fa;

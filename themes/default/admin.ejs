@@ -22,13 +22,13 @@
             <% if (req.query.err) { %>
               <% if (req.query.err !== "none") { %>
               <% } else if (req.query.err == "none") { %>
-                <div class="alert" style="background-color: #007fcc;">
+                <div class="alert alert-custom">
                   Success! Action completed
                 </div>
               <% } %>
             <% } %>
            	<% if (req.query.code) { %>
-            	<div class="alert" style="background-color: #007fcc;">
+            	<div class="alert alert-custom">
             		Success! You have created a coupon code with the name of: <%= req.query.code %>
     	      	</div>
           	<% } %>

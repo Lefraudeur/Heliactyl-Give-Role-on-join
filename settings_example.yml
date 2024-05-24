@@ -229,6 +229,7 @@ afk page:
 
 servercreation:
   cost: 0
+  ping: true
 
 renewals:
 # It's not advisable to use the renewals system, as it's unstable and doesn't work all the time.

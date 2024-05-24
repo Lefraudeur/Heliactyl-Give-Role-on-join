@@ -18,11 +18,16 @@
             <p class="text-gray">Earn coins by completing Linkvertise links.</p>
            </div>
 
-            <% if (req.query.success) { %>
-              <div class="alert alert-success">
-                Success! <%= settings.linkvertise.coins%> coins were added to your account.
+           <% if (req.query.success) { %>
+            <div class="alert alert-success">
+              Success! <%= settings.linkvertise.coins %> coins were added to your account.
             </div>
-            <% } %>
+          <% } else if (req.query.err === 'REACHEDDAILYLIMIT') { %>
+            <div class="alert alert-danger">
+              Error! You have reached your daily limit.
+            </div>
+          <% } %>
+          
             
               <div class="row justify-content-center">
                 <div class="col-md-6 grid-margin stretch-card">
@@ -89,7 +94,7 @@
                     </script>
                   <script type="text/javascript">
                     function generate() {
-                      window.location.replace(`/lv/gen`)
+                      window.open(`/lv/gen`, '_blank');
                     }
                   </script>
                  </div>
