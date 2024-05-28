@@ -3,9 +3,9 @@ const fetch = require('node-fetch');
 const getPteroUser = require('../handlers/getPteroUser.js');
 
 module.exports.load = async function(app, db) {
-  const redirectToPanel = (req, res) => res.redirect(settings.pterodactyl.domain);
+  app.get("/panel", (req, res) => res.redirect(settings.pterodactyl.domain));
 
-  const updateInfo = async (req, res) => {
+  app.get("/updateinfo", async (req, res) => {
     try {
       if (!req.session.pterodactyl) return res.redirect("/login");
 
@@ -14,16 +14,16 @@ module.exports.load = async function(app, db) {
       if (!cacheaccount) return;
       req.session.pterodactyl = cacheaccount.attributes;
       
-      if (req.query.redirect && typeof req.query.redirect === "string") {
+      if (req.query.redirect && typeof req.query.redirect === "string") 
         return res.redirect("/" + req.query.redirect);
-      }
+      
       res.redirect("/settings");
     } catch (error) {
       res.send("An error has occurred while attempting to update your account information and server list.");
     }
-  };
+  });
 
-  const regeneratePassword = async (req, res) => {
+  app.get("/regen", async (req, res) => {
     try {
     if (!req.session.pterodactyl) return res.redirect("/login");
     const newsettings = require('../handlers/readSettings').settings(); 
@@ -57,9 +57,9 @@ module.exports.load = async function(app, db) {
     } catch (error) {
       res.send("An error occurred while attempting to regenerate your password.");
     }
-  };
+  });
 
-  const getPing = async (req, res) => {
+  app.get("/ping", async (req, res) => {
     if (!req.session.pterodactyl) 
         return res.json({ error: true, message: `You must be logged in.` });
     try {
@@ -101,13 +101,7 @@ module.exports.load = async function(app, db) {
         console.error('Error fetching nodes or calculating ping:', error);
         res.status(500).send("An error has occurred while processing your request.");
     }
-};
-
-
-  app.get("/ping", getPing);
-  app.get("/panel", redirectToPanel);
-  app.get("/updateinfo", updateInfo);
-  app.get("/regen", regeneratePassword);
+  });
 };
 
 function generateRandomPassword(length) {
