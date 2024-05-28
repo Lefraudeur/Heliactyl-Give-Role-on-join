@@ -100,7 +100,8 @@
       fetch("/stats")
         .then(response => response.json())
         .then(data => {
-            document.getElementById("userStats").innerHTML = `Total number of users: <span>${data.total_users}</span>`;
+          let TotalUsers = data.total_users;
+            document.getElementById("userStats").innerHTML = `Total number of users: <code style="color: #007fcc">${TotalUsers}</code>`;
         })
         .catch(error => {
             console.error("Error fetching stats:", error);

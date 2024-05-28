@@ -1,61 +1,52 @@
+# Fixed Heliactyl v12.8+ • The Modern Client Panel for Pterodactyl
+
 ![Heliactyl](https://github.com/OvernodeProjets/Fixed-Heliactyl/assets/73477238/fe5aaf5c-1c01-4145-b37a-b91b184354b5)
 
-<hr>
+> **WARNING**  
+> Fixed Heliactyl 12.8 and above are not compatible with older files (themes) due to major settings modifications. Replace all `settings.api.client` with `settings`. Thank you for understanding.
 
-> [!WARNING]  
-> Fixed Heliactyl 12.8 and above are not compatible with older files (themes) due to major settings modifications. To fix this replace all of the settings.api.client with settings. Thank you for understanding.
+> **WARNING**  
+> Fixed Heliactyl 12.7.10 and above is not compatible with Heliactyl's settings due to the switch to YAML, which is easier to use than JSON. You will need to reconfigure all of your settings.
 
-> [!WARNING]  
-> Fixed Heliactyl 12.7.10 and above is not compatible with Heliactyl's settings due to newer versions using YAML as its easier to use instead of JSON. You will have to reconfigure all of your settings.
+## Features
 
-# This is a fork of Heliactyl v12
+- **Resource Management**: Create servers, manage resources.
+- **Coins**: Earn through AFK pages, Linkvertise.
+- **Renewal**: Use coins for server renewal.
+- **Coupons**: Distribute resources and coins.
+- **Servers**: Create, view, and edit servers.
+- **Payments**: Stripe integration for purchases.
+- **Login Queue**: Prevent overload with a queue system.
+- **User System**: Authentication, password regeneration, etc.
+- **Store**: Purchase resources with coins.
+- **Dashboard**: Overview of resources.
+- **Join for Rewards**: Earn coins by joining Discord servers.
+- **Admin Panel**: Manage coins, resources, coupons.
+- **API**: For bots and other integrations.
 
-# Heliactyl • The modern client panel for Pterodactyl
+## Install Guide
 
-All features:
+### 1. Configuring Heliactyl
 
-- Resource Management (Use it to create servers etc)
-- Coins (AFK Page Earning, Linkvertise earning)
-- Renewal (Require coins for renewal)
-- Coupons (which give resources & coins to a user)
-- Servers (create, view, and edit servers)
-- Payments (buy via Stripe)
-- Login Queue (prevent overload)
-- User System (auth, regen password, etc)
-- Store (buy resources with coins)
-- Dashboard (view resources)
-- Join for Rewards (join Discord servers for coins).
-- Admin (set/add/remove coins & resources, create/revoke coupons)
-- API (for bots & other things)
+#### Pterodactyl Method (Easiest)
 
-<hr>
+1. **Upload File**: Upload the Heliactyl file to a Pterodactyl NodeJS server. [Download the egg from Parkervcp's GitHub Repository](https://github.com/parkervcp/eggs/blob/master/generic/nodejs/egg-node-js-generic.json)
+2. **Setup NodeJS**: Unarchive the file and set the server to use NodeJS 16.
 
-# Install Guide
+#### Direct Method
 
-## 1. Configuring heliactyl
-
-### Pterodactyl method (easiest)
-
-Warning: You need Pterodactyl already set up on a domain for this method to work
-
-<strong>1.1</strong> Upload the file above onto a Pterodactyl NodeJS server [Download the egg from Parkervcp's GitHub Repository](https://github.com/parkervcp/eggs/blob/master/generic/nodejs/egg-node-js-generic.json)
-
-<strong>1.2</strong> Unarchive the file and set the server to use NodeJS 16
-
-### Direct method
-
-<strong>1.1</strong> Install Node.js 16 or newer, it's recommended to install it with nvm :
+1. **Install Node.js 16 or newer**: It's recommended to install it with nvm :
 
 - `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash`
 - reopen a new ssh session (e.g., restart putty)
 - `nvm install 16`
 - check the node version with `node -v` and switch between versions with `nvm use <version>`
 
-<strong>1.2</strong> Download heliactyl files in /var/www/heliactyl :
+2. Download heliactyl files in /var/www/heliactyl :
 
 - `git clone https://github.com/OvernodeProjets/Fixed-Heliactyl.git /var/www/heliactyl`
 
-<strong>1.3</strong> Installing required node modules (and build dependencies to avoid errors) :
+3. Installing required node modules (and build dependencies to avoid errors) :
 
 - `apt-get update && apt-get install libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev build-essential`
 - `cd /var/www/heliactyl && npm i`
@@ -65,43 +56,44 @@ To run in the background, use PM2 (see PM2 section)</br>
 
 ## 2. Setting up webserver
 
-<strong>2.1</strong> Rename exemple_settings.json to settings.json and configure settings.json (specify panel domain/apikey and discord auth settings for it to work)
+1. Rename exemple_settings.json to settings.json and configure settings.json (specify panel domain/apikey and discord auth settings for it to work)
 
-<strong>2.2</strong> Start the server (Ignore the 2 strange errors that might come up)
+2. Start the server (Ignore the 2 strange errors that might come up)
 
-<strong>2.3</strong> Login to your DNS manager, point the domain you want your dashboard to be hosted on to your VPS IP address. (Example: dashboard.domain.com 192.168.0.1)
+3. Login to your DNS manager, point the domain you want your dashboard to be hosted on to your VPS IP address. (Example: dashboard.domain.com 192.168.0.1)
 
-<strong>2.4</strong> Run `apt install nginx && apt install certbot` on the vps
+4. Run `apt install nginx && apt install certbot` on the vps
 
-<strong>2.5</strong> Run `ufw allow 80` and `ufw allow 443` on the vps
+5. Run `ufw allow 80` and `ufw allow 443` on the vps
 
-<strong>2.6</strong> Run `certbot certonly -d <Your Heliactyl Domain>` then do 1 and put your email
+6. Run `certbot certonly -d <Your Heliactyl Domain>` then do 1 and put your email
 
-<strong>2.7</strong> Run `nano /etc/nginx/sites-enabled/heliactyl.conf`
+7. Run `nano /etc/nginx/sites-enabled/heliactyl.conf`
 
-<strong>2.8</strong> Paste the configuration at the bottom of this and replace with the IP of the pterodactyl server including the port and with the domain you want your dashboard to be hosted on.
+8. Paste the configuration at the bottom of this and replace with the IP of the pterodactyl server including the port and with the domain you want your dashboard to be hosted on.
 
-<strong>2.9</strong> Run `systemctl restart nginx` and try open your domain.
+9. Run `systemctl restart nginx` and try open your domain.
 
-# Nginx Proxy Config
+## Nginx Proxy Config
 
 ```Nginx
 server {
     listen 80;
-    server_name <domain>;
-    return 301 https://$server_name$request_uri;
-}
-
-server {
+    listen [::]:80;
     listen 443 ssl http2;
+    listen [::]:443 ssl http2;
     server_name <domain>;
 
     ssl_certificate /etc/letsencrypt/live/<domain>/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/<domain>/privkey.pem;
     ssl_session_cache shared:SSL:10m;
-    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
-    ssl_ciphers  HIGH:!aNULL:!MD5;
+    ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
+    ssl_ciphers 'HIGH:!aNULL:!MD5:!ECDHE-RSA-AES128-SHA';
+    
+    if ($scheme = http) {
+        return 301 https://$server_name$request_uri;
+    }
 
     location /afk/ws {
         proxy_http_version 1.1;
@@ -109,6 +101,7 @@ server {
         proxy_set_header Connection "upgrade";
         proxy_pass http://localhost:<port>/afk/ws;
     }
+    
     location / {
         proxy_pass http://localhost:<port>/;
         proxy_buffering off;
@@ -119,7 +112,7 @@ server {
 
 <hr>
 
-# Updating
+## Updating
 
 ### From Heliactyl v11/v13 or Dashactyl v0.4 to Heliactyl v12:
 
@@ -138,7 +131,7 @@ server {
 
 <hr>
 
-# Running in background / on startup, on a server instead of within Pterodactyl
+## Running in background / on startup, on a server instead of within Pterodactyl
 
 ### Installing [pm2](https://github.com/Unitech/pm2):
 
@@ -169,7 +162,7 @@ To stop a currently running Heliactyl instance, use `pm2 stop heliactyl`
 
 > [!CAUTION]
 >
-> # Legacy Deprecation Notice
+> ## Legacy Deprecation Notice
 >
 > Heliactyl v6, v7, v8, v9, v10, v11, v13, v15 is now deprecated by the official Heliactyl team.
 > Users have made forks of older Heliactyl version but the Heliactyl team will not give support. 

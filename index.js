@@ -162,19 +162,18 @@ app.use(function(req, res, next) {
 
 // Load the routes.
 
-let apifiles = fs.readdirSync('./routes').filter(file => file.endsWith('.js'));
+let routeFiles = fs.readdirSync('./routes').filter(file => file.endsWith('.js'));
 
-apifiles.forEach(file => {
-  let apifile = require(`./routes/${file}`);
-	apifile.load(app, db);
+routeFiles.forEach(file => {
+  let routeFile = require(`./routes/${file}`);
+	routeFile.load(app, db);
 });
 
  // Load route
 
 app.all("*", async (req, res) => {
-  if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) {
+  if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) 
     return res.redirect("/login?prompt=none");
-  }
 
   let theme = indexjs.get(req);
   

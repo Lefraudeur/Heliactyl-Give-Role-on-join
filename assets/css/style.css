@@ -11402,27 +11402,34 @@ input[type="button"].btn-block {
   .navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .nav-link:focus {
     color: rgba(255, 255, 255, 0.75); }
   .navbar-dark .navbar-nav .nav-link.disabled {
-    color: rgba(255, 255, 255, 0.25); }
+    color: rgba(255, 255, 255, 0.25); 
+  }
 
 .navbar-dark .navbar-nav .show > .nav-link,
 .navbar-dark .navbar-nav .active > .nav-link,
 .navbar-dark .navbar-nav .nav-link.show,
 .navbar-dark .navbar-nav .nav-link.active {
-  color: #fff; }
+  color: #fff; 
+}
 
 .navbar-dark .navbar-toggler {
   color: rgba(255, 255, 255, 0.5);
-  border-color: rgba(255, 255, 255, 0.1); }
+  border-color: rgba(255, 255, 255, 0.1); 
+}
 
 .navbar-dark .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); 
+}
 
 .navbar-dark .navbar-text {
-  color: rgba(255, 255, 255, 0.5); }
+  color: rgba(255, 255, 255, 0.5); 
+}
   .navbar-dark .navbar-text a {
-    color: #fff; }
+    color: #fff; 
+  }
     .navbar-dark .navbar-text a:hover, .navbar-dark .navbar-text a:focus {
-      color: #fff; }
+      color: #fff; 
+    }
 
 .card {
   position: relative;
@@ -11444,67 +11451,84 @@ input[type="button"].btn-block {
 }
   .card > hr {
     margin-right: 0;
-    margin-left: 0; }
+    margin-left: 0; 
+  }
   .card > .list-group {
     border-top: inherit;
-    border-bottom: inherit; }
+    border-bottom: inherit; 
+  }
     .card > .list-group:first-child {
       border-top-width: 0;
       border-top-left-radius: calc(0.25rem - 1px);
-      border-top-right-radius: calc(0.25rem - 1px); }
+      border-top-right-radius: calc(0.25rem - 1px); 
+    }
     .card > .list-group:last-child {
       border-bottom-width: 0;
       border-bottom-right-radius: calc(0.25rem - 1px);
-      border-bottom-left-radius: calc(0.25rem - 1px); }
+      border-bottom-left-radius: calc(0.25rem - 1px); 
+    }
   .card > .card-header + .list-group,
   .card > .list-group + .card-footer {
-    border-top: 0; }
+    border-top: 0; 
+  }
 
 .card-body {
   flex: 1 1 auto;
   min-height: 1px;
-  padding: 1.25rem; }
+  padding: 1.25rem; 
+}
 
 .card-title {
-  margin-bottom: 0.75rem; }
+  margin-bottom: 0.75rem; 
+}
 
 .card-subtitle {
   margin-top: -0.375rem;
-  margin-bottom: 0; }
+  margin-bottom: 0; 
+}
 
 .card-text:last-child {
-  margin-bottom: 0; }
+  margin-bottom: 0; 
+}
 
 .card-link:hover {
-  text-decoration: none; }
+  text-decoration: none; 
+}
 
 .card-link + .card-link {
-  margin-left: 1.25rem; }
+  margin-left: 1.25rem; 
+}
 
 .card-header {
   padding: 0.75rem 1.25rem;
   margin-bottom: 0;
   background-color: rgba(0, 0, 0, 0.03);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125); }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125); 
+}
   .card-header:first-child {
-    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0; }
+    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0; 
+  }
 
 .card-footer {
   padding: 0.75rem 1.25rem;
   background-color: rgba(0, 0, 0, 0.03);
-  border-top: 1px solid rgba(0, 0, 0, 0.125); }
+  border-top: 1px solid rgba(0, 0, 0, 0.125); 
+}
   .card-footer:last-child {
-    border-radius: 0 0 calc(0.25rem - 1px) calc(0.25rem - 1px); }
+    border-radius: 0 0 calc(0.25rem - 1px) calc(0.25rem - 1px); 
+  }
 
 .card-header-tabs {
   margin-right: -0.625rem;
   margin-bottom: -0.75rem;
   margin-left: -0.625rem;
-  border-bottom: 0; }
+  border-bottom: 0; 
+}
 
 .card-header-pills {
   margin-right: -0.625rem;
-  margin-left: -0.625rem; }
+  margin-left: -0.625rem; 
+}
 
 .card-img-overlay {
   position: absolute;
@@ -11513,26 +11537,31 @@ input[type="button"].btn-block {
   bottom: 0;
   left: 0;
   padding: 1.25rem;
-  border-radius: calc(0.25rem - 1px); }
+  border-radius: calc(0.25rem - 1px); 
+}
 
 .card-img,
 .card-img-top,
 .card-img-bottom {
   flex-shrink: 0;
-  width: 100%; }
+  width: 100%; 
+}
 
 .card-img,
 .card-img-top {
   border-top-left-radius: calc(0.25rem - 1px);
-  border-top-right-radius: calc(0.25rem - 1px); }
+  border-top-right-radius: calc(0.25rem - 1px); 
+}
 
 .card-img,
 .card-img-bottom {
   border-bottom-right-radius: calc(0.25rem - 1px);
-  border-bottom-left-radius: calc(0.25rem - 1px); }
+  border-bottom-left-radius: calc(0.25rem - 1px); 
+}
 
 .card-deck .card {
-  margin-bottom: 15px; }
+  margin-bottom: 15px;
+}
 
 @media (min-width: 576px) {
   .card-deck {
@@ -11540,71 +11569,93 @@ input[type="button"].btn-block {
     flex-flow: row wrap;
     margin-right: -15px;
     margin-left: -15px; }
-    .card-deck .card {
-      flex: 1 0 0%;
-      margin-right: 15px;
-      margin-bottom: 0;
-      margin-left: 15px; } }
+  .card-deck .card {
+    flex: 1 0 0%;
+    margin-right: 15px;
+    margin-bottom: 0;
+    margin-left: 15px; 
+  } 
+}
 
 .card-group > .card {
-  margin-bottom: 15px; }
+  margin-bottom: 15px; 
+}
 
 @media (min-width: 576px) {
   .card-group {
     display: flex;
-    flex-flow: row wrap; }
+    flex-flow: row wrap; 
+  }
     .card-group > .card {
       flex: 1 0 0%;
-      margin-bottom: 0; }
+      margin-bottom: 0; 
+    }
       .card-group > .card + .card {
         margin-left: 0;
-        border-left: 0; }
+        border-left: 0; 
+      }
       .card-group > .card:not(:last-child) {
         border-top-right-radius: 0;
-        border-bottom-right-radius: 0; }
+        border-bottom-right-radius: 0; 
+      }
         .card-group > .card:not(:last-child) .card-img-top,
         .card-group > .card:not(:last-child) .card-header {
-          border-top-right-radius: 0; }
+          border-top-right-radius: 0; 
+        }
         .card-group > .card:not(:last-child) .card-img-bottom,
         .card-group > .card:not(:last-child) .card-footer {
-          border-bottom-right-radius: 0; }
+          border-bottom-right-radius: 0; 
+        }
       .card-group > .card:not(:first-child) {
         border-top-left-radius: 0;
-        border-bottom-left-radius: 0; }
+        border-bottom-left-radius: 0; 
+      }
         .card-group > .card:not(:first-child) .card-img-top,
         .card-group > .card:not(:first-child) .card-header {
-          border-top-left-radius: 0; }
+          border-top-left-radius: 0; 
+        }
         .card-group > .card:not(:first-child) .card-img-bottom,
         .card-group > .card:not(:first-child) .card-footer {
-          border-bottom-left-radius: 0; } }
+          border-bottom-left-radius: 0; 
+        } 
+        }
 
 .card-columns .card {
-  margin-bottom: 0.75rem; }
+  margin-bottom: 0.75rem; 
+}
 
 @media (min-width: 576px) {
   .card-columns {
     column-count: 3;
     column-gap: 1.25rem;
     orphans: 1;
-    widows: 1; }
-    .card-columns .card {
-      display: inline-block;
-      width: 100%; } }
+    widows: 1; 
+  }
+  .card-columns .card {
+    display: inline-block;
+    width: 100%; 
+  } 
+}
 
 .accordion {
-  overflow-anchor: none; }
+  overflow-anchor: none; 
+}
   .accordion > .card {
-    overflow: hidden; }
+    overflow: hidden; 
+  }
     .accordion > .card:not(:last-of-type) {
       border-bottom: 0;
       border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0; }
+      border-bottom-left-radius: 0; 
+    }
     .accordion > .card:not(:first-of-type) {
       border-top-left-radius: 0;
-      border-top-right-radius: 0; }
+      border-top-right-radius: 0; 
+    }
     .accordion > .card > .card-header {
       border-radius: 0;
-      margin-bottom: -1px; }
+      margin-bottom: -1px; 
+    }
 
 .breadcrumb {
   display: flex;
@@ -11614,29 +11665,37 @@ input[type="button"].btn-block {
   font-size: 0.875rem;
   list-style: none;
   background-color: transparent;
-  border-radius: 0.25rem; }
+  border-radius: 0.25rem; 
+}
 
 .breadcrumb-item {
-  display: flex; }
+  display: flex; 
+}
   .breadcrumb-item + .breadcrumb-item {
-    padding-left: 0.5rem; }
+    padding-left: 0.5rem; 
+  }
     .breadcrumb-item + .breadcrumb-item::before {
       display: inline-block;
       padding-right: 0.5rem;
       color: #6c757d;
-      content: "/"; }
+      content: "/"; 
+    }
   .breadcrumb-item + .breadcrumb-item:hover::before {
-    text-decoration: underline; }
+    text-decoration: underline; 
+  }
   .breadcrumb-item + .breadcrumb-item:hover::before {
-    text-decoration: none; }
+    text-decoration: none; 
+  }
   .breadcrumb-item.active {
-    color: #495057; }
+    color: #495057; 
+  }
 
 .pagination, .jsgrid .jsgrid-pager {
   display: flex;
   padding-left: 0;
   list-style: none;
-  border-radius: 0.25rem; }
+  border-radius: 0.25rem; 
+}
 
 .page-link, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a,
 .jsgrid .jsgrid-pager .jsgrid-pager-page a {
@@ -11647,32 +11706,37 @@ input[type="button"].btn-block {
   line-height: 1.25;
   color: #007bff;
   background-color: #000000;
-  border: 1px solid #dee2e6; }
+  border: 1px solid #dee2e6; 
+}
   .page-link:hover, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a:hover,
   .jsgrid .jsgrid-pager .jsgrid-pager-page a:hover {
     z-index: 2;
     color: #0056b3;
     text-decoration: none;
     background-color: #e9ecef;
-    border-color: #dee2e6; }
+    border-color: #dee2e6; 
+  }
   .page-link:focus, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a:focus,
   .jsgrid .jsgrid-pager .jsgrid-pager-page a:focus {
     z-index: 3;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); 
+  }
 
 .page-item:first-child .page-link, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:first-child .page-link, .jsgrid .jsgrid-pager .jsgrid-pager-page:first-child .page-link, .page-item:first-child .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .page-item:first-child a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:first-child a,
 .page-item:first-child .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .page-item:first-child a,
 .jsgrid .jsgrid-pager .jsgrid-pager-page:first-child a {
   margin-left: 0;
   border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem; }
+  border-bottom-left-radius: 0.25rem; 
+}
 
 .page-item:last-child .page-link, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:last-child .page-link, .jsgrid .jsgrid-pager .jsgrid-pager-page:last-child .page-link, .page-item:last-child .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .page-item:last-child a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:last-child a,
 .page-item:last-child .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .page-item:last-child a,
 .jsgrid .jsgrid-pager .jsgrid-pager-page:last-child a {
   border-top-right-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem; }
+  border-bottom-right-radius: 0.25rem; 
+}
 
 .page-item.active .page-link, .jsgrid .jsgrid-pager .active.jsgrid-pager-nav-button .page-link, .jsgrid .jsgrid-pager .active.jsgrid-pager-page .page-link, .page-item.active .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .page-item.active a, .jsgrid .jsgrid-pager .active.jsgrid-pager-nav-button a,
 .page-item.active .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .page-item.active a,
@@ -11680,7 +11744,8 @@ input[type="button"].btn-block {
   z-index: 3;
   color: #fff;
   background-color: #007bff;
-  border-color: #007bff; }
+  border-color: #007bff; 
+}
 
 .page-item.disabled .page-link, .jsgrid .jsgrid-pager .disabled.jsgrid-pager-nav-button .page-link, .jsgrid .jsgrid-pager .disabled.jsgrid-pager-page .page-link, .page-item.disabled .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .page-item.disabled a, .jsgrid .jsgrid-pager .disabled.jsgrid-pager-nav-button a,
 .page-item.disabled .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .page-item.disabled a,
@@ -11689,43 +11754,50 @@ input[type="button"].btn-block {
   pointer-events: none;
   cursor: auto;
   background-color: #fff;
-  border-color: #dee2e6; }
+  border-color: #dee2e6; 
+}
 
 .pagination-lg .page-link, .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .pagination-lg a,
 .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .pagination-lg a {
   padding: 0.75rem 1.5rem;
   font-size: 1.25rem;
-  line-height: 1.5; }
+  line-height: 1.5; 
+}
 
 .pagination-lg .page-item:first-child .page-link, .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:first-child .page-link, .jsgrid .jsgrid-pager .pagination-lg .jsgrid-pager-nav-button:first-child .page-link, .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-page:first-child .page-link, .jsgrid .jsgrid-pager .pagination-lg .jsgrid-pager-page:first-child .page-link, .pagination-lg .page-item:first-child .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .pagination-lg .page-item:first-child a, .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:first-child a, .jsgrid .jsgrid-pager .pagination-lg .jsgrid-pager-nav-button:first-child a,
 .pagination-lg .page-item:first-child .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .pagination-lg .page-item:first-child a,
 .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-page:first-child a, .jsgrid .jsgrid-pager .pagination-lg .jsgrid-pager-page:first-child a {
   border-top-left-radius: 0.3rem;
-  border-bottom-left-radius: 0.3rem; }
+  border-bottom-left-radius: 0.3rem; 
+}
 
 .pagination-lg .page-item:last-child .page-link, .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:last-child .page-link, .jsgrid .jsgrid-pager .pagination-lg .jsgrid-pager-nav-button:last-child .page-link, .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-page:last-child .page-link, .jsgrid .jsgrid-pager .pagination-lg .jsgrid-pager-page:last-child .page-link, .pagination-lg .page-item:last-child .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .pagination-lg .page-item:last-child a, .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:last-child a, .jsgrid .jsgrid-pager .pagination-lg .jsgrid-pager-nav-button:last-child a,
 .pagination-lg .page-item:last-child .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .pagination-lg .page-item:last-child a,
 .pagination-lg .jsgrid .jsgrid-pager .jsgrid-pager-page:last-child a, .jsgrid .jsgrid-pager .pagination-lg .jsgrid-pager-page:last-child a {
   border-top-right-radius: 0.3rem;
-  border-bottom-right-radius: 0.3rem; }
+  border-bottom-right-radius: 0.3rem; 
+}
 
 .pagination-sm .page-link, .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .pagination-sm a,
 .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .pagination-sm a {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  line-height: 1.5; }
+  line-height: 1.5; 
+}
 
 .pagination-sm .page-item:first-child .page-link, .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:first-child .page-link, .jsgrid .jsgrid-pager .pagination-sm .jsgrid-pager-nav-button:first-child .page-link, .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-page:first-child .page-link, .jsgrid .jsgrid-pager .pagination-sm .jsgrid-pager-page:first-child .page-link, .pagination-sm .page-item:first-child .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .pagination-sm .page-item:first-child a, .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:first-child a, .jsgrid .jsgrid-pager .pagination-sm .jsgrid-pager-nav-button:first-child a,
 .pagination-sm .page-item:first-child .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .pagination-sm .page-item:first-child a,
 .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-page:first-child a, .jsgrid .jsgrid-pager .pagination-sm .jsgrid-pager-page:first-child a {
   border-top-left-radius: 0.2rem;
-  border-bottom-left-radius: 0.2rem; }
+  border-bottom-left-radius: 0.2rem; 
+}
 
 .pagination-sm .page-item:last-child .page-link, .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:last-child .page-link, .jsgrid .jsgrid-pager .pagination-sm .jsgrid-pager-nav-button:last-child .page-link, .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-page:last-child .page-link, .jsgrid .jsgrid-pager .pagination-sm .jsgrid-pager-page:last-child .page-link, .pagination-sm .page-item:last-child .jsgrid .jsgrid-pager .jsgrid-pager-nav-button a, .jsgrid .jsgrid-pager .jsgrid-pager-nav-button .pagination-sm .page-item:last-child a, .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-nav-button:last-child a, .jsgrid .jsgrid-pager .pagination-sm .jsgrid-pager-nav-button:last-child a,
 .pagination-sm .page-item:last-child .jsgrid .jsgrid-pager .jsgrid-pager-page a, .jsgrid .jsgrid-pager .jsgrid-pager-page .pagination-sm .page-item:last-child a,
 .pagination-sm .jsgrid .jsgrid-pager .jsgrid-pager-page:last-child a, .jsgrid .jsgrid-pager .pagination-sm .jsgrid-pager-page:last-child a {
   border-top-right-radius: 0.2rem;
-  border-bottom-right-radius: 0.2rem; }
+  border-bottom-right-radius: 0.2rem; 
+}
 
 .badge {
   display: inline-block;
@@ -11737,117 +11809,153 @@ input[type="button"].btn-block {
   white-space: nowrap;
   vertical-align: baseline;
   border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; 
+}
   @media (prefers-reduced-motion: reduce) {
     .badge {
-      transition: none; } }
+      transition: none; 
+    } 
+  }
   a.badge:hover, a.badge:focus {
-    text-decoration: none; }
+    text-decoration: none; 
+  }
   .badge:empty {
-    display: none; }
+    display: none; 
+  }
 
 .btn .badge, .fc button .badge, .ajax-upload-dragdrop .ajax-file-upload .badge, .swal2-modal .swal2-buttonswrapper .swal2-styled .badge, .wizard > .actions a .badge {
   position: relative;
-  top: -1px; }
+  top: -1px; 
+}
 
 .badge-pill {
   padding-right: 0.6em;
   padding-left: 0.6em;
-  border-radius: 10rem; }
+  border-radius: 10rem; 
+}
 
 .badge-primary {
   color: #fff;
-  background-color: #0090e7; }
+  background-color: #0090e7; 
+}
   a.badge-primary:hover, a.badge-primary:focus {
     color: #fff;
-    background-color: #0070b4; }
+    background-color: #0070b4; 
+  }
   a.badge-primary:focus, a.badge-primary.focus {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 144, 231, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(0, 144, 231, 0.5); 
+  }
 
 .badge-secondary {
   color: #212529;
-  background-color: #e4eaec; }
+  background-color: #e4eaec; 
+}
   a.badge-secondary:hover, a.badge-secondary:focus {
     color: #212529;
-    background-color: #c6d3d7; }
+    background-color: #c6d3d7; 
+  }
   a.badge-secondary:focus, a.badge-secondary.focus {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(228, 234, 236, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(228, 234, 236, 0.5); 
+  }
 
 .badge-success, .preview-list .preview-item .preview-thumbnail .badge.badge-online {
   color: #fff;
-  background-color: #00d25b; }
+  background-color: #00d25b; 
+}
   a.badge-success:hover, .preview-list .preview-item .preview-thumbnail a.badge.badge-online:hover, a.badge-success:focus, .preview-list .preview-item .preview-thumbnail a.badge.badge-online:focus {
     color: #fff;
-    background-color: #009f45; }
+    background-color: #009f45; 
+  }
   a.badge-success:focus, .preview-list .preview-item .preview-thumbnail a.badge.badge-online:focus, a.badge-success.focus, .preview-list .preview-item .preview-thumbnail a.focus.badge.badge-online {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 210, 91, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(0, 210, 91, 0.5); 
+  }
 
 .badge-info, .preview-list .preview-item .preview-thumbnail .badge.badge-offline {
   color: #fff;
-  background-color: #8f5fe8; }
+  background-color: #8f5fe8; 
+}
   a.badge-info:hover, .preview-list .preview-item .preview-thumbnail a.badge.badge-offline:hover, a.badge-info:focus, .preview-list .preview-item .preview-thumbnail a.badge.badge-offline:focus {
     color: #fff;
-    background-color: #7032e2; }
+    background-color: #7032e2; 
+  }
   a.badge-info:focus, .preview-list .preview-item .preview-thumbnail a.badge.badge-offline:focus, a.badge-info.focus, .preview-list .preview-item .preview-thumbnail a.focus.badge.badge-offline {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(143, 95, 232, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(143, 95, 232, 0.5); 
+  }
 
 .badge-warning, .preview-list .preview-item .preview-thumbnail .badge.badge-busy {
   color: #212529;
-  background-color: #ffab00; }
+  background-color: #ffab00; 
+}
   a.badge-warning:hover, .preview-list .preview-item .preview-thumbnail a.badge.badge-busy:hover, a.badge-warning:focus, .preview-list .preview-item .preview-thumbnail a.badge.badge-busy:focus {
     color: #212529;
-    background-color: #cc8900; }
+    background-color: #cc8900; 
+  }
   a.badge-warning:focus, .preview-list .preview-item .preview-thumbnail a.badge.badge-busy:focus, a.badge-warning.focus, .preview-list .preview-item .preview-thumbnail a.focus.badge.badge-busy {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(255, 171, 0, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(255, 171, 0, 0.5); 
+  }
 
 .badge-danger {
   color: #fff;
-  background-color: #fc424a; }
+  background-color: #fc424a; 
+}
   a.badge-danger:hover, a.badge-danger:focus {
     color: #fff;
-    background-color: #fb101a; }
+    background-color: #fb101a; 
+  }
   a.badge-danger:focus, a.badge-danger.focus {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(252, 66, 74, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(252, 66, 74, 0.5); 
+  }
 
 .badge-light {
   color: #212529;
-  background-color: #ffffff; }
+  background-color: #ffffff; 
+}
   a.badge-light:hover, a.badge-light:focus {
     color: #212529;
-    background-color: #e6e6e6; }
+    background-color: #e6e6e6; 
+  }
   a.badge-light:focus, a.badge-light.focus {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5); 
+  }
 
 .badge-dark {
   color: #fff;
-  background-color: #0d0d0d; }
+  background-color: #0d0d0d; 
+}
   a.badge-dark:hover, a.badge-dark:focus {
     color: #fff;
-    background-color: black; }
+    background-color: black; 
+  }
   a.badge-dark:focus, a.badge-dark.focus {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(13, 13, 13, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(13, 13, 13, 0.5); 
+  }
 
 .jumbotron {
   padding: 2rem 1rem;
   margin-bottom: 2rem;
   background-color: #e9ecef;
-  border-radius: 0.3rem; }
+  border-radius: 0.3rem; 
+}
+
   @media (min-width: 576px) {
     .jumbotron {
-      padding: 4rem 2rem; } }
+      padding: 4rem 2rem; 
+    } 
+  }
 
 .jumbotron-fluid {
   padding-right: 0;
   padding-left: 0;
-  border-radius: 0; }
+  border-radius: 0; 
+}
 
 .alert {
   position: relative;
@@ -11858,42 +11966,53 @@ input[type="button"].btn-block {
  }
 
 .alert-heading {
-  color: inherit; }
+  color: inherit; 
+}
 
 .alert-link {
-  font-weight: 700; }
+  font-weight: 700; 
+}
 
 .alert-dismissible {
-  padding-right: 4rem; }
-  .alert-dismissible .close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 2;
-    padding: 0.75rem 1.25rem;
-    color: inherit; }
+  padding-right: 4rem; 
+}
+
+.alert-dismissible .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  padding: 0.75rem 1.25rem;
+  color: inherit; 
+}
 
 .alert-custom {
-  background-color: #007fcc;
+  background-color: #007fcc !important;
 }
 
 .alert-primary {
   color: #004b78;
   background-color: #cce9fa;
-  border-color: #b8e0f8; }
+  border-color: #b8e0f8; 
+}
   .alert-primary hr {
-    border-top-color: #a1d6f6; }
+    border-top-color: #a1d6f6; 
+  }
   .alert-primary .alert-link {
-    color: #002b45; }
+    color: #002b45; 
+  }
 
 .alert-secondary {
   color: #777a7b;
   background-color: #fafbfb;
-  border-color: #f7f9fa; }
+  border-color: #f7f9fa; 
+}
   .alert-secondary hr {
-    border-top-color: #e7edf0; }
+    border-top-color: #e7edf0; 
+  }
   .alert-secondary .alert-link {
-    color: #5e6061; }
+    color: #5e6061; 
+  }
 
 .alert-success {
   color: white !important;
@@ -11910,47 +12029,62 @@ input[type="button"].btn-block {
 .alert-info {
   color: #4a3179;
   background-color: #e9dffa;
-  border-color: #e0d2f9; }
+  border-color: #e0d2f9; 
+}
   .alert-info hr {
-    border-top-color: #d1bcf6; }
+    border-top-color: #d1bcf6; 
+  }
   .alert-info .alert-link {
-    color: #342255; }
+    color: #342255; 
+  }
 
 .alert-warning {
   color: #855900;
   background-color: #ffeecc;
-  border-color: #ffe7b8; }
+  border-color: #ffe7b8; 
+}
   .alert-warning hr {
-    border-top-color: #ffde9f; }
+    border-top-color: #ffde9f; 
+  }
   .alert-warning .alert-link {
-    color: #523700; }
+    color: #523700; 
+  }
 
 .alert-danger {
   color: #832226;
   background-color: #fed9db;
-  border-color: #fecacc; }
+  border-color: #fecacc; 
+}
   .alert-danger hr {
-    border-top-color: #feb1b4; }
+    border-top-color: #feb1b4; 
+  }
   .alert-danger .alert-link {
-    color: #5b171a; }
+    color: #5b171a; 
+  }
 
 .alert-light {
   color: #858585;
   background-color: white;
-  border-color: white; }
+  border-color: white; 
+}
   .alert-light hr {
-    border-top-color: #f2f2f2; }
+    border-top-color: #f2f2f2; 
+  }
   .alert-light .alert-link {
-    color: #6c6c6c; }
+    color: #6c6c6c; 
+  }
 
 .alert-dark {
   color: #070707;
   background-color: #cfcfcf;
-  border-color: #bbbbbb; }
+  border-color: #bbbbbb; 
+}
   .alert-dark hr {
-    border-top-color: #aeaeae; }
+    border-top-color: #aeaeae; 
+  }
   .alert-dark .alert-link {
-    color: black; }
+    color: black; 
+  }
 
 @keyframes progress-bar-stripes {
   from {
@@ -11965,7 +12099,8 @@ input[type="button"].btn-block {
   line-height: 0;
   font-size: 0.75rem;
   background-color: #000000;
-  border-radius: 0.25rem; }
+  border-radius: 0.25rem; 
+}
 
 .progress-bar {
   display: flex;
@@ -11976,47 +12111,60 @@ input[type="button"].btn-block {
   text-align: center;
   white-space: nowrap;
   background-color: #007bff;
-  transition: width 0.6s ease; }
+  transition: width 0.6s ease; 
+}
   @media (prefers-reduced-motion: reduce) {
     .progress-bar {
-      transition: none; } }
+      transition: none; 
+    } 
+  }
 
 .progress-bar-striped {
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-size: 1rem 1rem; }
+  background-size: 1rem 1rem; 
+}
 
 .progress-bar-animated {
-  animation: progress-bar-stripes 1s linear infinite; }
+  animation: progress-bar-stripes 1s linear infinite; 
+}
   @media (prefers-reduced-motion: reduce) {
     .progress-bar-animated {
-      animation: none; } }
+      animation: none; 
+    } 
+  }
 
 .media {
   display: flex;
-  align-items: flex-start; }
+  align-items: flex-start; 
+}
 
 .media-body {
-  flex: 1; }
+  flex: 1; 
+}
 
 .list-group {
   display: flex;
   flex-direction: column;
   padding-left: 0;
   margin-bottom: 0;
-  border-radius: 0.25rem; }
+  border-radius: 0.25rem; 
+}
 
 .list-group-item-action {
   width: 100%;
   color: #495057;
-  text-align: inherit; }
+  text-align: inherit; 
+}
   .list-group-item-action:hover, .list-group-item-action:focus {
     z-index: 1;
     color: #495057;
     text-decoration: none;
-    background-color: #f8f9fa; }
+    background-color: #f8f9fa; 
+  }
   .list-group-item-action:active {
     color: #212529;
-    background-color: #e9ecef; }
+    background-color: #e9ecef; 
+  }
 
 .list-group-item {
   position: relative;
