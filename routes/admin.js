@@ -66,7 +66,7 @@ module.exports.load = async function (app, db) {
 
         let successredirect = theme.settings.redirect.setcoins || "/";
         log(`set coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the coins of the user with the ID \`${id}\` to \`${coins}\`.`)
-        res.redirect(successredirect + "?err=none");
+        res.redirect(`${successredirect}?err=none`);
     });
 
   /**
@@ -444,7 +444,7 @@ module.exports.load = async function (app, db) {
 
         if (!coins && !ram && !disk && !cpu && !servers) return res.redirect(`${theme.settings.redirect.couponcreationfailed}?err=CREATECOUPONEMPTY`);
 
-        await db.set("coupon-" + code, {
+        await db.set(`coupon-${code}`, {
             coins: coins,
             ram: ram,
             disk: disk,
@@ -537,7 +537,7 @@ module.exports.load = async function (app, db) {
                 await db.set("ips", allips);
             }
 
-            await db.delete("ip-" + discordid);
+            await db.delete(`ip-${discordid}`);
         }
 
         // Remove user from dashboard.
@@ -663,7 +663,7 @@ module.exports.load = async function (app, db) {
 
         let pterodactylid = await db.get(`users-${req.query.id}`);
         let userinforeq = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + pterodactylid + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
             {
                 method: "get",
                 headers: {
