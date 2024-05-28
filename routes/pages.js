@@ -2,7 +2,7 @@ const settings = require('../handlers/readSettings').settings();
 const indexjs = require("../index.js");
 const ejs = require("ejs");
 const express = require("express");
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
     settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
@@ -27,7 +27,7 @@ module.exports.load = async function(app, db) {
                 return res.render("404.ejs", { err });
             }
             let cacheaccount = await fetch(
-                settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+                `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
                 {
                     method: "get",
                     headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }

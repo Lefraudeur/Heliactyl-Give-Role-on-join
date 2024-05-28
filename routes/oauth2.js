@@ -109,8 +109,7 @@ app.get("/logout", (req, res) => {
       if (settings.oauth2.blacklist.status && settings.oauth2.blacklist.users.includes(userinfo.id)) 
         return res.send(getTemplate("Blacklisted", "You are blacklisted. Please contact the administrator for more information.", true));
 
-      let guildsjson = await fetch(
-        'https://discord.com/api/users/@me/guilds',
+      let guildsjson = await fetch('https://discord.com/api/users/@me/guilds',
         {
           method: "get",
           headers: {
@@ -255,12 +254,12 @@ app.get("/logout", (req, res) => {
           }
         }
 
-        if (!await db.get("users-" + userinfo.id)) {
+        if (!await db.get(`users-${userinfo.id}`)) {
           if (newsettings.allow.newusers == true) {
             let genpassword = null;
             if (newsettings.passwordgenerator.signup == true) genpassword = makeid(newsettings.passwordgenerator["length"]);
             let accountjson = await fetch(
-              settings.pterodactyl.domain + "/api/application/users",
+              `${settings.pterodactyl.domain}/api/application/users`,
               {
                 method: "post",
                 headers: {
@@ -281,12 +280,12 @@ app.get("/logout", (req, res) => {
               let userids = await db.get("users") ? await db.get("users") : [];
               userids.push(accountinfo.attributes.id);
               await db.set("users", userids);
-              await db.set("users-" + userinfo.id, accountinfo.attributes.id);
+              await db.set(`users-${userinfo.id}`, accountinfo.attributes.id);
               req.session.newaccount = true;
               req.session.password = genpassword;
             } else {
               let accountlistjson = await fetch(
-                settings.pterodactyl.domain + "/api/application/users?include=servers&filter[email]=" + encodeURIComponent(userinfo.email),
+                `${settings.pterodactyl.domain}/api/application/users?include=servers&filter[email]=` + encodeURIComponent(userinfo.email),
                 {
                   method: "get",
                   headers: {
@@ -303,7 +302,7 @@ app.get("/logout", (req, res) => {
                 if (userids.filter(id => id == userid).length == 0) {
                   userids.push(userid);
                   await db.set("users", userids);
-                  await db.set("users-" + userinfo.id, userid);
+                  await db.set(`users-${userinfo.id}`, userid);
                   req.session.pterodactyl = user[0].attributes;
                 } else {
                   return res.send("We have detected an account with your Discord email on it but the user id has already been claimed on another Discord account.");
@@ -319,7 +318,7 @@ app.get("/logout", (req, res) => {
         };
 
         let cacheaccount = await fetch(
-          settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + userinfo.id)) + "?include=servers",
+          `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + userinfo.id))}?include=servers`,
           {
             method: "get",
             headers: {

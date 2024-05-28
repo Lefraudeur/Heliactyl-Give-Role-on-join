@@ -20,11 +20,11 @@ module.exports.load = async function(app, db) {
 
     let coinloop = setInterval(
       async function() {
-        let usercoins = await db.get("coins-" + req.session.userinfo.id);
+        let usercoins = await db.get(`coins-${req.session.userinfo.id}`);
         usercoins = usercoins ? usercoins : 0;
         usercoins = usercoins + newsettings["afk page"].coins;
         if (usercoins > 999999999999999) return ws.close();
-        await db.set("coins-" + req.session.userinfo.id, usercoins);  
+        await db.set(`coins-${req.session.userinfo.id}`, usercoins);  
 
         if (ws.readyState === ws.OPEN) {
           ws.send(JSON.stringify({"type":"coin"}));

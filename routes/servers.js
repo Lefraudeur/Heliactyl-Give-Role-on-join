@@ -41,11 +41,11 @@ module.exports.load = async function (app, db) {
             return res.redirect(`${redirectlink}?err=COULDNOTDECODENAME`);
           }
 
-          let packagename = await db.get("package-" + req.session.userinfo.id);
+          let packagename = await db.get(`package-${req.session.userinfo.id}`);
           let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
 
           let extra =
-            await db.get("extra-" + req.session.userinfo.id) ||
+            await db.get(`extra-${req.session.userinfo.id}`) ||
             {
               ram: 0,
               disk: 0,
@@ -151,7 +151,7 @@ module.exports.load = async function (app, db) {
 
             let specs = egginfo.info;
             
-            specs["user"] = (await db.get("users-" + req.session.userinfo.id));
+            specs["user"] = (await db.get(`users-${req.session.userinfo.id}`));
             if (!specs["limits"]) specs["limits"] = {
               swap: 0,
               io: 500,
@@ -172,7 +172,7 @@ module.exports.load = async function (app, db) {
             // Make sure user has enough coins
             const createdServer = await db.get(`createdserver-${req.session.userinfo.id}`)
             const createdStatus = createdServer ?? false
-            const coins = await db.get("coins-" + req.session.userinfo.id) ?? 0;
+            const coins = await db.get(`coins-${req.session.userinfo.id}`) ?? 0;
             const cost = settings.servercreation.cost
             if (createdStatus && coins < cost) {
               cb();
@@ -180,7 +180,7 @@ module.exports.load = async function (app, db) {
             }
 
             let serverinfo = await fetch(
-              settings.pterodactyl.domain + "/api/application/servers",
+              `${settings.pterodactyl.domain}/api/application/servers`,
               {
                 method: "post",
                 headers: { 
@@ -203,7 +203,7 @@ module.exports.load = async function (app, db) {
             
             // Bill user if they have created a server before
             if (createdStatus) {
-              await db.set("coins-" + req.session.userinfo.id, coins - cost)
+              await db.set(`coins-${req.session.userinfo.id}`, coins - cost)
             }
             
             await db.set(`lastrenewal-${serverinfotext.attributes.id}`, Date.now())
@@ -254,7 +254,7 @@ module.exports.load = async function (app, db) {
       if (ram || disk || cpu) {
         const newsettings = require('../handlers/readSettings').settings(); 
 
-        let packagename = await db.get("package-" + req.session.userinfo.id);
+        let packagename = await db.get(`package-${req.session.userinfo.id}`);
         let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
 
         let pterorelationshipsserverdata = req.session.pterodactyl.relationships.servers.data.filter(name => name.attributes.id.toString() !== req.query.id);
@@ -281,8 +281,8 @@ module.exports.load = async function (app, db) {
         if (!egginfo) return res.redirect(`${redirectlink}?id=${req.query.id}&err=MISSINGEGG`);
 
         let extra =
-          await db.get("extra-" + req.session.userinfo.id) ?
-            await db.get("extra-" + req.session.userinfo.id) :
+          await db.get(`extra-${req.session.userinfo.id}`) ?
+            await db.get(`extra-${req.session.userinfo.id}`) :
             {
               ram: 0,
               disk: 0,
@@ -293,13 +293,13 @@ module.exports.load = async function (app, db) {
         if (ram2 + ram > package.ram + extra.ram) return res.redirect(`${redirectlink}?id=${req.query.id}&err=EXCEEDRAM&num=${package.ram + extra.ram - ram2}`);
         if (disk2 + disk > package.disk + extra.disk) return res.redirect(`${redirectlink}?id=${req.query.id}&err=EXCEEDDISK&num=${package.disk + extra.disk - disk2}`);
         if (cpu2 + cpu > package.cpu + extra.cpu) return res.redirect(`${redirectlink}?id=${req.query.id}&err=EXCEEDCPU&num=${package.cpu + extra.cpu - cpu2}`);
-        if (egginfo.minimum.ram) if (ram < egginfo.minimum.ram) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOLITTLERAM&num=${egginfo.minimum.ram}`);
-        if (egginfo.minimum.disk) if (disk < egginfo.minimum.disk) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOLITTLEDISK&num=${egginfo.minimum.disk}`);
-        if (egginfo.minimum.cpu) if (cpu < egginfo.minimum.cpu) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOLITTLECPU&num=${egginfo.minimum.cpu}`);
+        if (egginfo.minimum.ram && ram < egginfo.minimum.ram) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOLITTLERAM&num=${egginfo.minimum.ram}`);
+        if (egginfo.minimum.disk && disk < egginfo.minimum.disk) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOLITTLEDISK&num=${egginfo.minimum.disk}`);
+        if (egginfo.minimum.cpu && cpu < egginfo.minimum.cpu) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOLITTLECPU&num=${egginfo.minimum.cpu}`);
         if (egginfo.maximum) {
-          if (egginfo.maximum.ram) if (ram > egginfo.maximum.ram) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOMUCHRAM&num=${egginfo.maximum.ram}`);
-          if (egginfo.maximum.disk) if (disk > egginfo.maximum.disk) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOMUCHDISK&num=${egginfo.maximum.disk}`);
-          if (egginfo.maximum.cpu) if (cpu > egginfo.maximum.cpu) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOMUCHCPU&num=${egginfo.maximum.cpu}`);
+          if (egginfo.maximum.ram && ram > egginfo.maximum.ram) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOMUCHRAM&num=${egginfo.maximum.ram}`);
+          if (egginfo.maximum.disk && disk > egginfo.maximum.disk) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOMUCHDISK&num=${egginfo.maximum.disk}`);
+          if (egginfo.maximum.cpu && cpu > egginfo.maximum.cpu) return res.redirect(`${redirectlink}?id=${req.query.id}&err=TOOMUCHCPU&num=${egginfo.maximum.cpu}`);
         };
 
         let limits = {
@@ -311,10 +311,14 @@ module.exports.load = async function (app, db) {
         };
 
         let serverinfo = await fetch(
-          settings.pterodactyl.domain + "/api/application/servers/" + req.query.id + "/build",
+          `${settings.pterodactyl.domain}/api/application/servers/${req.query.id}/build`,
           {
             method: "patch",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}`, "Accept": "application/json" },
+            headers: { 
+              'Content-Type': 'application/json',
+              "Authorization": `Bearer ${settings.pterodactyl.key}`,
+              "Accept": "application/json" 
+            },
             body: JSON.stringify({
               limits: limits,
               feature_limits: checkexist[0].attributes.feature_limits,
@@ -356,7 +360,7 @@ module.exports.load = async function (app, db) {
         return res.send("Could not find server with that ID.");
   
       let deletionresults = await fetch(
-        settings.pterodactyl.domain + "/api/application/servers/" + req.query.id,
+        `${settings.pterodactyl.domain}/api/application/servers/${req.query.id}`,
         {
           method: "delete",
           headers: {

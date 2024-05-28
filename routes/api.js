@@ -1,7 +1,7 @@
 const indexjs = require("../index.js");
 const adminjs = require('./admin.js');
 const ejs = require("ejs");
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 const NodeCache = require("node-cache");
 const myCache = new NodeCache({ 
   deleteOnExpire: true,
@@ -47,10 +47,10 @@ module.exports.load = async function (app, db) {
     if (!req.query.id) 
       return res.send({ status: "missing id" });
   
-    if (!(await db.get("users-" + req.query.id))) 
+    if (!(await db.get(`users-${req.query.id}`))) 
       return res.send({ status: "invalid id" });
 
-    let packagename = await db.get("package-" + req.query.id);
+    let packagename = await db.get(`package-${req.query.id}`);
     let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
     if (!package) package = {  
       ram: 0,  
@@ -60,19 +60,22 @@ module.exports.load = async function (app, db) {
     };
     package["name"] = packagename;
   
-    let pterodactylid = await db.get("users-" + req.query.id);
+    let pterodactylid = await db.get(`users-${req.query.id}`);
     
     let userinforeq = await fetch(
-      newsettings.pterodactyl.domain + "/api/application/users/" + pterodactylid + "?include=servers",
+      `${newsettings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
       {
         method: "get",
-        headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${newsettings.pterodactyl.key}` }
+        headers: { 
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${newsettings.pterodactyl.key}` 
+        }
       }
     );
     if (await userinforeq.statusText == "Not Found") {
       console.log("[WEBSITE] An error has occured while attempting to get a user's information");
-      console.log("- Discord ID: " + req.query.id);
-      console.log("- Pterodactyl Panel ID: " + pterodactylid);
+      console.log(`- Discord ID: ${req.query.id}`);
+      console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
       return res.send({ status: "could not find user on panel" });
     }
 
@@ -81,14 +84,14 @@ module.exports.load = async function (app, db) {
     res.send({
       status: "success",
       package: package,
-      extra: await db.get("extra-" + req.query.id) ? await db.get("extra-" + req.query.id) : {
+      extra: await db.get(`extra-${req.query.id}`) ? await db.get(`extra-${req.query.id}`) : {
         ram: 0,
         disk: 0,
         cpu: 0,
         servers: 0
       },
       userinfo: userinfo,  
-      coins: newsettings.coins.enabled == true ? (await db.get("coins-" + req.query.id) ? await db.get("coins-" + req.query.id) : 0) : null
+      coins: newsettings.coins.enabled == true ? (await db.get(`coins-${req.query.id}`) ? await db.get(`coins-${req.query.id}`) : 0) : null
     });
   });  
 
@@ -110,16 +113,16 @@ module.exports.load = async function (app, db) {
     let coins = req.body.coins;	
     if (typeof id !== "string") 
       return res.send({status: "id must be a string"});	
-    if (!(await db.get("users-" + id))) 
+    if (!(await db.get(`users-${id}`))) 
       return res.send({status: "invalid id"});	
     if (typeof coins !== "number") 
       return res.send({status: "coins must be number"});	
     if (coins < 0 || coins > 999999999999999) 
       return res.send({status: "too small or big coins"});	
     if (coins == 0) {	
-      await db.delete("coins-" + id)	
+      await db.delete(`coins-${id}`)	
     } else {	
-      await db.set("coins-" + id, coins);	
+      await db.set(`coins-${id}`, coins);	
     }	
     res.send({status: "success"});	
   });
@@ -191,7 +194,7 @@ module.exports.load = async function (app, db) {
     if (!coins && !ram && !disk && !cpu && !servers) 
       return res.json({ status: "cannot create empty coupon" });
 
-    await db.set("coupon-" + code, {
+    await db.set(`coupon-${code}`, {
       coins: coins,
       ram: ram,
       disk: disk,
@@ -223,10 +226,10 @@ module.exports.load = async function (app, db) {
     if (!code.match(/^[a-z0-9]+$/i)) 
       return res.json({ status: "invalid code" });
 
-    if (!(await db.get("coupon-" + code))) 
+    if (!(await db.get(`coupon-${code}`))) 
       return res.json({ status: "invalid code" });
 
-    await db.delete("coupon-" + code);
+    await db.delete(`coupon-${code}`);
 
     res.json({ status: "success" })
   });
@@ -250,12 +253,12 @@ module.exports.load = async function (app, db) {
       return res.send({ status: "invalid id" });
 
     if (typeof req.body.package !== "string") {
-      await db.delete("package-" + req.body.id);
+      await db.delete(`package-${req.body.id}`);
       adminjs.suspend(req.body.id);
       return res.send({ status: "success" });
     } else {
       if (!newsettings.packages.list[req.body.package]) return res.send({ status: "invalid package" });
-      await db.set("package-" + req.body.id, req.body.package);
+      await db.set(`package-${req.body.id}`, req.body.package);
       adminjs.suspend(req.body.id);
       return res.send({ status: "success" });
     }
@@ -276,7 +279,7 @@ module.exports.load = async function (app, db) {
     if (typeof req.body.id !== "string") 
       return res.send({ status: "missing id" });
 
-    if (!(await db.get("users-" + req.body.id))) 
+    if (!(await db.get(`users-${req.body.id}`))) 
       return res.send({ status: "invalid id" });
 
     if (typeof req.body.ram == "number" || typeof req.body.disk == "number" || typeof req.body.cpu == "number" || typeof req.body.servers == "number") {
@@ -285,7 +288,7 @@ module.exports.load = async function (app, db) {
       let cpu = req.body.cpu;
       let servers = req.body.servers;
 
-      let currentextra = await db.get("extra-" + req.body.id);
+      let currentextra = await db.get(`extra-${req.body.id}`);
       let extra;
 
       if (typeof currentextra == "object") {
@@ -328,9 +331,9 @@ module.exports.load = async function (app, db) {
       }
 
       if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
-        await db.delete("extra-" + req.body.id);
+        await db.delete(`extra-${req.body.id}`);
       } else {
-        await db.set("extra-" + req.body.id, extra);
+        await db.set(`extra-${req.body.id}`, extra);
       }
 
       adminjs.suspend(req.body.id);
@@ -351,7 +354,7 @@ module.exports.load = async function (app, db) {
     if (newsettings.api.enabled == true) {
       let auth = req.headers['authorization'];
       if (auth) {
-        if (auth == "Bearer " + newsettings.api.code) {
+        if (auth == `Bearer ${newsettings.api.code}`) {
           return newsettings;
         }
       }

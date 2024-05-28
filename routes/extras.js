@@ -37,7 +37,7 @@ module.exports.load = async function(app, db) {
     req.session.password = newpassword;
 
     await fetch(
-      settings.pterodactyl.domain + "/api/application/users/" + req.session.pterodactyl.id,
+      `${settings.pterodactyl.domain}/api/application/users/${req.session.pterodactyl.id}`,
       {
         method: "patch",
         headers: {
@@ -63,7 +63,7 @@ module.exports.load = async function(app, db) {
     if (!req.session.pterodactyl) 
         return res.json({ error: true, message: `You must be logged in.` });
     try {
-        let response = await fetch(settings.pterodactyl.domain + "/api/application/nodes", {
+        let response = await fetch(`${settings.pterodactyl.domain}/api/application/nodes`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

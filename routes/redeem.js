@@ -9,9 +9,9 @@ module.exports.load = async function(app, db) {
 
     let code = req.query.code ? req.query.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
 
-    if (!code) return res.redirect(theme.settings.redirect.missingorinvalidcouponcode + "?err=MISSINGCOUPONCODE");
+    if (!code) return res.redirect(`${theme.settings.redirect.missingorinvalidcouponcode}?err=MISSINGCOUPONCODE`);
 
-    let couponInfo = await db.get("coupon-" + code);
+    let couponInfo = await db.get(`coupon-${code}`);
 
     /*
     {
@@ -23,11 +23,11 @@ module.exports.load = async function(app, db) {
     }
     */
 
-    if (!couponInfo) return res.redirect(theme.settings.redirect.missingorinvalidcouponcode + "?err=INVALIDCOUPONCODE");
+    if (!couponInfo) return res.redirect(`${theme.settings.redirect.missingorinvalidcouponcode}?err=INVALIDCOUPONCODE`);
 
-    await db.delete("coupon-" + code);
+    await db.delete(`coupon-${code}`);
 
-    let extra = (await db.get("extra-" + req.session.userinfo.id)) || {
+    let extra = (await db.get(`extra-${req.session.userinfo.id}`)) || {
       ram: 0,
       disk: 0,
       cpu: 0,
@@ -42,14 +42,14 @@ module.exports.load = async function(app, db) {
     extra.cpu = Math.min(extra.cpu + (cpu || 0), 999999999999999);
     extra.servers = Math.min(extra.servers + (servers || 0), 999999999999999);
 
-    await db.set("extra-" + req.session.userinfo.id, extra);
+    await db.set(`extra-${req.session.userinfo.id}`, extra);
 
-    let userCoins = (await db.get("coins-" + req.session.userinfo.id)) ?? 0;
+    let userCoins = (await db.get(`coins-${req.session.userinfo.id}`)) ?? 0;
     userCoins += coins;
-    await db.set("coins-" + req.session.userinfo.id, userCoins);
+    await db.set(`coins-${req.session.userinfo.id}`, userCoins);
 
     log(`coupon redeemed`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} redeemed the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``);
 
-    res.redirect(theme.settings.redirect.successfullyredeemedcoupon + "?err=SUCCESSCOUPONCODE");
+    res.redirect(`${theme.settings.redirect.successfullyredeemedcoupon}?err=SUCCESSCOUPONCODE`);
   });
 }

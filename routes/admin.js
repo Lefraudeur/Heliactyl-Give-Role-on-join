@@ -28,12 +28,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
@@ -46,14 +47,14 @@ module.exports.load = async function (app, db) {
         let id = req.query.id;
         let coins = req.query.coins;
 
-        if (!id) return res.redirect(failredirect + "?err=MISSINGID");
+        if (!id) return res.redirect(`${failredirect}?err=MISSINGID`);
         if (!(await db.get("users-" + req.query.id))) return res.redirect(`${failredirect}?err=INVALIDID`);
 
-        if (!coins) return res.redirect(failredirect + "?err=MISSINGCOINS");
+        if (!coins) return res.redirect(`${failredirect}?err=MISSINGCOINS`);
 
         coins = parseFloat(coins);
 
-        if (isNaN(coins)) return res.redirect(failredirect + "?err=INVALIDCOINNUMBER");
+        if (isNaN(coins)) return res.redirect(`${failredirect}?err=INVALIDCOINNUMBER`);
 
         if (coins < 0 || coins > 999999999999999) return res.redirect(`${failredirect}?err=COINSIZE`);
 
@@ -79,12 +80,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -96,16 +98,16 @@ module.exports.load = async function (app, db) {
         let id = req.query.id;
         let coins = req.query.coins;
 
-        if (!id) return res.redirect(failredirect + "?err=MISSINGID");
+        if (!id) return res.redirect(`${failredirect}?err=MISSINGID`);
         if (!(await db.get("users-" + req.query.id))) return res.redirect(`${failredirect}?err=INVALIDID`);
 
-        if (!coins) return res.redirect(failredirect + "?err=MISSINGCOINS");
+        if (!coins) return res.redirect(`${failredirect}?err=MISSINGCOINS`);
 
         let currentcoins = await db.get("coins-" + id) || 0;
 
         coins = currentcoins + parseFloat(coins);
 
-        if (isNaN(coins)) return res.redirect(failredirect + "?err=INVALIDCOINNUMBER");
+        if (isNaN(coins)) return res.redirect(`${failredirect}?err=INVALIDCOINNUMBER`);
 
         if (coins < 0 || coins > 999999999999999) return res.redirect(`${failredirect}?err=COINSIZE`);
 
@@ -117,7 +119,7 @@ module.exports.load = async function (app, db) {
 
         let successredirect = theme.settings.redirect.setcoins || "/";
         log(`add coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added \`${req.query.coins}\` coins to the user with the ID \`${id}\`'s account.`)
-        res.redirect(successredirect + "?err=none");
+        res.redirect(`${successredirect}?err=none`);
     });
 
   /**
@@ -131,12 +133,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -158,7 +161,7 @@ module.exports.load = async function (app, db) {
             let serversstring = req.query.servers;
             let id = req.query.id;
 
-            let currentextra = await db.get("extra-" + req.query.id);
+            let currentextra = await db.get(`extra-${req.query.id}`);
             let extra;
 
             if (typeof currentextra == "object") {
@@ -205,15 +208,15 @@ module.exports.load = async function (app, db) {
             }
 
             if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
-                await db.delete("extra-" + req.query.id);
+                await db.delete(`extra-${req.query.id}`);
             } else {
-                await db.set("extra-" + req.query.id, extra);
+                await db.set(`extra-${req.query.id}`, extra);
             }
 
             adminjs.suspend(req.query.id);
 
             log(`set resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversstring}\nCPU: ${cpustring}%\nMemory: ${ramstring} MB\nDisk: ${diskstring} MB\`\`\``)
-            return res.redirect(successredirect + "?err=none");
+            return res.redirect(`${successredirect}?err=none`);
         } else {
             res.redirect(`${failredirect}?err=MISSINGVARIABLES`);
         }
@@ -257,12 +260,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -284,7 +288,7 @@ module.exports.load = async function (app, db) {
             let serversstring = req.query.servers;
             let id = req.query.id;
 
-            let currentextra = await db.get("extra-" + req.query.id);
+            let currentextra = await db.get(`extra-${req.query.id}`);
             let extra;
 
             if (typeof currentextra == "object") {
@@ -331,15 +335,15 @@ module.exports.load = async function (app, db) {
             }
 
             if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
-                await db.delete("extra-" + req.query.id);
+                await db.delete(`extra-${req.query.id}`);
             } else {
-                await db.set("extra-" + req.query.id, extra);
+                await db.set(`extra-${req.query.id}`, extra);
             }
 
             adminjs.suspend(req.query.id);
 
             log(`add resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} add the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversstring}\nCPU: ${cpustring}%\nMemory: ${ramstring} MB\nDisk: ${diskstring} MB\`\`\``)
-            return res.redirect(successredirect + "?err=none");
+            return res.redirect(`${successredirect}?err=none`);
         } else {
             res.redirect(`${failredirect}?err=MISSINGVARIABLES`);
         }
@@ -356,12 +360,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -377,19 +382,19 @@ module.exports.load = async function (app, db) {
         let successredirect = theme.settings.redirect.setplan || "/";
 
         if (!req.query.package) {
-            await db.delete("package-" + req.query.id);
+            await db.delete(`package-${req.query.id}`);
             adminjs.suspend(req.query.id);
 
             log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the plan of the user with the ID \`${req.query.id}\`.`)
-            return res.redirect(successredirect + "?err=none");
+            return res.redirect(`${successredirect}?err=none`);
         } else {
             if (!settings.packages.list[req.query.package]) 
                 return res.redirect(`${failredirect}?err=INVALIDPACKAGE`);
-            await db.set("package-" + req.query.id, req.query.package);
+            await db.set(`package-${req.query.id}`, req.query.package);
             adminjs.suspend(req.query.id);
 
             log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the plan of the user with the ID \`${req.query.id}\` to \`${req.query.package}\`.`)
-            return res.redirect(successredirect + "?err=none");
+            return res.redirect(`${successredirect}?err=none`);
         }
     });
 
@@ -404,12 +409,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+        
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -418,7 +424,7 @@ module.exports.load = async function (app, db) {
 
         let code = req.query.code ? req.query.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
 
-        if (!code.match(/^[a-z0-9]+$/i)) return res.redirect(theme.settings.redirect.couponcreationfailed + "?err=CREATECOUPONINVALIDCHARACTERS");
+        if (!code.match(/^[a-z0-9]+$/i)) return res.redirect(`${theme.settings.redirect.couponcreationfailed}?err=CREATECOUPONINVALIDCHARACTERS`);
 
         let coins = req.query.coins || 0;
         let ram = req.query.ram * 1024 || 0;
@@ -433,10 +439,10 @@ module.exports.load = async function (app, db) {
         servers = parseFloat(servers);
 
         if (coins < 0 || ram < 0 || disk < 0 || cpu < 0 || servers < 0) {
-            return res.redirect(theme.settings.redirect.couponcreationfailed + "?err=CREATECOUPONLESSTHANONE");
+            return res.redirect(`${theme.settings.redirect.couponcreationfailed}?err=CREATECOUPONLESSTHANONE`);
         }
 
-        if (!coins && !ram && !disk && !cpu && !servers) return res.redirect(theme.settings.redirect.couponcreationfailed + "?err=CREATECOUPONEMPTY");
+        if (!coins && !ram && !disk && !cpu && !servers) return res.redirect(`${theme.settings.redirect.couponcreationfailed}?err=CREATECOUPONEMPTY`);
 
         await db.set("coupon-" + code, {
             coins: coins,
@@ -447,7 +453,7 @@ module.exports.load = async function (app, db) {
         });
 
         log(`create coupon`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``)
-        res.redirect(theme.settings.redirect.couponcreationsuccess + "?code=" + code)
+        res.redirect(`${theme.settings.redirect.couponcreationsuccess}?code=${code}`)
     });
 
   /**
@@ -461,12 +467,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -475,14 +482,14 @@ module.exports.load = async function (app, db) {
 
         let code = req.query.code;
 
-        if (!code.match(/^[a-z0-9]+$/i)) return res.redirect(theme.settings.redirect.couponrevokefailed + "?err=REVOKECOUPONCANNOTFINDCODE");
+        if (!code.match(/^[a-z0-9]+$/i)) return res.redirect(`${theme.settings.redirect.couponrevokefailed}?err=REVOKECOUPONCANNOTFINDCODE`);
 
-        if (!(await db.get("coupon-" + code))) return res.redirect(theme.settings.redirect.couponrevokefailed + "?err=REVOKECOUPONCANNOTFINDCODE");
+        if (!(await db.get(`coupon-${code}`))) return res.redirect(`${theme.settings.redirect.couponrevokefailed}?err=REVOKECOUPONCANNOTFINDCODE`);
 
-        await db.delete("coupon-" + code);
+        await db.delete(`coupon-${code}`);
 
         log(`revoke coupon`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} revoked the coupon code \`${code}\`.`)
-        res.redirect(theme.settings.redirect.couponrevokesuccess + "?revokedcode=true");
+        res.redirect(`${theme.settings.redirect.couponrevokesuccess}?revokedcode=true`);
     });
 
   /**
@@ -496,12 +503,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -510,14 +518,14 @@ module.exports.load = async function (app, db) {
 
         // This doesn't delete the account and doesn't touch the renewal system.
 
-        if (!req.query.id) return res.redirect(theme.settings.redirect.removeaccountfailed + "?err=REMOVEACCOUNTMISSINGID");
+        if (!req.query.id) return res.redirect(`${theme.settings.redirect.removeaccountfailed}?err=REMOVEACCOUNTMISSINGID`);
 
         let discordid = req.query.id;
-        let pteroid = await db.get("users-" + discordid);
+        let pteroid = await db.get(`users-${discordid}`);
 
         // Remove IP.
 
-        let selected_ip = await db.get("ip-" + discordid);
+        let selected_ip = await db.get(`ip-${discordid}`);
 
         if (selected_ip) {
             let allips = await db.get("ips") || [];
@@ -543,13 +551,13 @@ module.exports.load = async function (app, db) {
             await db.set("users", userids);
         }
 
-        await db.delete("users-" + discordid);
+        await db.delete(`users-${discordid}`);
 
         // Remove coins/resources.
 
-        await db.delete("coins-" + discordid);
-        await db.delete("extra-" + discordid);
-        await db.delete("package-" + discordid);
+        await db.delete(`coins-${discordid}`);
+        await db.delete(`extra-${discordid}`);
+        await db.delete(`package-${discordid}`);
 
         // Remove server and user account
 
@@ -573,7 +581,7 @@ module.exports.load = async function (app, db) {
         });
 
         log(`remove account`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the account with the ID \`${discordid}\`.`)
-        res.redirect(theme.settings.redirect.removeaccountsuccess + "?success=REMOVEACCOUNT");
+        res.redirect(`${theme.settings.redirect.removeaccountsuccess}?success=REMOVEACCOUNT`);
     });
 
   /**
@@ -587,12 +595,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -610,7 +619,7 @@ module.exports.load = async function (app, db) {
             return res.redirect(`${failredirect}?err=NOIP`);
         let ip = await db.get("ip-" + req.query.id);
         log(`view ip`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${req.query.id}\`.`)
-        return res.redirect(successredirect + "?err=NONE&ip=" + ip)
+        return res.redirect(`${successredirect}?err=NONE&ip=${ip}`)
     });
 
   /**
@@ -624,12 +633,13 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
+
         if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheaccountinfo = JSON.parse(await cacheaccount.text());
 
@@ -638,9 +648,9 @@ module.exports.load = async function (app, db) {
 
         if (!req.query.id) return res.send({ status: "missing id" });
 
-        if (!(await db.get("users-" + req.query.id))) return res.send({ status: "invalid id" });
+        if (!(await db.get(`users-${req.query.id}`))) return res.send({ status: "invalid id" });
 
-        let packagename = await db.get("package-" + req.query.id);
+        let packagename = await db.get(`package-${req.query.id}`);
         let package = settings.packages.list[packagename ? packagename : settings.packages.default];
         if (!package) package = {
             ram: 0,
@@ -651,7 +661,7 @@ module.exports.load = async function (app, db) {
 
         package["name"] = packagename;
 
-        let pterodactylid = await db.get("users-" + req.query.id);
+        let pterodactylid = await db.get(`users-${req.query.id}`);
         let userinforeq = await fetch(
             settings.pterodactyl.domain + "/api/application/users/" + pterodactylid + "?include=servers",
             {
@@ -664,8 +674,8 @@ module.exports.load = async function (app, db) {
         );
         if (await userinforeq.statusText == "Not Found") {
             console.log("[WEBSITE] An error has occured while attempting to get a user's information");
-            console.log("- Discord ID: " + req.query.id);
-            console.log("- Pterodactyl Panel ID: " + pterodactylid);
+            console.log(`- Discord ID: ${req.query.id}`);
+            console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
             return res.send({ status: "could not find user on panel" });
         }
         let userinfo = await userinforeq.json();
@@ -673,14 +683,14 @@ module.exports.load = async function (app, db) {
         res.send({
             status: "success",
             package: package,
-            extra: await db.get("extra-" + req.query.id) ? await db.get("extra-" + req.query.id) : {
+            extra: await db.get(`extra-${req.query.id}`) ? await db.get(`extra-${req.query.id}`) : {
                 ram: 0,
                 disk: 0,
                 cpu: 0,
                 servers: 0
             },
             userinfo: userinfo,
-            coins: settings.coins.enabled == true ? (await db.get("coins-" + req.query.id) ? await db.get("coins-" + req.query.id) : 0) : null
+            coins: settings.coins.enabled == true ? (await db.get(`coins-${req.query.id}`) ? await db.get(`coins-${req.query.id}`) : 0) : null
         });
     });
 
@@ -713,9 +723,9 @@ module.exports.load = async function (app, db) {
         };
 
         indexjs.ratelimits(1);
-        let pterodactylid = await db.get("users-" + discordid);
+        let pterodactylid = await db.get(`users-${discordid}`);
         let userinforeq = await fetch(
-            settings.pterodactyl.domain + "/api/application/users/" + pterodactylid + "?include=servers",
+            `${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
             {
                 method: "get",
                 headers: { 
@@ -726,17 +736,17 @@ module.exports.load = async function (app, db) {
         );
         if (await userinforeq.statusText == "Not Found") {
             console.log("[WEBSITE] An error has occured while attempting to check if a user's server should be suspended.");
-            console.log("- Discord ID: " + discordid);
-            console.log("- Pterodactyl Panel ID: " + pterodactylid);
+            console.log(`- Discord ID: ${req.query.id}`);
+            console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
             return;
         };
         let userinfo = JSON.parse(await userinforeq.text());
 
-        let packagename = await db.get("package-" + discordid);
+        let packagename = await db.get(`package-${discordid}`);
         let package = settings.packages.list[packagename || settings.packages.default];
 
         let extra =
-            await db.get("extra-" + discordid) ||
+            await db.get(`extra-${discordid}`) ||
             {
                 ram: 0,
                 disk: 0,
@@ -768,7 +778,7 @@ module.exports.load = async function (app, db) {
             for (let i = 0, len = userinfo.attributes.relationships.servers.data.length; i < len; i++) {
                 let suspendid = userinfo.attributes.relationships.servers.data[i].attributes.id;
                 await fetch(
-                    settings.pterodactyl.domain + "/api/application/servers/" + suspendid + "/suspend",
+                    `${settings.pterodactyl.domain}/api/application/servers/${suspendid}/suspend`,
                     {
                         method: "post",
                         headers: { 
@@ -783,7 +793,7 @@ module.exports.load = async function (app, db) {
             for (let i = 0, len = userinfo.attributes.relationships.servers.data.length; i < len; i++) {
                 let suspendid = userinfo.attributes.relationships.servers.data[i].attributes.id;
                 await fetch(
-                    settings.pterodactyl.domain + "/api/application/servers/" + suspendid + "/unsuspend",
+                    `${settings.pterodactyl.domain}/api/application/servers/${suspendid}/unsuspend`,
                     {
                         method: "post",
                         headers: { 
