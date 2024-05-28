@@ -11,7 +11,7 @@ if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.
 module.exports.load = async function(app, db) {
   app.use('/assets', express.static('./assets'));
   app.all("/", async (req, res) => {
-    if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get("users-" + req.session.userinfo.id)) 
+    if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) 
         return res.redirect("/login?prompt=none");
     
     let theme = indexjs.get(req);
@@ -27,7 +27,7 @@ module.exports.load = async function(app, db) {
                 return res.render("404.ejs", { err });
             }
             let cacheaccount = await fetch(
-                `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+                `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
                 {
                     method: "get",
                     headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }

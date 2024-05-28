@@ -249,7 +249,7 @@ module.exports.load = async function (app, db) {
     if (typeof req.body.id !== "string") 
       return res.send({ status: "missing id" });
 
-    if (!(await db.get("users-" + req.body.id))) 
+    if (!(await db.get(`users-${req.body.id}`))) 
       return res.send({ status: "invalid id" });
 
     if (typeof req.body.package !== "string") {

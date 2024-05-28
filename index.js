@@ -172,7 +172,7 @@ apifiles.forEach(file => {
  // Load route
 
 app.all("*", async (req, res) => {
-  if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get("users-" + req.session.userinfo.id)) {
+  if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) {
     return res.redirect("/login?prompt=none");
   }
 
@@ -200,7 +200,7 @@ app.all("*", async (req, res) => {
       };
 
       let cacheaccount = await fetch(
-        settings.pterodactyl.domain + "/api/application/users/" + (await db.get("users-" + req.session.userinfo.id)) + "?include=servers",
+        `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
         {
           method: "get",
           headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }

@@ -318,7 +318,7 @@ app.get("/logout", (req, res) => {
         };
 
         let cacheaccount = await fetch(
-          `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + userinfo.id))}?include=servers`,
+          `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${userinfo.id}`))}?include=servers`,
           {
             method: "get",
             headers: {

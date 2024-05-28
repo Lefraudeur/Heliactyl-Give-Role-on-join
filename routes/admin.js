@@ -28,7 +28,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -48,7 +48,7 @@ module.exports.load = async function (app, db) {
         let coins = req.query.coins;
 
         if (!id) return res.redirect(`${failredirect}?err=MISSINGID`);
-        if (!(await db.get("users-" + req.query.id))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
 
         if (!coins) return res.redirect(`${failredirect}?err=MISSINGCOINS`);
 
@@ -59,9 +59,9 @@ module.exports.load = async function (app, db) {
         if (coins < 0 || coins > 999999999999999) return res.redirect(`${failredirect}?err=COINSIZE`);
 
         if (coins == 0) {
-            await db.delete("coins-" + id)
+            await db.delete(`coins-${id}`)
         } else {
-            await db.set("coins-" + id, coins);
+            await db.set(`coins-${id}`, coins);
         }
 
         let successredirect = theme.settings.redirect.setcoins || "/";
@@ -80,7 +80,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -99,11 +99,11 @@ module.exports.load = async function (app, db) {
         let coins = req.query.coins;
 
         if (!id) return res.redirect(`${failredirect}?err=MISSINGID`);
-        if (!(await db.get("users-" + req.query.id))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
 
         if (!coins) return res.redirect(`${failredirect}?err=MISSINGCOINS`);
 
-        let currentcoins = await db.get("coins-" + id) || 0;
+        let currentcoins = await db.get(`coins-${id}`) || 0;
 
         coins = currentcoins + parseFloat(coins);
 
@@ -112,9 +112,9 @@ module.exports.load = async function (app, db) {
         if (coins < 0 || coins > 999999999999999) return res.redirect(`${failredirect}?err=COINSIZE`);
 
         if (coins == 0) {
-            await db.delete("coins-" + id)
+            await db.delete(`coins-${id}`)
         } else {
-            await db.set("coins-" + id, coins);
+            await db.set(`coins-${id}`, coins);
         }
 
         let successredirect = theme.settings.redirect.setcoins || "/";
@@ -133,7 +133,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -150,7 +150,7 @@ module.exports.load = async function (app, db) {
 
         if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
 
-        if (!(await db.get("users-" + req.query.id))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
 
         let successredirect = theme.settings.redirect.setresources || "/";
 
@@ -260,7 +260,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -277,7 +277,7 @@ module.exports.load = async function (app, db) {
 
         if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
 
-        if (!(await db.get("users-" + req.query.id))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
 
         let successredirect = theme.settings.redirect.setresources ? theme.settings.redirect.setresources : "/";
 
@@ -360,7 +360,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -377,7 +377,7 @@ module.exports.load = async function (app, db) {
 
         if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
 
-        if (!(await db.get("users-" + req.query.id))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
 
         let successredirect = theme.settings.redirect.setplan || "/";
 
@@ -409,7 +409,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -467,7 +467,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -503,7 +503,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -595,7 +595,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
@@ -612,12 +612,12 @@ module.exports.load = async function (app, db) {
         let successredirect = theme.settings.redirect.getip || "/";
         if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
 
-        if (!(await db.get("users-" + req.query.id))) 
+        if (!(await db.get(`users-${req.query.id}`))) 
             return res.redirect(`${failredirect}?err=INVALIDID`);
 
-        if (!(await db.get("ip-" + req.query.id))) 
+        if (!(await db.get(`ip-${req.query.id}`))) 
             return res.redirect(`${failredirect}?err=NOIP`);
-        let ip = await db.get("ip-" + req.query.id);
+        let ip = await db.get(`ip-${req.query.id}`);
         log(`view ip`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${req.query.id}\`.`)
         return res.redirect(`${successredirect}?err=NONE&ip=${ip}`)
     });
@@ -633,7 +633,7 @@ module.exports.load = async function (app, db) {
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
         let cacheaccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get("users-" + req.session.userinfo.id))}?include=servers`,
+            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
                 method: "get",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
