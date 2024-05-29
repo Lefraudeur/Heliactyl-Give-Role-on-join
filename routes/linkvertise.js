@@ -56,6 +56,7 @@ module.exports.load = async function (app, db) {
                 delete cooldowns[userId];
             }
 
+            // We get the code from the paramters, eg (client.domain.com/lv/redeem/abc123) here "abc123" is the code
             const code = req.params.code;
             if (!code || !req.headers.referer || !req.headers.referer.includes('linkvertise.com')) 
                 return res.send('<p>Hm... our systems detected something going on! Please make sure you are not using an ad blocker (or linkvertise bypasser).</p> <img src="https://i.imgur.com/lwbn3E9.png" alt="robot" height="300">');

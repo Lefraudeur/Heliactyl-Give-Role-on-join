@@ -35,18 +35,18 @@
 
 #### Direct Method
 
-1. **Install Node.js 16 or newer**: It's recommended to install it with nvm :
+1. **Install Node.js 16 or newer it's recommended to install it with nvm**:
 
 - `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash`
 - reopen a new ssh session (e.g., restart putty)
 - `nvm install 16`
 - check the node version with `node -v` and switch between versions with `nvm use <version>`
 
-2. Download heliactyl files in /var/www/heliactyl :
+2. **Download heliactyl files in /var/www/heliactyl**:
 
 - `git clone https://github.com/OvernodeProjets/Fixed-Heliactyl.git /var/www/heliactyl`
 
-3. Installing required node modules (and build dependencies to avoid errors) :
+3. **Installing required node modules (and build dependencies to avoid errors)**:
 
 - `apt-get update && apt-get install libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev build-essential`
 - `cd /var/www/heliactyl && npm i`
