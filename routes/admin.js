@@ -27,17 +27,17 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
         
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -79,16 +79,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -132,16 +132,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -259,16 +259,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -359,16 +359,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -408,16 +408,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
         
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -466,16 +466,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -502,16 +502,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -594,16 +594,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -632,16 +632,16 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl) return four0four(req, res, theme);
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
 
-        if (await cacheaccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheaccountinfo.attributes;
         if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
@@ -665,7 +665,7 @@ module.exports.load = async function (app, db) {
         let userinforeq = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${settings.pterodactyl.key}` 
@@ -727,7 +727,7 @@ module.exports.load = async function (app, db) {
         let userinforeq = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
             {
-                method: "get",
+                method: "GET",
                 headers: { 
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${settings.pterodactyl.key}` 
@@ -780,7 +780,7 @@ module.exports.load = async function (app, db) {
                 await fetch(
                     `${settings.pterodactyl.domain}/api/application/servers/${suspendid}/suspend`,
                     {
-                        method: "post",
+                        method: "POST",
                         headers: { 
                             'Content-Type': 'application/json',
                             "Authorization": `Bearer ${settings.pterodactyl.key}` 
@@ -795,7 +795,7 @@ module.exports.load = async function (app, db) {
                 await fetch(
                     `${settings.pterodactyl.domain}/api/application/servers/${suspendid}/unsuspend`,
                     {
-                        method: "post",
+                        method: "POST",
                         headers: { 
                             'Content-Type': 'application/json',
                             "Authorization": `Bearer ${settings.pterodactyl.key}` 

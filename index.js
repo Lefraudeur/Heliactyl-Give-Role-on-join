@@ -112,51 +112,55 @@ app.use(express.json({
 const listener = app.listen(settings.website.port, async function() {
   console.clear();
   console.log(chalk.gray("  "));
-  console.log(chalk.gray("  ") + chalk.bgBlue("  APPLICATION IS ONLINE  "));
+  console.log(`${chalk.gray("  ")}${chalk.bgBlue("  APPLICATION IS ONLINE  ")}`);
   console.log(chalk.gray("  "));
-  console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(" Checking for updates..."));
+  console.log(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.white(" Checking for updates...")}`);
 
   try {
     const newsettings = require('./handlers/readSettings').settings(); 
     const response = await fetch(`https://api.github.com/repos/OvernodeProjets/Fixed-Heliactyl/releases/latest`);
-    const data = await response.json();
-    const latestVersion = data.tag_name;
+    const { tag_name: latestVersion } = await response.json();
 
     if (latestVersion !== newsettings.version) {
-      console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.yellow(" New version available!"));
-      console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(` Current Version: ${newsettings.version}, Latest Version: ${latestVersion}`));
+      console.log(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.yellow(" New version available!")}`);
+      console.log(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.white(` Current Version: ${newsettings.version}, Latest Version: ${latestVersion}`)}`);
     } else {
-      console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(" Your application is up-to-date."));
+      console.log(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.white(" Your application is up-to-date.")}`);
     }
   } catch (error) {
-    console.error(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.red(" Error checking for updates:"), error.message);
+    console.error(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.red(" Error checking for updates:")} ${error.message}`);
   }
-  console.log(chalk.gray("  ") + chalk.cyan("[Heliactyl]") + chalk.white(" You can now access the dashboard at ") + chalk.underline(settings.oauth2.link + "/"));
+
+  console.log(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.white(" You can now access the dashboard at ")}${chalk.underline(`${settings.oauth2.link}/`)}`);
 });
 
-var cache = false;
+const manager = require('./handlers/readSettings').settings(); 
+var cache = false
 
 app.use(function(req, res, next) {
-  const manager = require('./handlers/readSettings').settings(); 
-  if (manager.ratelimits[req._parsedUrl.pathname]) {
+  const rateLimitPath = manager.ratelimits[req._parsedUrl.pathname];
+
+  if (rateLimitPath) {
     if (cache == true) {
       setTimeout(async () => {
         let allqueries = Object.entries(req.query);
         let querystring = "";
+
         for (let query of allqueries) {
-          querystring = querystring + "&" + query[0] + "=" + query[1];
+          querystring = `${querystring}&${query[0]}=${query[1]}`;
         }
-        querystring = "?" + querystring.slice(1);
+        querystring = `?${querystring.slice(1)}`;
         res.redirect((req._parsedUrl.pathname.slice(0, 1) == "/" ? req._parsedUrl.pathname : "/" + req._parsedUrl.pathname) + querystring);
       }, 1000);
       return;
     } else {
       cache = true;
+
       setTimeout(async () => {
         cache = false;
-      }, 1000 * manager[req._parsedUrl.pathname]);
+      }, 1000 * rateLimitPath);
     }
-  };
+  }
   next();
 });
 
@@ -198,7 +202,7 @@ app.all("*", async (req, res) => {
         return res.send(str);
       };
 
-      let cacheaccount = await fetch(
+      let cacheAccount = await fetch(
         `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
         {
           method: "get",
@@ -206,7 +210,7 @@ app.all("*", async (req, res) => {
         }
       );
 
-      if (await cacheaccount.statusText == "Not Found") {
+      if (await cacheAccount.statusText == "Not Found") {
         if (err) {
           console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
           console.log(err);
@@ -215,7 +219,7 @@ app.all("*", async (req, res) => {
         return res.send(str);
       };
       
-      let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+      let cacheaccountinfo = JSON.parse(await cacheAccount.text());
     
       req.session.pterodactyl = cacheaccountinfo.attributes;
       if (cacheaccountinfo.attributes.root_admin !== true) {

@@ -6,12 +6,10 @@ module.exports.load = async function(app, db) {
     if (!req.session.pterodactyl) return res.redirect("/login");
 
     let theme = indexjs.get(req);
-
     let code = req.query.code ? req.query.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
+    let couponInfo = await db.get(`coupon-${code}`);
 
     if (!code) return res.redirect(`${theme.settings.redirect.missingorinvalidcouponcode}?err=MISSINGCOUPONCODE`);
-
-    let couponInfo = await db.get(`coupon-${code}`);
 
     /*
     {

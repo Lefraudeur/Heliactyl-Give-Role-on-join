@@ -200,7 +200,6 @@ eggs:
 
 coins:
   enabled: true
-  
   store:
     enabled: true
     ram:
@@ -215,7 +214,6 @@ coins:
     servers:
       cost: 100
       per: 2
-
     storelimits:
       ram: 8192
       disk: 10240

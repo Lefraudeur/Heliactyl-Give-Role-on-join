@@ -26,17 +26,17 @@ module.exports.load = async function(app, db) {
                 console.log(err);
                 return res.render("404.ejs", { err });
             }
-            let cacheaccount = await fetch(
+            let cacheAccount = await fetch(
                 `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
                 {
-                    method: "get",
+                    method: "GET",
                     headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
                 }
             );
-            if (await cacheaccount.statusText == "Not Found") {
+            if (await cacheAccount.statusText == "Not Found") {
                 return res.send(str);
             }
-            let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+            let cacheaccountinfo = JSON.parse(await cacheAccount.text());
             req.session.pterodactyl = cacheaccountinfo.attributes;
             if (cacheaccountinfo.attributes.root_admin !== true) {
                 return res.send(str);

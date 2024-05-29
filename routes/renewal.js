@@ -68,7 +68,7 @@ module.exports.load = async function (app, db) {
 
     new CronJob(`0 0 * * *`, async () => {
         if (settings.renewals.status) {
-          console.log(chalk.cyan("[heliactyl]") + chalk.white(" Checking renewal servers... "));
+          console.log(`${chalk.cyan("[heliactyl]")}${chalk.white(" Checking renewal servers... ")}`);
             getAllServers().then(async servers => {
                 for (const server of servers) {
                     const id = server.attributes.id;
@@ -81,7 +81,7 @@ module.exports.load = async function (app, db) {
                         let deletionresults = await fetch(
                           `${settings.pterodactyl.domain}/api/application/servers/${id}/suspend`,
                             {
-                                method: "post",
+                                method: "POST",
                                 headers: {
                                     'Content-Type': 'application/json',
                                     "Authorization": `Bearer ${settings.pterodactyl.key}`
@@ -95,7 +95,7 @@ module.exports.load = async function (app, db) {
                     }
                 }
             })
-            console.log(chalk.cyan("[Heliactyl]") + chalk.white("The renewal check-over is now complete."));
+            console.log(`${chalk.cyan("[Heliactyl]")}${chalk.white("The renewal check-over is now complete.")}`);
         }
     }, null, true, settings.timezone)
         .start()

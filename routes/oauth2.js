@@ -7,7 +7,6 @@ const log = require('../handlers/log');
 const vpnCheck = require("../handlers/vpnCheck");
 const getTemplate = require('../handlers/getTemplate.js').template;
 
-const { renderFile } = require('ejs');
 const fetch = require('node-fetch');
 
 if (settings.oauth2.link.slice(-1) == "/")
@@ -68,17 +67,17 @@ app.get("/logout", (req, res) => {
     "&code=" + encodeURIComponent(req.query.code) +
     "&redirect_uri=" + encodeURIComponent(settings.oauth2.link + settings.oauth2.callbackpath);
   
-    let json = await fetch(
+    let tokenReponse = await fetch(
       'https://discord.com/api/oauth2/token',
       {
-        method: "post",
+        method: "POST",
         body: body,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }
     );
 
-    if (json.ok == true) {
-      let codeinfo = JSON.parse(await json.text());
+    if (tokenReponse.ok == true) {
+      let codeinfo = JSON.parse(await tokenReponse.text());
       let scopes = codeinfo.scope;
       let missingscopes = [];
 
@@ -87,7 +86,7 @@ app.get("/logout", (req, res) => {
       if (newsettings.bot.joinguild.enabled == true && scopes.replace(/guilds.join/g, "") == scopes) missingscopes.push("guilds.join");
       if (newsettings.j4r.enabled && scopes.replace(/guilds/g, "") == scopes) missingscopes.push("guilds");
       if (missingscopes.length !== 0) return res.send("Missing scopes: " + missingscopes.join(", "));
-      let userjson = await fetch(
+      let userReponse = await fetch(
         'https://discord.com/api/users/@me',
         {
           method: "get",
@@ -97,7 +96,7 @@ app.get("/logout", (req, res) => {
         }
       );
 
-      let userinfo = JSON.parse(await userjson.text());
+      let userinfo = JSON.parse(await userReponse.text());
 
       // Check if whitelist is enabled and if the user is whitelisted
 
@@ -109,7 +108,7 @@ app.get("/logout", (req, res) => {
       if (settings.oauth2.blacklist.status && settings.oauth2.blacklist.users.includes(userinfo.id)) 
         return res.send(getTemplate("Blacklisted", "You are blacklisted. Please contact the administrator for more information.", true));
 
-      let guildsjson = await fetch('https://discord.com/api/users/@me/guilds',
+      let guildsReponse = await fetch('https://discord.com/api/users/@me/guilds',
         {
           method: "get",
           headers: {
@@ -118,7 +117,7 @@ app.get("/logout", (req, res) => {
         }
       );
 
-      let guildsinfo = await guildsjson.json();
+      let guildsinfo = await guildsReponse.json();
 
       if (userinfo.verified == true) {
 
@@ -174,7 +173,7 @@ app.get("/logout", (req, res) => {
             await fetch(
               `https://discord.com/api/guilds/${newsettings.bot.joinguild.guildid}/members/${userinfo.id}`,
               {
-                method: "put",
+                method: "PUT",
                 headers: {
                   'Content-Type': 'application/json',
                   "Authorization": `Bot ${newsettings.bot.token}`
@@ -184,13 +183,12 @@ app.get("/logout", (req, res) => {
                 })
               }
             );
-          } else if (typeof newsettings.bot.joinguild.guildid == "object") {
-            if (Array.isArray(newsettings.bot.joinguild.guildid)) {
+          } else if (typeof newsettings.bot.joinguild.guildid == "object" && Array.isArray(newsettings.bot.joinguild.guildid)) {
               for (let guild of newsettings.bot.joinguild.guildid) {
                 await fetch(
                   `https://discord.com/api/guilds/${guild}/members/${userinfo.id}`,
                   {
-                    method: "put",
+                    method: "PUT",
                     headers: {
                       'Content-Type': 'application/json',
                       "Authorization": `Bot ${newsettings.bot.token}`
@@ -201,9 +199,6 @@ app.get("/logout", (req, res) => {
                   }
                 );
               }
-            } else {
-              return res.send("bot.joinguild.guildid is not an array not a string.");
-            }
           } else {
             return res.send("bot.joinguild.guildid is not an array not a string.");
           }
@@ -215,7 +210,7 @@ app.get("/logout", (req, res) => {
             await fetch(
               `https://discord.com/api/guilds/${newsettings.bot.giverole.guildid}/members/${userinfo.id}/roles/${newsettings.bot.giverole.roleid}`,
               {
-                method: "put",
+                method: "PUT",
                 headers: {
                   'Content-Type': 'application/json',
                   "Authorization": `Bot ${newsettings.bot.token}`
@@ -229,26 +224,30 @@ app.get("/logout", (req, res) => {
 
         // Applying role packages
         if (newsettings.packages.rolePackages.roles) {
-          const member = await fetch(`https://discord.com/api/v9/guilds/${newsettings.packages.rolePackages.roleServer}/members/${userinfo.id}`, {
-            headers: {
-              "Authorization": `Bot ${newsettings.bot.token}`
-            }
-          })
-          const memberinfo = await member.json()
-          if (memberinfo.user) {
-            const currentpackage = await db.get(`package-${userinfo.id}`)
-            if (Object.values(newsettings.packages.rolePackages.roles).includes(currentpackage)) {
-              for (const rolePackage of Object.keys(newsettings.packages.rolePackages.roles)) {
-                if (newsettings.packages.rolePackages.roles[rolePackage] === currentpackage) {
-                  if (!memberinfo.roles.includes(rolePackage)) {
-                    await db.set(`package-${userinfo.id}`, newsettings.packages.default)
-                  }
+          const memberResponse = await fetch(
+            `https://discord.com/api/v9/guilds/${newsettings.packages.rolePackages.roleServer}/members/${userinfo.id}`, {
+              headers: {
+                "Authorization": `Bot ${newsettings.bot.token}`
+              }
+            });
+          const memberInfo = await memberResponse.json();
+        
+          if (memberInfo.user) {
+            const currentPackage = await db.get(`package-${userinfo.id}`);
+          
+            // Check if the current package is included in the role packages
+            const rolePackages = newsettings.packages.rolePackages.roles;
+            if (Object.values(rolePackages).includes(currentPackage)) {
+              for (const rolePackage in rolePackages) {
+                if (rolePackages[rolePackage] === currentPackage && !memberInfo.roles.includes(rolePackage)) {
+                  await db.set(`package-${userinfo.id}`, newsettings.packages.default);
                 }
               }
             }
-            for (const role of memberinfo.roles) {
-              if (newsettings.packages.rolePackages.roles[role]) {
-                await db.set(`package-${userinfo.id}`, newsettings.packages.rolePackages.roles[role])
+            // Update package based on member roles
+            for (const role of memberInfo.roles) {
+              if (rolePackages[role]) {
+                await db.set(`package-${userinfo.id}`, rolePackages[role]);
               }
             }
           }
@@ -261,7 +260,7 @@ app.get("/logout", (req, res) => {
             let accountjson = await fetch(
               `${settings.pterodactyl.domain}/api/application/users`,
               {
-                method: "post",
+                method: "POST",
                 headers: {
                   'Content-Type': 'application/json',
                   "Authorization": `Bearer ${settings.pterodactyl.key}`
@@ -284,17 +283,17 @@ app.get("/logout", (req, res) => {
               req.session.newaccount = true;
               req.session.password = genpassword;
             } else {
-              let accountlistjson = await fetch(
-                `${settings.pterodactyl.domain}/api/application/users?include=servers&filter[email]=` + encodeURIComponent(userinfo.email),
+              let accountListReponse = await fetch(
+                `${settings.pterodactyl.domain}/api/application/users?include=servers&filter[email]=${encodeURIComponent(userinfo.email)}`,
                 {
-                  method: "get",
+                  method: "GET",
                   headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${settings.pterodactyl.key}`
                   }
                 }
               );
-              let accountlist = await accountlistjson.json();
+              let accountlist = await accountListReponse.json();
               let user = accountlist.data.filter(acc => acc.attributes.email == userinfo.email);
               if (user.length == 1) {
                 let userid = user[0].attributes.id;
@@ -317,7 +316,7 @@ app.get("/logout", (req, res) => {
           }
         };
 
-        let cacheaccount = await fetch(
+        let cacheAccount = await fetch(
           `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${userinfo.id}`))}?include=servers`,
           {
             method: "get",
@@ -327,8 +326,8 @@ app.get("/logout", (req, res) => {
           }
           }
         );
-        if (await cacheaccount.statusText == "Not Found") return res.send("An error has occured while attempting to get your user information.");
-        let cacheaccountinfo = JSON.parse(await cacheaccount.text());
+        if (await cacheAccount.statusText == "Not Found") return res.send("An error has occured while attempting to get your user information.");
+        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
         req.session.pterodactyl = cacheaccountinfo.attributes;
 
         req.session.userinfo = userinfo;

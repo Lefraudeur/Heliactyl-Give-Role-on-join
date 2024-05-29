@@ -9,10 +9,10 @@ module.exports.load = async function(app, db) {
     try {
       if (!req.session.pterodactyl) return res.redirect("/login");
 
-      const cacheaccount = await getPteroUser(req.session.userinfo.id, db);
+      const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
 
-      if (!cacheaccount) return;
-      req.session.pterodactyl = cacheaccount.attributes;
+      if (!cacheAccount) return;
+      req.session.pterodactyl = cacheAccount.attributes;
       
       if (req.query.redirect && typeof req.query.redirect === "string") 
         return res.redirect("/" + req.query.redirect);
@@ -39,7 +39,7 @@ module.exports.load = async function(app, db) {
     await fetch(
       `${settings.pterodactyl.domain}/api/application/users/${req.session.pterodactyl.id}`,
       {
-        method: "patch",
+        method: "PATCH",
         headers: {
           'Content-Type': 'application/json',
           "Authorization": `Bearer ${settings.pterodactyl.key}`

@@ -221,12 +221,12 @@ module.exports.load = async function (app, db) {
     if (newsettings.allow.server.modify == true) {
       if (!req.query.id) return res.send("Missing server id.");
   
-      const cacheaccount = await getPteroUser(req.session.userinfo.id, db)
+      const cacheAccount = await getPteroUser(req.session.userinfo.id, db)
         .catch(() => {
           return res.send("An error has occurred while attempting to update your account information and server list.");
         })
-      if (!cacheaccount) return
-      req.session.pterodactyl = cacheaccount.attributes;
+      if (!cacheAccount) return
+      req.session.pterodactyl = cacheAccount.attributes;
   
       let redirectlink = theme.settings.redirect.failedmodifyserver ? theme.settings.redirect.failedmodifyserver : "/"; // fail redirect link
   
@@ -299,7 +299,7 @@ module.exports.load = async function (app, db) {
         let serverinfo = await fetch(
           `${settings.pterodactyl.domain}/api/application/servers/${req.query.id}/build`,
           {
-            method: "patch",
+            method: "PATCH",
             headers: { 
               'Content-Type': 'application/json',
               "Authorization": `Bearer ${settings.pterodactyl.key}`,

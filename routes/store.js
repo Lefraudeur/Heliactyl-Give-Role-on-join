@@ -6,12 +6,10 @@ const settings = require('../handlers/readSettings').settings();
 
 module.exports.load = async function(app, db) {
   const buyResource = async (req, res, resourceType, resourceName) => {
-    if (!req.session.pterodactyl) 
-      return res.redirect("/login");
+    if (!req.session.pterodactyl) return res.redirect("/login");
 
     let newsettings = await enabledCheck(req, res);
-    if (!newsettings) 
-      return;
+    if (!newsettings) return;
 
     const amount = parseInt(req.query.amount);
     if (!amount || isNaN(amount) || amount < 1 || amount > 10) return res.send("Invalid amount");
@@ -22,7 +20,7 @@ module.exports.load = async function(app, db) {
     const userCoins = (await db.get(`coins-${req.session.userinfo.id}`)) || 0;
     const resourceCap = (await db.get(`${resourceType}-${req.session.userinfo.id}`)) || 0;
 
-    // idk why don't work, i will see that later
+    // just idk
     if (resourceCap + amount > settings.coins.store.storelimits[resourceType]) 
       return res.redirect(`${failedCallback}?err=MAX${resourceName}EXCEETED`);
 
@@ -64,8 +62,7 @@ module.exports.load = async function(app, db) {
 
   async function enabledCheck(req, res) {
     let newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.coins.store.enabled) 
-      return newsettings;
+    if (newsettings.coins.store.enabled) return newsettings;
 
     const theme = indexjs.get(req);
     ejs.renderFile(
