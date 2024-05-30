@@ -35,7 +35,7 @@ app.get("/logout", (req, res) => {
 });
 
   app.get(settings.oauth2.callbackpath, async (req, res) => {
-    if (!req.query.code) return res.redirect(`/login`)
+    if (!req.query.code) return res.redirect(`/login`);
     const code = encodeURIComponent(req.query.code.replace(/'/g, ''));
     res.send(getTemplate("Please wait...", "Logging in... Please wait, you'll be redirected soon") + `
     <script type="text/javascript" defer>
@@ -46,17 +46,17 @@ app.get("/logout", (req, res) => {
   })
   
   app.get(`/submitlogin`, async (req, res) => {
-    if (!req.query.code) return res.send("Missing code.")
+    if (!req.query.code) return res.send("Missing code.");
     let customredirect = req.session.redirect;
     delete req.session.redirect;
 
     const newsettings = require('../handlers/readSettings').settings(); 
 
-    let ip = (newsettings.oauth2.ip["trust x-forwarded-for"] == true ? (req.headers['x-forwarded-for'] || req.connection.remoteAddress) : req.connection.remoteAddress);
+    let ip = (newsettings.oauth2.ip["trust x-forwarded-for"] ? (req.headers['x-forwarded-for'] || req.connection.remoteAddress) : req.connection.remoteAddress);
     ip = (ip ? ip : "::1").replace(/::1/g, "::ffff:127.0.0.1").replace(/^.*:/, '');
 
     if (newsettings.antivpn.status && ip !== '127.0.0.1' && !newsettings.antivpn.whitelistedIPs.includes(ip)) {
-      const vpn = await vpnCheck(newsettings.antivpn.APIKey, db, ip, res)
+      const vpn = await vpnCheck(newsettings.antivpn.APIKey, db, ip, res);
       if (vpn) return;
     }
 
@@ -89,7 +89,7 @@ app.get("/logout", (req, res) => {
       let userReponse = await fetch(
         'https://discord.com/api/users/@me',
         {
-          method: "get",
+          method: "GET",
           headers: {
             "Authorization": `Bearer ${codeinfo.access_token}`
           }
@@ -110,7 +110,7 @@ app.get("/logout", (req, res) => {
 
       let guildsReponse = await fetch('https://discord.com/api/users/@me/guilds',
         {
-          method: "get",
+          method: "GET",
           headers: {
             "Authorization": `Bearer ${codeinfo.access_token}`
           }
@@ -119,7 +119,8 @@ app.get("/logout", (req, res) => {
 
       let guildsinfo = await guildsReponse.json();
 
-      if (userinfo.verified == true) {
+      if (userinfo.verified !== true) 
+        return res.send("Not verified a Discord account. Please verify the email on your Discord account.");
 
       // Check if the user is "blacklisted" ip
 
@@ -139,11 +140,11 @@ app.get("/logout", (req, res) => {
       }      
 
         if (newsettings.j4r.enabled) {
-          if (guildsinfo.message == '401: Unauthorized') return res.send("Please allow us to know what servers you are in to let the J4R system work properly. <a href='/login'>Login again</a>")
-          let userj4r = await db.get(`j4rs-${userinfo.id}`) ?? []
-          await guildsinfo
+          if (guildsinfo.message == '401: Unauthorized') return res.send("Please allow us to know what servers you are in to let the J4R system work properly. <a href='/login'>Login again</a>");
+          let userj4r = await db.get(`j4rs-${userinfo.id}`) ?? [];
+          await guildsinfo;
 
-          let coins = await db.get(`coins-${userinfo.id}`) ?? 0
+          let coins = await db.get(`coins-${userinfo.id}`) ?? 0;
 
           // Checking if the user has completed any new j4rs
           for (const guild of newsettings.j4r.ads) {
@@ -159,13 +160,13 @@ app.get("/logout", (req, res) => {
           // Checking if the user has left any j4r servers
           for (const j4r of userj4r) {
             if (!guildsinfo.find(g => g.id === j4r.id)) {
-              userj4r = userj4r.filter(g => g.id !== j4r.id)
-              coins -= j4r.coins
+              userj4r = userj4r.filter(g => g.id !== j4r.id);
+              coins -= j4r.coins;
             }
           }
 
-          await db.set(`j4rs-${userinfo.id}`, userj4r)
-          await db.set(`coins-${userinfo.id}`, coins)
+          await db.set(`j4rs-${userinfo.id}`, userj4r);
+          await db.set(`coins-${userinfo.id}`, coins);
         }
 
         if (newsettings.bot.joinguild.enabled == true) {
@@ -218,7 +219,7 @@ app.get("/logout", (req, res) => {
               }
             );
           } else {
-            return res.send("bot.giverole.guildid or roleid is not a string.")
+            return res.send("bot.giverole.guildid or roleid is not a string.");
           }
         }
 
@@ -254,72 +255,71 @@ app.get("/logout", (req, res) => {
         }
 
         if (!await db.get(`users-${userinfo.id}`)) {
-          if (newsettings.allow.newusers == true) {
-            let genpassword = null;
-            if (newsettings.passwordgenerator.signup == true) genpassword = makeid(newsettings.passwordgenerator["length"]);
-            let accountjson = await fetch(
-              `${settings.pterodactyl.domain}/api/application/users`,
+          if (newsettings.allow.newusers !== true) 
+            return res.send("New users cannot signup currently.");
+          
+          let genpassword = null;
+          if (newsettings.passwordgenerator.signup == true) genpassword = makeid(newsettings.passwordgenerator["length"]);
+          let accountjson = await fetch(
+            `${settings.pterodactyl.domain}/api/application/users`,
+            {
+              method: "POST",
+              headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${settings.pterodactyl.key}`
+              },
+              body: JSON.stringify({
+                username: userinfo.id,
+                email: userinfo.email,
+                first_name: userinfo.username,
+                last_name: "#" + userinfo.discriminator,
+                password: genpassword
+              })
+            }
+          );
+          if (await accountjson.status == 201) {
+            let accountinfo = JSON.parse(await accountjson.text());
+            let userids = await db.get("users") ? await db.get("users") : [];
+            userids.push(accountinfo.attributes.id);
+            await db.set("users", userids);
+            await db.set(`users-${userinfo.id}`, accountinfo.attributes.id);
+            req.session.newaccount = true;
+            req.session.password = genpassword;
+          } else {
+            let accountListReponse = await fetch(
+              `${settings.pterodactyl.domain}/api/application/users?include=servers&filter[email]=${encodeURIComponent(userinfo.email)}`,
               {
-                method: "POST",
+                method: "GET",
                 headers: {
                   'Content-Type': 'application/json',
                   "Authorization": `Bearer ${settings.pterodactyl.key}`
-                },
-                body: JSON.stringify({
-                  username: userinfo.id,
-                  email: userinfo.email,
-                  first_name: userinfo.username,
-                  last_name: "#" + userinfo.discriminator,
-                  password: genpassword
-                })
+                }
               }
             );
-            if (await accountjson.status == 201) {
-              let accountinfo = JSON.parse(await accountjson.text());
+            let accountlist = await accountListReponse.json();
+            let user = accountlist.data.filter(acc => acc.attributes.email == userinfo.email);
+            if (user.length == 1) {
+              let userid = user[0].attributes.id;
               let userids = await db.get("users") ? await db.get("users") : [];
-              userids.push(accountinfo.attributes.id);
-              await db.set("users", userids);
-              await db.set(`users-${userinfo.id}`, accountinfo.attributes.id);
-              req.session.newaccount = true;
-              req.session.password = genpassword;
-            } else {
-              let accountListReponse = await fetch(
-                `${settings.pterodactyl.domain}/api/application/users?include=servers&filter[email]=${encodeURIComponent(userinfo.email)}`,
-                {
-                  method: "GET",
-                  headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${settings.pterodactyl.key}`
-                  }
-                }
-              );
-              let accountlist = await accountListReponse.json();
-              let user = accountlist.data.filter(acc => acc.attributes.email == userinfo.email);
-              if (user.length == 1) {
-                let userid = user[0].attributes.id;
-                let userids = await db.get("users") ? await db.get("users") : [];
-                if (userids.filter(id => id == userid).length == 0) {
-                  userids.push(userid);
-                  await db.set("users", userids);
-                  await db.set(`users-${userinfo.id}`, userid);
-                  req.session.pterodactyl = user[0].attributes;
-                } else {
-                  return res.send("We have detected an account with your Discord email on it but the user id has already been claimed on another Discord account.");
-                }
+              if (userids.filter(id => id == userid).length == 0) {
+                userids.push(userid);
+                await db.set("users", userids);
+                await db.set(`users-${userinfo.id}`, userid);
+                req.session.pterodactyl = user[0].attributes;
               } else {
-                return res.send("An error has occured when attempting to create your account.");
-              };
+                return res.send("We have detected an account with your Discord email on it but the user id has already been claimed on another Discord account.");
+              }
+            } else {
+              return res.send("An error has occured when attempting to create your account.");
             };
-            log('signup', `${userinfo.username}#${userinfo.discriminator} logged in to the dashboard for the first time!`)
-          } else {
-            return res.send("New users cannot signup currently.")
-          }
+          };
+          log('signup', `${userinfo.username}#${userinfo.discriminator} logged in to the dashboard for the first time!`);
         };
 
         let cacheAccount = await fetch(
           `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${userinfo.id}`))}?include=servers`,
           {
-            method: "get",
+            method: "GET",
             headers: {
             'Content-Type': 'application/json',
             "Authorization": `Bearer ${settings.pterodactyl.key}` 
@@ -327,14 +327,12 @@ app.get("/logout", (req, res) => {
           }
         );
         if (await cacheAccount.statusText == "Not Found") return res.send("An error has occured while attempting to get your user information.");
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
-        req.session.pterodactyl = cacheaccountinfo.attributes;
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+        req.session.pterodactyl = cacheAccountInfo.attributes;
 
         req.session.userinfo = userinfo;
         let theme = indexjs.get(req);
         return res.redirect(customredirect || theme.settings.redirect.callback || "/");
-      };
-      res.send("Not verified a Discord account. Please verify the email on your Discord account.");
     } else {
       res.redirect(`/login`);
     };

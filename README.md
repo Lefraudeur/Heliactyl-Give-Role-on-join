@@ -155,6 +155,14 @@ To stop a currently running Heliactyl instance, use `pm2 stop heliactyl`
 
 <br>
 
+## Credit : 
+I'd rather tell you the code I've taken back or taken so as not to have drama or anything x)
+ - Dashactyl 0.3.1 & 0.4 (0.3.1 : Base | 0.4 : database system)
+ - Heliactyl v12.7 & v14 (v12.7 : Base | v14 : documentation api)
+ - BetterHeliactyl v15 (AFK system but i remade this)
+ - Faliactyl (YML / ReadSettings system)
+ - HolaClient (Linkvertise settings)
+
 > [!WARNING]
 >
 > We cannot force you to keep "Powered by Heliactyl" in the footer, but please consider keeping it. It helps to get more visibility for the project, which is getting better. We won't > provide technical support for installations without the notice in the footer. We may DMCA the website under certain conditions.

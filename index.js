@@ -69,11 +69,11 @@ module.exports.db = db;
 
 const cookieParser = require("cookie-parser");
 const express = require("express");
+const session = require("express-session");
 const app = express();
 require('express-ws')(app);
 
 const ejs = require("ejs");
-const session = require("express-session");
 const indexjs = require("./index.js");
 
 const sqlite = require("better-sqlite3");
@@ -109,11 +109,9 @@ app.use(express.json({
 
 // Load the console
 
-const listener = app.listen(settings.website.port, async function() {
+const listener = app.listen(settings.website.port, async () => {
   console.clear();
-  console.log(chalk.gray("  "));
-  console.log(`${chalk.gray("  ")}${chalk.bgBlue("  APPLICATION IS ONLINE  ")}`);
-  console.log(chalk.gray("  "));
+  console.log(`${chalk.gray("  ")}${chalk.bgBlue("  APPLICATION IS ONLINE  ")}\n${chalk.gray("  ")}`);
   console.log(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.white(" Checking for updates...")}`);
 
   try {
@@ -205,7 +203,7 @@ app.all("*", async (req, res) => {
       let cacheAccount = await fetch(
         `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
         {
-          method: "get",
+          method: "GET",
           headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
         }
       );
@@ -219,10 +217,10 @@ app.all("*", async (req, res) => {
         return res.send(str);
       };
       
-      let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+      let cacheAccountInfo = JSON.parse(await cacheAccount.text());
     
-      req.session.pterodactyl = cacheaccountinfo.attributes;
-      if (cacheaccountinfo.attributes.root_admin !== true) {
+      req.session.pterodactyl = cacheAccountInfo.attributes;
+      if (cacheAccountInfo.attributes.root_admin !== true) {
         if (err) {
           console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
           console.log(err);
@@ -271,11 +269,11 @@ app.all("*", async (req, res) => {
 
 module.exports.get = function(req) {
   const settings = require('./handlers/readSettings').settings(); 
-  let tname = encodeURIComponent(req.cookies.theme);
+  let themeName = encodeURIComponent(req.cookies.theme);
   let name = (
-    tname ?
-      fs.existsSync(`./themes/${tname}`) ?
-        tname
+    themeName ?
+      fs.existsSync(`./themes/${themeName}`) ?
+        themeName
       : settings.theme
     : settings.theme
   )

@@ -21,7 +21,7 @@ if (newsettings.pterodactyl.domain.slice(-1) == "/")
 module.exports.load = async function (app, db) {
   /**
   * Information 
-  * A lot of the API information is taken from Heliactyl v14.
+  * A lot of the API information is taken from Heliactyl v14 (heliactyloss).
   */
 
   /**
@@ -65,7 +65,7 @@ module.exports.load = async function (app, db) {
     let userinforeq = await fetch(
       `${newsettings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
       {
-        method: "get",
+        method: "GET",
         headers: { 
           'Content-Type': 'application/json',
           "Authorization": `Bearer ${newsettings.pterodactyl.key}` 
@@ -351,7 +351,7 @@ module.exports.load = async function (app, db) {
    * @returns {Object|null} - The settings object if authorized, otherwise null.
    */
   async function check(req, res) {
-    if (newsettings.api.enabled == true) {
+    if (newsettings.api.enabled) {
       let auth = req.headers['authorization'];
       if (auth) {
         if (auth == `Bearer ${newsettings.api.code}`) {

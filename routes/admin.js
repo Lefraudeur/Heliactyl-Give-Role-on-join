@@ -37,10 +37,10 @@ module.exports.load = async function (app, db) {
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
         
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         let failredirect = theme.settings.redirect.failedsetcoins || "/";
 
@@ -88,10 +88,10 @@ module.exports.load = async function (app, db) {
         );
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         let failredirect = theme.settings.redirect.failedsetcoins || "/";
 
@@ -141,10 +141,10 @@ module.exports.load = async function (app, db) {
         );
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         let failredirect = theme.settings.redirect.failedsetresources || "/";
 
@@ -268,10 +268,10 @@ module.exports.load = async function (app, db) {
         );
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         let failredirect = theme.settings.redirect.failedsetresources ? theme.settings.redirect.failedsetresources : "/";
 
@@ -368,10 +368,10 @@ module.exports.load = async function (app, db) {
         );
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         let failredirect = theme.settings.redirect.failedsetplan || "/";
 
@@ -417,10 +417,10 @@ module.exports.load = async function (app, db) {
         );
         
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         let code = req.query.code ? req.query.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
 
@@ -475,10 +475,10 @@ module.exports.load = async function (app, db) {
         );
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         let code = req.query.code;
 
@@ -511,10 +511,10 @@ module.exports.load = async function (app, db) {
         );
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         // This doesn't delete the account and doesn't touch the renewal system.
 
@@ -561,7 +561,7 @@ module.exports.load = async function (app, db) {
 
         // Remove server and user account
 
-        let servers = cacheaccountinfo.attributes.relationships.servers.data;
+        let servers = cacheAccountInfo.attributes.relationships.servers.data;
         for (let server of servers) {
             await fetch(`${settings.pterodactyl.domain}/api/application/servers/${server.id}`, {
                 method: "DELETE",
@@ -603,10 +603,10 @@ module.exports.load = async function (app, db) {
         );
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         let failredirect = theme.settings.redirect.failedgetip || "/";
         let successredirect = theme.settings.redirect.getip || "/";
@@ -641,10 +641,10 @@ module.exports.load = async function (app, db) {
         );
 
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
-        req.session.pterodactyl = cacheaccountinfo.attributes;
-        if (cacheaccountinfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        req.session.pterodactyl = cacheAccountInfo.attributes;
+        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
 
         if (!req.query.id) return res.send({ status: "missing id" });
 
@@ -789,7 +789,7 @@ module.exports.load = async function (app, db) {
                 );
             }
         } else {
-            if (settings.renewals.status == true) return;
+            if (settings.renewals.status) return;
             for (let i = 0, len = userinfo.attributes.relationships.servers.data.length; i < len; i++) {
                 let suspendid = userinfo.attributes.relationships.servers.data[i].attributes.id;
                 await fetch(

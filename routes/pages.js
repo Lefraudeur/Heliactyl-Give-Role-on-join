@@ -36,9 +36,9 @@ module.exports.load = async function(app, db) {
             if (await cacheAccount.statusText == "Not Found") {
                 return res.send(str);
             }
-            let cacheaccountinfo = JSON.parse(await cacheAccount.text());
-            req.session.pterodactyl = cacheaccountinfo.attributes;
-            if (cacheaccountinfo.attributes.root_admin !== true) {
+            let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+            req.session.pterodactyl = cacheAccountInfo.attributes;
+            if (cacheAccountInfo.attributes.root_admin !== true) {
                 return res.send(str);
             }
             ejs.renderFile(

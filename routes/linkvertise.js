@@ -5,7 +5,6 @@ module.exports.load = async function (app, db) {
     const cooldowns = {};
 
     app.get(`/lv/gen`, async (req, res) => {
-        // add try/catch for dev, when is released i think i will remove
         try {
             if (!req.session.pterodactyl) return res.redirect("/login");
 
@@ -37,7 +36,6 @@ module.exports.load = async function (app, db) {
                 user: userId,
                 generated: Date.now()
             };
-            //  res.redirect(`/lv/redeem/${code}`); Dev comment
             res.redirect(lvurl);
         } catch (error) {
             console.error("Error generating link:", error);

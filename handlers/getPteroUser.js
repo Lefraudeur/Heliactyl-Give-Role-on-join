@@ -16,7 +16,7 @@ module.exports = async (userid, db) => {
             }
         );
         if (await cacheAccount.statusText === "Not Found") return err('Ptero account not found');
-        let cacheaccountinfo = JSON.parse(await cacheAccount.text());
-        resolve(cacheaccountinfo);
+        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+        resolve(cacheAccountInfo);
     })
 }
