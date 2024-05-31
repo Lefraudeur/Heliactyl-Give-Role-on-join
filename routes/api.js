@@ -3,6 +3,7 @@ const adminjs = require('./admin.js');
 const ejs = require("ejs");
 const fetch = require("node-fetch");
 const NodeCache = require("node-cache");
+
 const myCache = new NodeCache({ 
   deleteOnExpire: true,
   stdTTL: 59 
@@ -43,14 +44,15 @@ module.exports.load = async function (app, db) {
     /* Check if the API key is valid */
     let auth = await check(req, res);
     if (!auth) return;
-  
-    if (!req.query.id) 
+
+    let userId = req.query.id;
+    if (!userId) 
       return res.send({ status: "missing id" });
   
-    if (!(await db.get(`users-${req.query.id}`))) 
+    if (!(await db.get(`users-${userId}`))) 
       return res.send({ status: "invalid id" });
 
-    let packagename = await db.get(`package-${req.query.id}`);
+    let packagename = await db.get(`package-${userId}`);
     let package = newsettings.packages.list[packagename ? packagename : newsettings.packages.default];
     if (!package) package = {  
       ram: 0,  
@@ -60,7 +62,7 @@ module.exports.load = async function (app, db) {
     };
     package["name"] = packagename;
   
-    let pterodactylid = await db.get(`users-${req.query.id}`);
+    let pterodactylid = await db.get(`users-${userId}`);
     
     let userinforeq = await fetch(
       `${newsettings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
@@ -74,7 +76,7 @@ module.exports.load = async function (app, db) {
     );
     if (await userinforeq.statusText == "Not Found") {
       console.log("[WEBSITE] An error has occured while attempting to get a user's information");
-      console.log(`- Discord ID: ${req.query.id}`);
+      console.log(`- Discord ID: ${userId}`);
       console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
       return res.send({ status: "could not find user on panel" });
     }
@@ -83,15 +85,15 @@ module.exports.load = async function (app, db) {
   
     res.send({
       status: "success",
+      coins: newsettings.coins.enabled ? (await db.get(`coins-${userId}`) ? await db.get(`coins-${userId}`) : 0) : null,
       package: package,
-      extra: await db.get(`extra-${req.query.id}`) ? await db.get(`extra-${req.query.id}`) : {
+      extra: await db.get(`extra-${userId}`) ? await db.get(`extra-${userId}`) : {
         ram: 0,
         disk: 0,
         cpu: 0,
         servers: 0
       },
-      userinfo: userinfo,  
-      coins: newsettings.coins.enabled == true ? (await db.get(`coins-${req.query.id}`) ? await db.get(`coins-${req.query.id}`) : 0) : null
+      userinfo: userinfo
     });
   });  
 
@@ -101,8 +103,8 @@ module.exports.load = async function (app, db) {
    */
   app.post("/api/setcoins", async (req, res) => {	
     /* Check if the API key is valid */
-    let auth = await check(req, res);	
-    if (!auth) return;	
+    let auth = await check(req, res);
+    if (!auth) return;
 
     if (typeof req.body !== "object") 
       return res.send({status: "body must be an object"});	
@@ -136,9 +138,9 @@ module.exports.load = async function (app, db) {
     if (!req.session.pterodactyl) return res.redirect("/login");
   
     let userInfo = req.session.userinfo;
-    let initialCoins = await db.get(`coins-${req.session.userinfo.id}`);
+    let initialCoins = await db.get(`coins-${userInfo.id}`);
   
-    if (myCache.get(`coins_${userInfo.id}`) == true) 
+    if (myCache.get(`coins_${userInfo.id}`)) 
       return res.send({coins: initialCoins});
   
     myCache.set(`coins_${userInfo.id}`, true, 59);
@@ -353,10 +355,8 @@ module.exports.load = async function (app, db) {
   async function check(req, res) {
     if (newsettings.api.enabled) {
       let auth = req.headers['authorization'];
-      if (auth) {
-        if (auth == `Bearer ${newsettings.api.code}`) {
+      if (auth && auth == `Bearer ${newsettings.api.code}`) {
           return newsettings;
-        }
       }
     }
 

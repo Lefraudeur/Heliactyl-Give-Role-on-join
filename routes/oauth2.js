@@ -6,7 +6,6 @@ const indexjs = require("../index.js");
 const log = require('../handlers/log');
 const vpnCheck = require("../handlers/vpnCheck");
 const getTemplate = require('../handlers/getTemplate.js').template;
-
 const fetch = require('node-fetch');
 
 if (settings.oauth2.link.slice(-1) == "/")
@@ -19,13 +18,19 @@ if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.
     settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
 }
 
-module.exports.load = async function (app, db) {
-  const settings = require('../handlers/readSettings').settings(); 
-  
+module.exports.load = async function (app, db) {  
   app.get("/login", async (req, res) => {
     if (req.query.redirect) req.session.redirect = "/" + req.query.redirect;
-    res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${settings.oauth2.id}&redirect_uri=${encodeURIComponent(settings.oauth2.link + settings.oauth2.callbackpath)}&response_type=code&scope=identify%20email${settings.bot.joinguild.enabled == true ? "%20guilds.join" : ""}${settings.j4r.enabled == true ? "%20guilds" : ""}${settings.oauth2.prompt == false ? "&prompt=none" : (req.query.prompt ? (req.query.prompt == "none" ? "&prompt=none" : "") : "")}`);
-});
+    res.redirect(
+      `https://discord.com/api/oauth2/authorize?client_id=${settings.oauth2.id}&redirect_uri=${encodeURIComponent(settings.oauth2.link + settings.oauth2.callbackpath)}&response_type=code&scope=identify%20email${
+          settings.bot.joinguild.enabled == true ? "%20guilds.join" : ""
+      }${
+          settings.j4r.enabled == true ? "%20guilds" : ""
+      }${
+          settings.oauth2.prompt == false ? "&prompt=none" : (req.query.prompt ? (req.query.prompt == "none" ? "&prompt=none" : "") : "")
+      }`
+  );
+  });
 
 app.get("/logout", (req, res) => {
   let theme = indexjs.get(req);
@@ -132,8 +137,7 @@ app.get("/logout", (req, res) => {
       if (newsettings.oauth2.ip["duplicate check"] && ip !== '127.0.0.1') {
         const ipuser = await db.get(`ipuser-${ip}`);
         if (ipuser && ipuser !== userinfo.id) {
-          res.status(200).send(getTemplate("Alt Account Detected", `${newsettings.name} detected that you have multiple accounts with us. We do not allow the use of multiple accounts on our services.`, true));
-          return;
+          return res.status(200).send(getTemplate("Alt Account Detected", `${newsettings.name} detected that you have multiple accounts with us. We do not allow the use of multiple accounts on our services.`, true));
         } else if (!ipuser) {
           await db.set(`ipuser-${ip}`, userinfo.id);
         }

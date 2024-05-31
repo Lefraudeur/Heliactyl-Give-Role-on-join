@@ -229,12 +229,24 @@ module.exports.load = async function (app, db) {
    */
   
   app.get("/stats", async (req, res) => {
-    const theme = indexjs.get(req);
-  
-    if (!req.session.pterodactyl || !req.session.pterodactyl.root_admin) 
-      return four0four(req, res, theme);
-    
-    try {
+    let theme = indexjs.get(req);
+
+    if (!req.session.pterodactyl) return four0four(req, res, theme);
+
+    let cacheAccount = await fetch(
+        `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
+        {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        }
+    );
+
+    if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+    let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+
+    req.session.pterodactyl = cacheAccountInfo.attributes;
+    if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+
       const users = await db.get("users") || [];
   
       const stats = {
@@ -242,11 +254,6 @@ module.exports.load = async function (app, db) {
       };
   
       res.json(stats);
-  
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
   });
   
   /**
@@ -415,7 +422,7 @@ module.exports.load = async function (app, db) {
                 headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
             }
         );
-        
+
         if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
@@ -617,6 +624,7 @@ module.exports.load = async function (app, db) {
 
         if (!(await db.get(`ip-${req.query.id}`))) 
             return res.redirect(`${failredirect}?err=NOIP`);
+        
         let ip = await db.get(`ip-${req.query.id}`);
         log(`view ip`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${req.query.id}\`.`)
         return res.redirect(`${successredirect}?err=NONE&ip=${ip}`)
@@ -690,10 +698,10 @@ module.exports.load = async function (app, db) {
                 servers: 0
             },
             userinfo: userinfo,
-            coins: settings.coins.enabled == true ? (await db.get(`coins-${req.query.id}`) ? await db.get(`coins-${req.query.id}`) : 0) : null
+            coins: settings.coins.enabled ? (await db.get(`coins-${req.query.id}`) ? await db.get(`coins-${req.query.id}`) : 0) : null
         });
     });
-
+    
     async function four0four(req, res, theme) {
         ejs.renderFile(
             `./themes/${theme.name}/${theme.settings.notfound}`,
@@ -745,6 +753,8 @@ module.exports.load = async function (app, db) {
         let packagename = await db.get(`package-${discordid}`);
         let package = settings.packages.list[packagename || settings.packages.default];
 
+        let userRelationShipServers = userinfo.attributes.relationships.servers
+
         let extra =
             await db.get(`extra-${discordid}`) ||
             {
@@ -765,18 +775,18 @@ module.exports.load = async function (app, db) {
             ram: 0,
             disk: 0,
             cpu: 0,
-            servers: userinfo.attributes.relationships.servers.data.length
+            servers: userRelationShipServers.data.length
         };
-        for (let i = 0, len = userinfo.attributes.relationships.servers.data.length; i < len; i++) {
-            current.ram = current.ram + userinfo.attributes.relationships.servers.data[i].attributes.limits.memory;
-            current.disk = current.disk + userinfo.attributes.relationships.servers.data[i].attributes.limits.disk;
-            current.cpu = current.cpu + userinfo.attributes.relationships.servers.data[i].attributes.limits.cpu;
+        for (let i = 0, len = userRelationShipServers.data.length; i < len; i++) {
+            current.ram = current.ram + userRelationShipServers.data[i].attributes.limits.memory;
+            current.disk = current.disk + userRelationShipServers.data[i].attributes.limits.disk;
+            current.cpu = current.cpu + userRelationShipServers.data[i].attributes.limits.cpu;
         };
 
-        indexjs.ratelimits(userinfo.attributes.relationships.servers.data.length);
+        indexjs.ratelimits(userRelationShipServers.data.length);
         if (current.ram > plan.ram || current.disk > plan.disk || current.cpu > plan.cpu || current.servers > plan.servers) {
-            for (let i = 0, len = userinfo.attributes.relationships.servers.data.length; i < len; i++) {
-                let suspendid = userinfo.attributes.relationships.servers.data[i].attributes.id;
+            for (let i = 0, len = userRelationShipServers.data.length; i < len; i++) {
+                let suspendid = userRelationShipServers.data[i].attributes.id;
                 await fetch(
                     `${settings.pterodactyl.domain}/api/application/servers/${suspendid}/suspend`,
                     {
@@ -790,8 +800,8 @@ module.exports.load = async function (app, db) {
             }
         } else {
             if (settings.renewals.status) return;
-            for (let i = 0, len = userinfo.attributes.relationships.servers.data.length; i < len; i++) {
-                let suspendid = userinfo.attributes.relationships.servers.data[i].attributes.id;
+            for (let i = 0, len = userRelationShipServers.data.length; i < len; i++) {
+                let suspendid = userRelationShipServers.data[i].attributes.id;
                 await fetch(
                     `${settings.pterodactyl.domain}/api/application/servers/${suspendid}/unsuspend`,
                     {

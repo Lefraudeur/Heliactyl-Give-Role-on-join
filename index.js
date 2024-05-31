@@ -52,7 +52,7 @@ module.exports.renderdataeval = async function(req) {
     packagename: req.session.userinfo ? await db.get(`package-${req.session.userinfo.id}`) || newsettings.packages.default : null,
     extraresources: !req.session.userinfo ? null : (await db.get(`extra-${req.session.userinfo.id}`) || { ram: 0, disk: 0, cpu: 0, servers: 0 }),
     packages: req.session.userinfo ? newsettings.packages.list[await db.get(`package-${req.session.userinfo.id}`) || newsettings.packages.default] : null,
-    coins: newsettings.coins.enabled == true ? (req.session.userinfo ? await db.get(`coins-${req.session.userinfo.id}`) || 0 : null) : null,
+    coins: newsettings.coins.enabled ? (req.session.userinfo ? await db.get(`coins-${req.session.userinfo.id}`) || 0 : null) : null,
     pterodactyl: req.session.pterodactyl,
     theme: theme.name,
     db
@@ -139,7 +139,7 @@ app.use(function(req, res, next) {
   const rateLimitPath = manager.ratelimits[req._parsedUrl.pathname];
 
   if (rateLimitPath) {
-    if (cache == true) {
+    if (cache) {
       setTimeout(async () => {
         let allqueries = Object.entries(req.query);
         let querystring = "";
@@ -288,11 +288,11 @@ module.exports.get = function(req) {
 };
 
 module.exports.islimited = async function() {
-  return cache == true ? false : true;
+  return cache ? false : true;
 }
 
 module.exports.ratelimits = async function(length) {
-  if (cache == true) 
+  if (cache) 
   return setTimeout(
     indexjs.ratelimits, 1
   );
