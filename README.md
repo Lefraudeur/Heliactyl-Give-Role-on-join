@@ -1,3 +1,5 @@
+> [!WARNING]
+> Using fixed-heliactyl or heliactyl in general is risky, there are lots of bugs and loopholes. Please migrate to fixed-palladium or to another client that doesn't use heliactyl as a base. 
 # Fixed Heliactyl v12.8+ • The Modern Client Panel for Pterodactyl
 
 ![Heliactyl](https://github.com/OvernodeProjets/Fixed-Heliactyl/assets/73477238/fe5aaf5c-1c01-4145-b37a-b91b184354b5)
