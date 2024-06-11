@@ -19,13 +19,17 @@
 
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list bborderradius" aria-labelledby="profileDropdown">
 
-          <% if (settings.coins.enabled === true) { %>
-          <a class="dropdown-item preview-item" href="/afk">
-            <div class="preview-item-content">
-              <p class="preview-subject mb-1">Coins: <span id="balance"><%= Math.floor(coins * 100) / 100 %></span></p>
-            </div>
-          </a>
-          <% } %>
+          <% if (settings.coins.enabled) { %>
+            <a class="dropdown-item preview-item" href="/afk">
+              <div class="preview-item-content">
+                <p class="preview-subject mb-1">Coins: <span id="balance"><%= Math.floor(coins * 100) / 100 %></span></p>
+              </div>
+            </a>
+            <script>
+              let balance = document.getElementById("balance");
+              balance.textContent = <%= Math.floor(coins * 100) / 100 %>;
+            </script>
+            <% } %>
           <a class="dropdown-item preview-item" href="/dashboard">
             <div class="preview-item-content">
               <p class="preview-subject mb-1">Plan: <%= typeof packagename.charAt(0) == 'number' ? packagename : packagename.charAt(0).toUpperCase() + packagename.slice(1) %></p>
@@ -50,9 +54,3 @@
     </button>
   </div>
 </nav>
-<% if (settings.coins.enabled === true) { %>
-  <script>
-    let balance = document.getElementById("balance");
-    balance.textContent = <%= Math.floor(coins * 100) / 100 %>;
-  </script>
-<% } %>

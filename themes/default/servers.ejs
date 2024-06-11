@@ -44,7 +44,7 @@
                   <div class="card">
                     <div class="card-body">
                       <h4 class="card-title"><%= pterodactyl.relationships.servers.data[i].attributes.name.length > 40 ? pterodactyl.relationships.servers.data[i].attributes.name.slice(0, 40) + "..." : pterodactyl.relationships.servers.data[i].attributes.name %></h4>
-                      <h5 style="font-family: 'Roboto Mono', monospace;">Server <%= pterodactyl.relationships.servers.data[i].attributes.identifier %></h5><br>
+                      <h5>Server <%= pterodactyl.relationships.servers.data[i].attributes.identifier %></h5><br>
                       <p><i class="mdi mdi-memory"></i> &nbsp; CPU: <%= pterodactyl.relationships.servers.data[i].attributes.limits.cpu/100 %> Core(s)</p>
                       <p><i class="mdi mdi-layers"></i> &nbsp; Ram: <%= pterodactyl.relationships.servers.data[i].attributes.limits.memory/1024 %> GB(s)</p>
                       <p><i class="mdi mdi-harddisk"></i> &nbsp; Disk: <%= pterodactyl.relationships.servers.data[i].attributes.limits.disk/1024 %> GB(s)</p>

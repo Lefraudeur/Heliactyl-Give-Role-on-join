@@ -71,6 +71,7 @@ const cookieParser = require("cookie-parser");
 const express = require("express");
 const session = require("express-session");
 const app = express();
+const helmet = require('helmet');
 require('express-ws')(app);
 
 const ejs = require("ejs");
@@ -84,6 +85,7 @@ const session_db = new sqlite("sessions.db");
 
 module.exports.app = app;
 
+app.use(helmet());
 app.use(cookieParser());
 app.use(session({
   secret: settings.website.secret,
