@@ -1,132 +1,120 @@
 const settings = require('../handlers/readSettings').settings(); 
 
 module.exports.load = async function (app, db) {
+
     const lvcodes = {};
     const cooldowns = {};
 
     app.get(`/lv/gen`, async (req, res) => {
-        try {
-            if (!req.session.pterodactyl) return res.redirect("/login");
+        if (!req.session.pterodactyl) return res.redirect("/login");
 
-            const userId = req.session.userinfo.id;
+        const userId = req.session.userinfo.id;
 
-            if (cooldowns[userId] > Date.now()) {
-                return res.redirect(`/lv`);
-            } else if (cooldowns[userId]) {
-                delete cooldowns[userId];
-            }
-
-            const dailyTotal = await db.get(`dailylinkvertise-${userId}`);
-            if (dailyTotal && dailyTotal >= settings.linkvertise.dailyLimit)
-                return res.redirect(`/lv?err=REACHEDDAILYLIMIT`);
-
-            let referer = req.headers.referer
-            if (!referer) return res.send('An error occured with your browser!')
-            referer = referer.toLowerCase()
-            if (referer.includes('?')) referer = referer.split('?')[0]
-            if (!referer.endsWith(`/lv`) && !referer.endsWith(`/lv/`)) 
-                return res.send('An error occured with your browser!')
-            if (!referer.endsWith(`/`)) referer += `/`
-
-            const code = makeid(12);
-            const lvurl = linkvertise(settings.linkvertise.userid, referer + `redeem/${code}`);
-
-            lvcodes[userId] = {
-                code: code,
-                user: userId,
-                generated: Date.now()
-            };
-            res.redirect(lvurl);
-        } catch (error) {
-            console.error("Error generating link:", error);
-            res.status(500).send("Internal Server Error");
+        if (cooldowns[userId] > Date.now()) {
+            return res.redirect(`/lv`);
+        } else if (cooldowns[userId]) {
+            delete cooldowns[userId];
         }
+
+        const dailyTotal = await db.get(`dailylinkvertise-${userId}`);
+        if (dailyTotal && dailyTotal >= settings.linkvertise.dailyLimit) 
+            return res.redirect(`/lv?err=REACHEDDAILYLIMIT`);
+
+        let referer = req.headers.referer
+        if (!referer) return res.send('An error occured with your browser!')
+        referer = referer.toLowerCase()
+        if (referer.includes('?')) referer = referer.split('?')[0]
+        if (!referer.endsWith(`/lv`) && !referer.endsWith(`/lv/`)) 
+            return res.send('An error occured with your browser!')
+        if (!referer.endsWith(`/`)) referer += `/`
+
+        const code = makeid(12);
+        const lvurl = linkvertise(settings.linkvertise.userid, referer + `redeem/${code}`);
+
+        lvcodes[userId] = {
+            code: code,
+            user: userId,
+            generated: Date.now()
+        };
+        res.redirect(lvurl);
     });
 
     app.get(`/lv/redeem/:code`, async (req, res) => {
-        try {
-            if (!req.session.pterodactyl) return res.redirect("/");
-            const userId = req.session.userinfo.id;
+        if (!req.session.pterodactyl) return res.redirect("/");
 
-            if (cooldowns[userId] > Date.now()) {
-                return res.redirect(`/lv`);
-            } else if (cooldowns[userId]) {
-                delete cooldowns[userId];
-            }
+        const userId = req.session.userinfo.id;
 
-            // We get the code from the paramters, eg (client.domain.com/lv/redeem/abc123) here "abc123" is the code
-            const code = req.params.code;
-            if (!code || !req.headers.referer || !req.headers.referer.includes('linkvertise.com')) 
-                return res.send('<p>Hm... our systems detected something going on! Please make sure you are not using an ad blocker (or linkvertise bypasser).</p> <img src="https://i.imgur.com/lwbn3E9.png" alt="robot" height="300">');
-
-            const usercode = lvcodes[userId];
-            if (!usercode || usercode.code !== code) return res.redirect(`/lv`);
-            delete lvcodes[userId];
-
-            const timePassed = (Date.now() - usercode.generated) / 1000;
-            if (timePassed < settings.linkvertise.minTimeToComplete) 
-                return res.send('<p>Hm... our systems detected something going on! Please make sure you are not using an ad blocker (or linkvertise bypasser). <a href="/lv">Generate another link</a></p> <img src="https://i.imgur.com/lwbn3E9.png" alt="robot" height="300">');
-            
-            cooldowns[userId] = Date.now() + (settings.linkvertise.cooldown * 1000);
-
-            const dailyTotal = await db.get(`dailylinkvertise-${userId}`);
-            if (dailyTotal && dailyTotal >= settings.linkvertise.dailyLimit) 
-                return res.redirect(`/lv?err=REACHEDDAILYLIMIT`);
-            
-            await db.set(`dailylinkvertise-${userId}`, 1)
-            if (dailyTotal + 1 >= settings.linkvertise.dailyLimit) 
-                await db.set(`lvlimitdate-${userId}`, Date.now(), 43200000);
-
-            // Adding coins
-            const coins = await db.get(`coins-${req.session.userinfo.id}`)
-            await db.set(`coins-${req.session.userinfo.id}`, coins + settings.linkvertise.coins)
-
-            res.redirect(`/lv?success=true`);
-        } catch (error) {
-            console.error("Error redeeming code:", error);
-            res.status(500).send("Internal Server Error");
+        if (cooldowns[userId] > Date.now()) {
+            return res.redirect(`/lv`);
+        } else if (cooldowns[userId]) {
+            delete cooldowns[userId];
         }
-    });
 
+        // We get the code from the paramters, eg (client.domain.com/lv/redeem/abc123) here "abc123" is the code
+        const code = req.params.code
+        if (!code) return res.send('An error occured with your browser!')
+        if (!req.headers.referer || !req.headers.referer.includes('linkvertise.com')) 
+            return res.send('<p>Hm... our systems detected something going on! Please make sure you are not using an ad blocker (or linkvertise bypasser).</p> <img src="https://i.imgur.com/lwbn3E9.png" alt="robot" height="300">')
+
+        const usercode = lvcodes[userId];
+        if (!usercode || usercode.code !== code) return res.redirect(`/lv`);
+        delete lvcodes[userId];
+
+        // Checking at least the minimum allowed time passed between generation and completion
+        if (((Date.now() - usercode.generated) / 1000) < settings.linkvertise.minTimeToComplete) 
+            return res.send('<p>Hm... our systems detected something going on! Please make sure you are not using an ad blocker (or linkvertise bypasser). <a href="/lv">Generate another link</a></p> <img src="https://i.imgur.com/lwbn3E9.png" alt="robot" height="300">');
+
+        cooldowns[userId] = Date.now() + (settings.linkvertise.cooldown * 1000);
+
+        // Adding to daily total
+        const dailyTotal = await db.get(`dailylinkvertise-${userId}`);
+        if (dailyTotal && dailyTotal >= settings.linkvertise.dailyLimit) 
+            return res.redirect(`/lv?err=REACHEDDAILYLIMIT`);
+        
+        if (dailyTotal) await db.set(`dailylinkvertise-${userId}`, dailyTotal + 1)
+        else await db.set(`dailylinkvertise-${userId}`, 1);
+        if (dailyTotal + 1 >= settings.linkvertise.dailyLimit) 
+            await db.set(`lvlimitdate-${userId}`, Date.now(), 43200000);
+
+        // Adding coins
+        const coins = await db.get(`coins-${userId}`)
+        await db.set(`coins-${userId}`, coins + settings.linkvertise.coins)
+
+        res.redirect(`/lv?success=true`);
+    });
+    
     app.get(`/api/lvcooldown`, async (req, res) => {
-        try {
-            if (!req.session.pterodactyl) return res.json({ error: true, message: 'Not logged in' });
-            const userId = req.session.userinfo.id;
+        if (!req.session.pterodactyl) return res.json({ error: true, message: 'Not logged in' });
+        const userId = req.session.userinfo.id;
 
-            const limitTimestamp = await db.get(`lvlimitdate-${userId}`);
-            if (limitTimestamp && limitTimestamp + 43200000 < Date.now()) {
-                await Promise.all([
-                    db.delete(`dailylinkvertise-${userId}`),
-                    db.delete(`lvlimitdate-${userId}`)
-                ]);
-            } else if (cooldowns[userId] && cooldowns[userId] < Date.now()) {
-                delete cooldowns[userId];
+        const limitTimestamp = await db.get(`lvlimitdate-${userId}`);
+        if (limitTimestamp) {
+            if ((limitTimestamp + 43200000) < Date.now()) {
+                await db.delete(`dailylinkvertise-${userId}`);
+                await db.delete(`lvlimitdate-${userId}`);
+            } else {
+                return res.json({ dailyLimit: true, readable: msToHoursAndMinutes((limitTimestamp + 43200000) - Date.now()) })
             }
-
-            return res.json({
-                dailyLimit: limitTimestamp ? true : false,
-                readable: limitTimestamp ? msToHoursAndMinutes(limitTimestamp + 43200000 - Date.now()) : null,
-                cooldown: cooldowns[userId] || null
-            });
-        } catch (error) {
-            console.error("Error checking cooldown:", error);
-            res.status(500).json({ error: true, message: "Internal Server Error" });
         }
-    });
 
-    // Removing expired codes and cooldowns
+        if (cooldowns[userId] && cooldowns[userId] < Date.now()) 
+            delete cooldowns[userId];
+
+        return res.json({ cooldown: cooldowns[userId] ?? null });
+    })
+
+    // Removing codes that have expired and cooldowns that are no longer applicable
     setInterval(() => {
-        // idk if is working x)
-        for (const [userId, code] of Object.entries(lvcodes)) {
-            if ((Date.now() - code.generated) / 1000 > settings.linkvertise.timeToExpire) {
-                delete lvcodes[userId];
+        for (const code of Object.values(lvcodes)) {
+            if (((Date.now() - code.generated) / 1000) > settings.linkvertise.timeToExpire) {
+                delete lvcodes[code.user];
             }
         }
 
-        for (const [userId, cooldown] of Object.entries(cooldowns)) {
-            if (cooldown < Date.now()) {
-                delete cooldowns[userId];
-            }
+        for (const user of Object.keys(cooldowns)) {
+            const cooldown = cooldowns[user];
+            if (cooldown < Date.now())
+                delete cooldowns[user];
         }
     }, 10000);
 };
@@ -142,9 +130,9 @@ function makeid(length) {
     const charactersLength = characters.length;
     let result = Array.from({ length }, () => characters.charAt(Math.floor(Math.random() * charactersLength))).join('');
     return result;
-}
+  }
 
-function msToHoursAndMinutes(ms) {
+  function msToHoursAndMinutes(ms) {
     const msInHour = 3600000;
     const msInMinute = 60000;
 
