@@ -17,6 +17,7 @@ resources:
 website:
   port: 25002
   secret: "Default Secret (Change this to any string you want)"
+  helmet: true
 
 pterodactyl:
   domain: "https://panel.example.com"
