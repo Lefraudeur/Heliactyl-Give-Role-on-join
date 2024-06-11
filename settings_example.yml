@@ -17,7 +17,8 @@ resources:
 website:
   port: 25002
   secret: "Default Secret (Change this to any string you want)"
-  helmet: true
+    # if you got 4 error of CSP disabled thats
+  helmet: false
 
 pterodactyl:
   domain: "https://panel.example.com"
