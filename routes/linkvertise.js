@@ -8,7 +8,7 @@ module.exports.load = async function (app, db) {
     app.get(`/lv/gen`, async (req, res) => {
         if (!req.session.pterodactyl) return res.redirect("/login");
 
-        const userId = req.session.userinfo.id;
+        let userId = req.session.userinfo.id;
 
         if (cooldowns[userId] > Date.now()) {
             return res.redirect(`/lv`);
@@ -19,14 +19,13 @@ module.exports.load = async function (app, db) {
         const dailyTotal = await db.get(`dailylinkvertise-${userId}`);
         if (dailyTotal && dailyTotal >= settings.linkvertise.dailyLimit) 
             return res.redirect(`/lv?err=REACHEDDAILYLIMIT`);
-
-        let referer = req.headers.referer
-        if (!referer) return res.send('An error occured with your browser!')
-        referer = referer.toLowerCase()
+        
+        let referer = req.headers.referer;
+        if (!referer) return res.send('An error occurred with your browser!');
+        referer = referer.toLowerCase();
         if (referer.includes('?')) referer = referer.split('?')[0]
-        if (!referer.endsWith(`/lv`) && !referer.endsWith(`/lv/`)) 
-            return res.send('An error occured with your browser!')
-        if (!referer.endsWith(`/`)) referer += `/`
+        if (!referer.endsWith(`/lv`) && !referer.endsWith(`/lv/`)) return res.send('An error occurred with your browser!');
+        if (!referer.endsWith(`/`)) referer += `/`;
 
         const code = makeid(12);
         const lvurl = linkvertise(settings.linkvertise.userid, referer + `redeem/${code}`);
@@ -36,13 +35,14 @@ module.exports.load = async function (app, db) {
             user: userId,
             generated: Date.now()
         };
+
         res.redirect(lvurl);
     });
 
     app.get(`/lv/redeem/:code`, async (req, res) => {
         if (!req.session.pterodactyl) return res.redirect("/");
 
-        const userId = req.session.userinfo.id;
+        let userId = req.session.userinfo.id;
 
         if (cooldowns[userId] > Date.now()) {
             return res.redirect(`/lv`);
@@ -52,9 +52,9 @@ module.exports.load = async function (app, db) {
 
         // We get the code from the paramters, eg (client.domain.com/lv/redeem/abc123) here "abc123" is the code
         const code = req.params.code
-        if (!code) return res.send('An error occured with your browser!')
+        if (!code) return res.send('An error occurred with your browser!');
         if (!req.headers.referer || !req.headers.referer.includes('linkvertise.com')) 
-            return res.send('<p>Hm... our systems detected something going on! Please make sure you are not using an ad blocker (or linkvertise bypasser).</p> <img src="https://i.imgur.com/lwbn3E9.png" alt="robot" height="300">')
+            return res.send('<p>Hm... our systems detected something going on! Please make sure you are not using an ad blocker (or linkvertise bypasser).</p> <img src="https://i.imgur.com/lwbn3E9.png" alt="robot" height="300">');
 
         const usercode = lvcodes[userId];
         if (!usercode || usercode.code !== code) return res.redirect(`/lv`);
@@ -77,15 +77,16 @@ module.exports.load = async function (app, db) {
             await db.set(`lvlimitdate-${userId}`, Date.now(), 43200000);
 
         // Adding coins
-        const coins = await db.get(`coins-${userId}`)
-        await db.set(`coins-${userId}`, coins + settings.linkvertise.coins)
+        const coins = await db.get(`coins-${userId}`);
+        await db.set(`coins-${userId}`, coins + settings.linkvertise.coins);
 
         res.redirect(`/lv?success=true`);
     });
     
     app.get(`/api/lvcooldown`, async (req, res) => {
         if (!req.session.pterodactyl) return res.json({ error: true, message: 'Not logged in' });
-        const userId = req.session.userinfo.id;
+
+        let userId = req.session.userinfo.id;
 
         const limitTimestamp = await db.get(`lvlimitdate-${userId}`);
         if (limitTimestamp) {
@@ -113,15 +114,15 @@ module.exports.load = async function (app, db) {
 
         for (const user of Object.keys(cooldowns)) {
             const cooldown = cooldowns[user];
-            if (cooldown < Date.now())
+            if (cooldown < Date.now()) 
                 delete cooldowns[user];
         }
     }, 10000);
 };
 
 function linkvertise(userid, link) {
-    const base_url = `https://link-to.net/${userid}/${Math.random() * 1000}/dynamic`;
-    const href = base_url + "?r=" + Buffer.from(encodeURI(link)).toString('base64');
+    let base_url = `https://link-to.net/${userid}/${Math.random() * 1000}/dynamic`;
+    let href = base_url + "?r=" + Buffer.from(encodeURI(link)).toString('base64');
     return href;
 }
 
@@ -130,9 +131,9 @@ function makeid(length) {
     const charactersLength = characters.length;
     let result = Array.from({ length }, () => characters.charAt(Math.floor(Math.random() * charactersLength))).join('');
     return result;
-  }
+}
 
-  function msToHoursAndMinutes(ms) {
+function msToHoursAndMinutes(ms) {
     const msInHour = 3600000;
     const msInMinute = 60000;
 

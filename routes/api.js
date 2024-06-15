@@ -75,7 +75,7 @@ module.exports.load = async function (app, db) {
       }
     );
     if (await userinforeq.statusText == "Not Found") {
-      console.log("[WEBSITE] An error has occured while attempting to get a user's information");
+      console.log("[WEBSITE] An error has occurred while attempting to get a user's information");
       console.log(`- Discord ID: ${userId}`);
       console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
       return res.send({ status: "could not find user on panel" });
@@ -368,7 +368,7 @@ module.exports.load = async function (app, db) {
       function (err, str) {
         delete req.session.newaccount;
         if (err) {
-          console.log(`[WEBSITE] An error has occured on path ${req._parsedUrl.pathname}:`);
+          console.log(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
           console.log(err);
           return res.render("404.ejs", { err });
         }

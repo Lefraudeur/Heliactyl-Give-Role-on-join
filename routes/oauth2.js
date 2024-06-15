@@ -314,7 +314,7 @@ app.get("/logout", (req, res) => {
                 return res.send("We have detected an account with your Discord email on it but the user id has already been claimed on another Discord account.");
               }
             } else {
-              return res.send("An error has occured when attempting to create your account.");
+              return res.send("An error has occurred when attempting to create your account.");
             };
           };
           log('signup', `${userinfo.username}#${userinfo.discriminator} logged in to the dashboard for the first time!`);
@@ -330,7 +330,7 @@ app.get("/logout", (req, res) => {
           }
           }
         );
-        if (await cacheAccount.statusText == "Not Found") return res.send("An error has occured while attempting to get your user information.");
+        if (await cacheAccount.statusText == "Not Found") return res.send("An error has occurred while attempting to get your user information.");
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
         req.session.pterodactyl = cacheAccountInfo.attributes;
 
