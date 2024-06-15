@@ -1,15 +1,11 @@
 > [!WARNING]
-> Using fixed-heliactyl or [heliactyl](https://github.com/OpenHeliactyl/Heliactyl) in general is risky, there are lots of bugs and loopholes. Please migrate to [fixed-palladium](https://github.com/OvernodeProjets/Fixed-Palladium) or to another client that doesn't use heliactyl as a base. 
-# Fixed Heliactyl v12.8+ • The Modern Client Panel for Pterodactyl
+> Overnode has deprecated Fixed Heliactyl. Overnode is now developing [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium). Warning: **Heliactyl and Fixed Heliactyl may contain security vulnerabilities.** If you are looking for a still updated version of Heliactyl (and by the official team) take a look at [Heliactyl 14](https://github.com/heliactyloss/heliactyl). 
+# Fixed Heliactyl • The Modern Client Panel for Pterodactyl
 
 ![Heliactyl](https://github.com/OvernodeProjets/Fixed-Heliactyl/assets/73477238/fe5aaf5c-1c01-4145-b37a-b91b184354b5)
 
-> **WARNING**  
-> Fixed Heliactyl 12.8 and above are not compatible with older files (themes) due to major settings modifications. Replace all `settings.api.client` with `settings`. Thank you for understanding.
-
-> **WARNING**  
-> Fixed Heliactyl 12.7.10 and above is not compatible with Heliactyl's settings due to the switch to YAML, which is easier to use than JSON. You will need to reconfigure all of your settings.
-
+> [!WARNING]
+> Fixed Heliactyl 12.8 and above are not compatible with older files (themes and settings.json files) due to major modifications. For themes: Replace all `settings.api.client` with `settings`. For settings: Reconfigure using YAML. Thank you for understanding.
 ## Features
 
 - **Resource Management**: Create servers, manage resources.
@@ -32,7 +28,7 @@
 
 #### Pterodactyl Method (Easiest)
 
-1. **Upload File**: Upload the Heliactyl file to a Pterodactyl NodeJS server. [Download the egg from Parkervcp's GitHub Repository](https://github.com/parkervcp/eggs/blob/master/generic/nodejs/egg-node-js-generic.json)
+1. **Upload File**: Upload the Heliactyl file to a Pterodactyl NodeJS server. [Download the egg from Pelican Eggs Library](https://github.com/pelican-eggs/generic/blob/main/nodejs/egg-pterodactyl-node-js-generic.json)
 2. **Setup NodeJS**: Unarchive the file and set the server to use NodeJS 16.
 
 #### Direct Method
@@ -58,7 +54,7 @@ To run in the background, use PM2 (see PM2 section)</br>
 
 ## 2. Setting up webserver
 
-1. Rename exemple_settings.json to settings.json and configure settings.json (specify panel domain/apikey and discord auth settings for it to work)
+1. Rename settings_example.yml to settings.yml and configure settings.yml (specify panel domain/apikey and discord auth settings for it to work)
 
 2. Start the server (Ignore the 2 strange errors that might come up)
 
@@ -124,12 +120,12 @@ server {
 4. Upload the latest Heliactyl v12 release and unzip it
 5. Upload database.sqlite and reconfigure settings.yml
 
-### Move to a newer Heliactyl v12 release:
+### Move to Heliactyl 14+:
 
-1. Delete everything except settings.yml, database.sqlite
+1. Delete everything except database.sqlite
 2. Put the files that you didn't delete into a zip file
-3. Upload the latest Heliactyl v12 release and unzip it
-4. Upload database.sqlite and reconfigure settings.yml
+3. Upload the latest Heliactyl release and unzip it
+4. Upload database.sqlite and reconfigure settings
 
 <hr>
 
@@ -157,12 +153,10 @@ To stop a currently running Heliactyl instance, use `pm2 stop heliactyl`
 
 <br>
 
-## Credit : 
-I'd rather tell you the code I've taken back or taken so as not to have drama or anything x)
- - Dashactyl 0.3.1 & 0.4 (0.3.1 : Base | 0.4 : database system)
- - Heliactyl v12.7 & v14 (v12.7 : Base | v14 : documentation api)
- - BetterHeliactyl v15 (AFK system but i remade this)
- - Faliactyl (YML / ReadSettings system)
+## Credit:
+ - Dashactyl 0.3.1 & 0.4 (0.3.1 Base - 0.4 Database System)
+ - Heliactyl (v12 Base - v14 Api Documentation - v15 Afk System but remade)
+ - Faliactyl (Settings system)
  - HolaClient (Linkvertise settings)
 
 > [!WARNING]
