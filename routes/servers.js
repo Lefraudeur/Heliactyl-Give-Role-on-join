@@ -210,7 +210,7 @@ module.exports.load = async function (app, db) {
   });
 
   app.get("/modify", async (req, res) => {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
   
     let theme = indexjs.get(req);
   
@@ -328,7 +328,7 @@ module.exports.load = async function (app, db) {
   });  
 
   app.get("/delete", async (req, res) => {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
     if (!req.query.id) return res.send("Missing id.");
   
     let theme = indexjs.get(req);
