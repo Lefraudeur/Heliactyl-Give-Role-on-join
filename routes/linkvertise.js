@@ -6,7 +6,7 @@ module.exports.load = async function (app, db) {
     const cooldowns = {};
 
     app.get(`/lv/gen`, async (req, res) => {
-        if (!req.session.pterodactyl) return res.redirect("/login");
+        if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
 
         let userId = req.session.userinfo.id;
 
@@ -89,13 +89,10 @@ module.exports.load = async function (app, db) {
         let userId = req.session.userinfo.id;
 
         const limitTimestamp = await db.get(`lvlimitdate-${userId}`);
-        if (limitTimestamp) {
-            if ((limitTimestamp + 43200000) < Date.now()) {
-                await db.delete(`dailylinkvertise-${userId}`);
-                await db.delete(`lvlimitdate-${userId}`);
-            } else {
-                return res.json({ dailyLimit: true, readable: msToHoursAndMinutes((limitTimestamp + 43200000) - Date.now()) })
-            }
+        if (!limitTimestamp) return res.json({ dailyLimit: true, readable: msToHoursAndMinutes((limitTimestamp + 43200000) - Date.now()) })
+        if ((limitTimestamp + 43200000) < Date.now()) {
+            await db.delete(`dailylinkvertise-${userId}`);
+            await db.delete(`lvlimitdate-${userId}`);
         }
 
         if (cooldowns[userId] && cooldowns[userId] < Date.now()) 
@@ -134,6 +131,7 @@ function makeid(length) {
 }
 
 function msToHoursAndMinutes(ms) {
+    if (isNaN(ms) || ms < 0) return "Unknown time";
     const msInHour = 3600000;
     const msInMinute = 60000;
 

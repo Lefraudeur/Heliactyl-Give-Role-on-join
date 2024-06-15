@@ -29,10 +29,6 @@ if (!global.atob) {
 
 const settings = require('./handlers/readSettings').settings(); 
 
-if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
-  settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
-}
-
 const themesettings = {
   index: "index.ejs",
   notfound: "index.ejs",

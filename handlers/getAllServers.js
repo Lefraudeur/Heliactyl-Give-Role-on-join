@@ -2,10 +2,6 @@ const settings = require('../handlers/readSettings').settings();
 
 const fetch = require("node-fetch");
 
-if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
-    settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
-}
-
 module.exports = () => {
     return new Promise(async (resolve) => {
 

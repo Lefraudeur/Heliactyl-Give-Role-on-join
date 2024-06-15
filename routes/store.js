@@ -6,7 +6,7 @@ const settings = require('../handlers/readSettings').settings();
 
 module.exports.load = async function(app, db) {
   const buyResource = async (req, res, resourceType, resourceName) => {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
 
     let newsettings = await enabledCheck(req, res);
     if (!newsettings) return;

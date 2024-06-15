@@ -5,15 +5,6 @@ const adminjs = require("./admin.js");
 const log = require("../handlers/log.js");
 
 const settings = require('../handlers/readSettings').settings();
-if (settings.oauth2.link.slice(-1) == "/")
-  settings.oauth2.link = settings.oauth2.link.slice(0, -1);
-
-if (settings.oauth2.callbackpath.slice(0, 1) !== "/")
-  settings.oauth2.callbackpath = "/" + settings.oauth2.callbackpath;
-
-if (settings.pterodactyl.domain.slice(-1) == "/")
-  settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
-
 
 module.exports.load = async function (app, db) {
 
@@ -25,7 +16,7 @@ module.exports.load = async function (app, db) {
     app.get("/setcoins", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -48,7 +39,7 @@ module.exports.load = async function (app, db) {
         let coins = req.query.coins;
 
         if (!id) return res.redirect(`${failredirect}?err=MISSINGID`);
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!(await db.get(`users-${id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
 
         if (!coins) return res.redirect(`${failredirect}?err=MISSINGCOINS`);
 
@@ -77,7 +68,7 @@ module.exports.load = async function (app, db) {
     app.get("/addcoins", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -130,7 +121,7 @@ module.exports.load = async function (app, db) {
     app.get("/setresources", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -231,7 +222,7 @@ module.exports.load = async function (app, db) {
   app.get("/stats", async (req, res) => {
     let theme = indexjs.get(req);
 
-    if (!req.session.pterodactyl) return four0four(req, res, theme);
+    if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
     let cacheAccount = await fetch(
         `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -264,7 +255,7 @@ module.exports.load = async function (app, db) {
     app.get("/addresources", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -364,7 +355,7 @@ module.exports.load = async function (app, db) {
     app.get("/setplan", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -413,7 +404,7 @@ module.exports.load = async function (app, db) {
     app.get("/create_coupon", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -471,7 +462,7 @@ module.exports.load = async function (app, db) {
     app.get("/revoke_coupon", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -507,7 +498,7 @@ module.exports.load = async function (app, db) {
     app.get("/remove_account", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -599,7 +590,7 @@ module.exports.load = async function (app, db) {
     app.get("/getip", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
@@ -638,7 +629,7 @@ module.exports.load = async function (app, db) {
     app.get("/userinfo", async (req, res) => {
         let theme = indexjs.get(req);
 
-        if (!req.session.pterodactyl) return four0four(req, res, theme);
+        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
         let cacheAccount = await fetch(
             `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,

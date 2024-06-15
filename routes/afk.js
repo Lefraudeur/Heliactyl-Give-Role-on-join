@@ -4,7 +4,7 @@ module.exports.load = async function(app, db) {
 
   app.ws("/afk/ws", async (ws, req, res) => {
 
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
 
     const newsettings = require('../handlers/readSettings').settings(); 
 

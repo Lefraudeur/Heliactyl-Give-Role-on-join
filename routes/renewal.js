@@ -4,32 +4,28 @@ const getAllServers = require("../handlers/getAllServers");
 const fetch = require("node-fetch");
 const chalk = require("chalk");
 
-if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
-  settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
-}
-
 module.exports.load = async function (app, db) {
 
     app.get(`/api/renewalstatus`, async (req, res) => {
-        if (!settings.renewals.status) return res.json({ error: true });
-        if (!req.query.id) return res.json({ error: true });
-        if (!req.session.pterodactyl) return res.json({ error: true });
-        if (req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) 
+        if (!settings.renewals.status 
+          || !req.query.id 
+          || !req.session.pterodactyl 
+          || !req.session 
+          || req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) 
           return res.json({ error: true });
 
         const lastRenewal = await db.get(`lastrenewal-${req.query.id}`);
         if (!lastRenewal) return res.json({ text: 'Disabled' });
 
-        if (lastRenewal > Date.now()) 
-          return res.json({ text: 'Renewed', success: true });
-        else {
+        if (!lastRenewal > Date.now()) {
           const renewalDelay = settings.renewals.delay * 86400000;
-          if ((Date.now() - lastRenewal) > renewalDelay) {
-              return res.json({ text: 'Last chance to renew!', renewable: true });
-          }
+          if ((Date.now() - lastRenewal) > renewalDelay) return res.json({ text: 'Last chance to renew!', renewable: true });
+          
           const time = msToDaysAndHours(renewalDelay - (Date.now() - lastRenewal));
           return res.json({ text: time, renewable: true });
         }
+
+        return res.json({ text: 'Renewed', success: true });
     })
 
     app.get(`/renew`, async (req, res) => {
@@ -50,17 +46,14 @@ module.exports.load = async function (app, db) {
   
       const nextEligibleRenewalTime = lastRenewal + (settings.renewals.delay * 86400000);
   
-      if (currentTime < nextEligibleRenewalTime) 
-          return res.redirect(`/dashboard?success=NEXTELIGIBLERENEWALTIME`);
+      if (currentTime < nextEligibleRenewalTime) return res.redirect(`/dashboard?success=NEXTELIGIBLERENEWALTIME`);
   
       let coins = await db.get(`coins-${req.session.userinfo.id}`);
       coins = coins ? coins : 0;
   
-      if (settings.renewals.cost > coins) 
-          return res.redirect(`/dashboard?err=CANNOTAFFORDRENEWAL`);
+      if (settings.renewals.cost > coins) return res.redirect(`/dashboard?err=CANNOTAFFORDRENEWAL`);
       
       await db.set(`coins-${req.session.userinfo.id}`, coins - settings.renewals.cost);
-  
       await db.set(`lastrenewal-${req.query.id}`, currentTime);
   
       return res.redirect(`/dashboard?success=RENEWED`);
@@ -97,8 +90,7 @@ module.exports.load = async function (app, db) {
             })
             console.log(`${chalk.cyan("[Heliactyl]")}${chalk.white("The renewal check-over is now complete.")}`);
         }
-    }, null, true, settings.timezone)
-        .start()
+    }, null, true, settings.timezone).start()
 };
 
 function msToDaysAndHours(ms) {

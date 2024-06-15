@@ -11957,6 +11957,17 @@ input[type="button"].btn-block {
   border-radius: 0; 
 }
 
+.alertbtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
 .alert {
   position: relative;
   padding: 0.75rem 1.25rem;

@@ -53,9 +53,7 @@
 
                               socket.onclose = (event) => {
                                   console.log("WebSocket connection closed:", event.reason);
-                                  if (!reconnecting) {
-                                      reconnect();
-                                  }
+                                  if (!reconnecting) reconnect();
                               };
 
                               function reconnect() {

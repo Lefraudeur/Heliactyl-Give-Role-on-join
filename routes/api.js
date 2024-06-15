@@ -135,7 +135,7 @@ module.exports.load = async function (app, db) {
    * Never used
    */
   app.get("/api/updateCoins", async (req, res) => {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
   
     let userInfo = req.session.userinfo;
     let initialCoins = await db.get(`coins-${userInfo.id}`);

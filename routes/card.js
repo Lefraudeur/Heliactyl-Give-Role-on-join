@@ -3,7 +3,7 @@ const stripe = require('stripe')(settings.stripe.key);
 
 module.exports.load = async function(app, db) {
   app.get("/buycoins", async (req, res) => {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
       
       const token = await stripe.tokens.create({
                   card: {

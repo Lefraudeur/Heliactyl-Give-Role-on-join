@@ -7,13 +7,10 @@ const log = require("../handlers/log.js");
 
 const fetch = require("node-fetch");
 
-if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
-  settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
-}
 module.exports.load = async function (app, db) {
   const queue = new Queue();
   app.get("/create", async (req, res) => {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
 
     let theme = indexjs.get(req);
     const newsettings = require('../handlers/readSettings').settings();
@@ -369,8 +366,7 @@ module.exports.load = async function (app, db) {
   });
   
   app.get(`/api/createdServer`, async (req, res) => {
-    if (!req.session.pterodactyl) 
-      return res.json({ error: true, message: `You must be logged in.` });
+    if (!req.session.pterodactyl) return res.json({ error: true, message: `You must be logged in.` });
 
     const createdServer = await db.get(`createdserver-${req.session.userinfo.id}`)
     return res.json({ created: createdServer ?? false, cost: settings.renewals.cost })

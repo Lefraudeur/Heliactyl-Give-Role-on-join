@@ -7,7 +7,7 @@ module.exports.load = async function(app, db) {
 
   app.get("/updateinfo", async (req, res) => {
     try {
-      if (!req.session.pterodactyl) return res.redirect("/login");
+      if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
 
       const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
 
@@ -25,7 +25,7 @@ module.exports.load = async function(app, db) {
 
   app.get("/regen", async (req, res) => {
     try {
-    if (!req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
     const newsettings = require('../handlers/readSettings').settings(); 
     if (newsettings.allow.regen !== true) return res.send("You cannot regenerate your password currently.");
 

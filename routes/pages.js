@@ -4,10 +4,6 @@ const ejs = require("ejs");
 const express = require("express");
 const fetch = require("node-fetch");
 
-if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
-    settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
-}
-
 module.exports.load = async function(app, db) {
   app.use('/assets', express.static('./assets'));
   app.all("/", async (req, res) => {

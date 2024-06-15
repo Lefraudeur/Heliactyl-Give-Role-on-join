@@ -8,16 +8,6 @@ const vpnCheck = require("../handlers/vpnCheck");
 const getTemplate = require('../handlers/getTemplate.js').template;
 const fetch = require('node-fetch');
 
-if (settings.oauth2.link.slice(-1) == "/")
-  settings.oauth2.link = settings.oauth2.link.slice(0, -1);
-
-if (settings.oauth2.callbackpath.slice(0, 1) !== "/")
-  settings.oauth2.callbackpath = "/" + settings.oauth2.callbackpath;
-
-if (settings.pterodactyl && settings.pterodactyl.domain && settings.pterodactyl.domain.endsWith("/")) {
-    settings.pterodactyl.domain = settings.pterodactyl.domain.slice(0, -1);
-}
-
 module.exports.load = async function (app, db) {  
   app.get("/login", async (req, res) => {
     if (req.query.redirect) req.session.redirect = "/" + req.query.redirect;

@@ -19,8 +19,7 @@
             </div>
 
             <% if (req.query.err) { %>
-              <% if (req.query.err !== "none") { %>
-              <% } else if (req.query.err == "none") { %>
+              <% if (req.query.err == "none") { %>
                 <div class="alert alert-custom">
                   Success! Action completed
                 </div>
@@ -32,13 +31,13 @@
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Set user's coins</h4>
-                                    <form action="/setcoins">
-                                        <label for="id">Discord ID:</label>
-                                        <input style="border-radius: 15px; padding: 8px;" class="form-control" name="id" placeholder="0000000000000000"><br><br>
-                                        <label for="coins">Coins:</label>
-                                        <input style="border-radius: 15px; padding: 8px;" class="form-control" name="coins" placeholder="100" type="number"><br><br>
-                                        <button class="btn btn-primary btn-lg" type="submit">Set</button>
-                                    </form>
+                    <form action="/setcoins">
+                        <label for="id">Discord ID:</label>
+                        <input style="border-radius: 15px; padding: 8px;" class="form-control" name="id" placeholder="0000000000000000"><br><br>
+                        <label for="coins">Coins:</label>
+                        <input style="border-radius: 15px; padding: 8px;" class="form-control" name="coins" placeholder="100" type="number"><br><br>
+                        <button class="btn btn-primary btn-lg" type="submit">Set</button>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -46,13 +45,13 @@
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Add user's coins</h4>
-                                    <form action="/addcoins">
-                                        <label for="id">Discord ID:</label>
-                                        <input style="border-radius: 15px; padding: 8px;" class="form-control" name="id" placeholder="0000000000000000"><br><br>
-                                        <label for="coins">Coins:</label>
-                                        <input style="border-radius: 15px; padding: 8px;" class="form-control" name="coins" placeholder="100" type="number"><br><br>
-                                        <button class="btn btn-primary btn-lg" type="submit">Add</button>
-                                    </form>
+                    <form action="/addcoins">
+                        <label for="id">Discord ID:</label>
+                        <input style="border-radius: 15px; padding: 8px;" class="form-control" name="id" placeholder="0000000000000000"><br><br>
+                        <label for="coins">Coins:</label>
+                        <input style="border-radius: 15px; padding: 8px;" class="form-control" name="coins" placeholder="100" type="number"><br><br>
+                        <button class="btn btn-primary btn-lg" type="submit">Add</button>
+                    </form>
                 </div>
               </div>
             </div>
