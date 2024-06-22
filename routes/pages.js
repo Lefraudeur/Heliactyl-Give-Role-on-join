@@ -5,7 +5,7 @@ const express = require("express");
 const fetch = require("node-fetch");
 
 module.exports.load = async function(app, db) {
-  app.use('/assets', express.static('./assets'));
+  app.use('/public', express.static('./public'));
   app.all("/", async (req, res) => {
     if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) return res.redirect("/login?prompt=none");
     

@@ -5,20 +5,13 @@
     <meta name="description" content="Login to access the dashboard.">
     <title><%= settings.name %></title>
     <!-- plugins:css -->
-    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css">
-    <script type="text/javascript" src="/assets/js/nanobar.js"></script>
-    <script type="text/javascript" src="/assets/vendors/js/jquery-3.7.1.min.js"></script>
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="/assets/vendors/jvectormap/jquery-jvectormap.css">
-    <link rel="stylesheet" href="/assets/vendors/owl-carousel-2/owl.carousel.min.css">
-    <link rel="stylesheet" href="/assets/vendors/owl-carousel-2/owl.theme.default.min.css">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->  
+    <link rel="stylesheet" href="/public/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/public/vendors/css/vendor.bundle.base.css">
+    <script type="text/javascript" src="/public/vendors/nanobar/nanobar.js"></script>
+    <script type="text/javascript" src="/public/vendors/js/jquery-3.7.1.min.js"></script>
+    <!-- endinject --> 
     <!-- Layout styles -->
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/public/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="<%= settings.icon %>" />
     <link rel="icon" type="image/png" href="<%= settings.icon %>">
@@ -148,6 +141,8 @@
     .button2 {
       width: 60%; 
       max-width: none; 
+      /* just refit in phone */
+      height: 1px;
     }
 
     .button2__text {

@@ -1,40 +1,52 @@
-const settings = require('../handlers/readSettings').settings(); 
-
+const settings = require('../handlers/readSettings').settings();
 const fetch = require("node-fetch");
 
-module.exports = () => {
-    return new Promise(async (resolve) => {
+module.exports = async () => {
+  try {
+    const allServers = [];
 
-        const allServers = []
-
-        async function getServersOnPage(page) {
-            const response = await fetch(
-                `${settings.pterodactyl.domain}/api/application/servers/?page=${page}`,
-                {
-                    headers: {
-                        "Authorization": `Bearer ${settings.pterodactyl.key}`
-                    }
-                }
-            );
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error(`Failed to fetch servers on page ${page}`);
+    async function getServersOnPage(page) {
+      try {
+        const response = await fetch(
+          `${settings.pterodactyl.domain}/api/application/servers/?page=${page}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${settings.pterodactyl.key}`
             }
-        };
+          }
+        );
 
-        let currentPage = 1
-        while (true) {
-            const page = await getServersOnPage(currentPage)
-            allServers.push(...page.data)
-            if (page.meta.pagination.total_pages > currentPage) {
-                currentPage++
-            } else {
-                break
-            }
+        if (!response.ok) {
+          throw new Error(`Failed to fetch servers on page ${page}`);
         }
 
-        resolve(allServers)
+        return response.json();
+      } catch (error) {
+        console.error(`Error fetching servers on page ${page}:`, error);
+        throw error;
+      }
+    }
 
-    })
-}
+    let currentPage = 1;
+    while (true) {
+      try {
+        const page = await getServersOnPage(currentPage);
+        allServers.push(...page.data);
+
+        if (page.meta.pagination.total_pages <= currentPage) {
+          break;
+        }
+
+        currentPage++;
+      } catch (error) {
+        console.error(`Error fetching servers:`, error);
+        return [];
+      }
+    }
+
+    return allServers;
+  } catch (error) {
+    console.error(`Error fetching all servers:`, error);
+    return [];
+  }
+};

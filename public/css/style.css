@@ -7596,45 +7596,55 @@ code,
 kbd,
 samp {
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 1em; }
+  font-size: 1em; 
+}
 
 pre {
   margin-top: 0;
   margin-bottom: 1rem;
   overflow: auto;
-  -ms-overflow-style: scrollbar; }
+  -ms-overflow-style: scrollbar; 
+}
 
 figure {
-  margin: 0 0 1rem; }
+  margin: 0 0 1rem; 
+}
 
 img {
   vertical-align: middle;
-  border-style: none; }
+  border-style: none; 
+}
 
 svg {
   overflow: hidden;
-  vertical-align: middle; }
+  vertical-align: middle; 
+}
 
 table {
-  border-collapse: collapse; }
+  border-collapse: collapse; 
+}
 
 caption {
   padding-top: 0.9375rem;
   padding-bottom: 0.9375rem;
   color: #6c757d;
   text-align: left;
-  caption-side: bottom; }
+  caption-side: bottom; 
+}
 
 th {
   text-align: inherit;
-  text-align: -webkit-match-parent; }
+  text-align: -webkit-match-parent; 
+}
 
 label {
   display: inline-block;
-  margin-bottom: 0.5rem; }
+  margin-bottom: 0.5rem; 
+}
 
 button {
-  border-radius: 0; }
+  border-radius: 0; 
+}
 
 button:focus {
   outline: 1px dotted;
@@ -21482,5 +21492,14 @@ div.tagsinput {
   width: 100%;
   -webkit-flex-grow: 1;
   flex-grow: 1; }
+
+/* === Custom CSS === */
+
+.loadingbar .bar {
+  background: #007fcc;
+  border-radius: 4px;
+  height: 2px;
+  box-shadow: 0 0 10px #007fcc;
+}
 
 /*# sourceMappingURL=maps/style.css.map */

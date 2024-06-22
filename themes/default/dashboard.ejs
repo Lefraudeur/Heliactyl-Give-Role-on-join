@@ -120,8 +120,8 @@
                             </script>
                           </p>
                           <% } %> 
-                          <p><i class="mdi mdi-memory"></i> CPU: <%= pterodactyl.relationships.servers.data[i].attributes.limits.cpu %>%</p>
-                          <p><i class="mdi mdi-memory"></i> RAM: <%= pterodactyl.relationships.servers.data[i].attributes.limits.memory %>MB</p>
+                          <p><i class="mdi mdi-memory "></i> CPU: <%= pterodactyl.relationships.servers.data[i].attributes.limits.cpu %>%</p>
+                          <p><i class="mdi mdi-format-list-bulleted"></i> RAM: <%= pterodactyl.relationships.servers.data[i].attributes.limits.memory %>MB</p>
                           <p><i class="mdi mdi-database"></i> Disk: <%= pterodactyl.relationships.servers.data[i].attributes.limits.disk %>MB</p>
                           <div class="btn-group btn-group-spacing">
                             <a role="button" class="btn btn-primary" href="<%= settings.pterodactyl.domain %>/server/<%= pterodactyl.relationships.servers.data[i].attributes.identifier %>">Link</a>
