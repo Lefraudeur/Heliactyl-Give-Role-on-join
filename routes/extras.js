@@ -17,7 +17,7 @@ module.exports.load = async function(app, db) {
       if (req.query.redirect && typeof req.query.redirect === "string") 
         return res.redirect("/" + req.query.redirect);
       
-      res.redirect("/settings");
+      res.redirect("/settings?err=SUCCESS");
     } catch (error) {
       res.send("An error has occurred while attempting to update your account information and server list.");
     }
