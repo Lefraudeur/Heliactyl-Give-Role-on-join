@@ -82,7 +82,7 @@ module.exports.load = async function (app, db) {
                             }
                         );
                         let ok = await deletionresults.ok;
-                        if (ok !== true) continue;
+                        if (!ok) continue;
                         console.log(`Server with ID ${id} failed renewal and was deleted.`);
                         await db.delete(`lastrenewal-${id}`);
                     }

@@ -19,31 +19,31 @@
               <p class="text-gray">View your resources & other things here.</p>
             </div>
             
-            <%- include('./components/alert') %>
+            <!-- alert -->
             <% if (req.query.err === "CANNOTAFFORDRENEWAL") { %>
               <div class="alert alert-custom">
                 You need at least <%= settings.renewals.cost %> coins to purchase a server renewal!
-            </div>
-            <% } if (req.query.success === 'RENEWED') { %>
+              </div>
+            <% } else if (req.query.success === 'RENEWED') { %>
               <div class="alert alert-custom">
-                Succesfully purchased renewal for server!
-            </div>
-            <% } if (req.query.success === 'NEXTELIGIBLERENEWALTIME') { %>
+                Successfully purchased renewal for server!
+              </div>
+            <% } else if (req.query.success === 'NEXTELIGIBLERENEWALTIME') { %>
               <div class="alert alert-custom">
                 You have to wait until your server is suspended to renew it.
-            </div>
-            <% } if (req.session.newaccount || req.session.password) { %>
-            <div class="alert alert-custom">
+              </div>
+            <% } else if (req.session.newaccount || req.session.password) { %>
+              <div class="alert alert-custom">
                 <% if (req.session.newaccount) { %>
                   Welcome, <%= pterodactyl.first_name %>! We're glad to have you here for the first time.<br>
                 <% } %>
                 <% if (req.session.password) { %>
-                    Your password has been changed to <%= req.session.password %>, however if you do not save that then you can just reset it via the "Account Settings" page.
+                  Your password has been changed to <%= req.session.password %>, however if you do not save that then you can just reset it via the "Account Settings" page.
                 <% } else { %>
-                    Please head over to Settings to create a password.
+                  Please head over to Settings to create a password.
                 <% } %>
-            </div>
-        <% } %>
+              </div>
+            <% } %>            
         
         <%- include('./components/status') %>
         <% if (settings.renewals.status) { %> 

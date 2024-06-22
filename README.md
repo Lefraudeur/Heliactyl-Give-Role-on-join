@@ -9,7 +9,7 @@
 ## Features
 
 - **Resource Management**: Create servers, manage resources.
-- **Coins**: Earn through AFK pages, Linkvertise.
+- **Coins**: Earn through AFK pages, J4R, Coupon.
 - **Renewal**: Use coins for server renewal.
 - **Coupons**: Distribute resources and coins.
 - **Servers**: Create, view, and edit servers.
@@ -157,7 +157,6 @@ To stop a currently running Heliactyl instance, use `pm2 stop heliactyl`
  - Dashactyl 0.3.1 & 0.4 (0.3.1 Base - 0.4 Database System)
  - Heliactyl (v12 Base - v14 Api Documentation - v15 Afk System but remade)
  - Faliactyl (Settings system)
- - HolaClient (Linkvertise settings)
 
 > [!WARNING]
 >

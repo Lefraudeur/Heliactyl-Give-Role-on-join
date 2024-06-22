@@ -17,19 +17,10 @@ resources:
 website:
   port: 25002
   secret: "Default Secret (Change this to any string you want)"
-  helmet: false   # Don't activate this if you don't know what you're doing.
 
 pterodactyl:
   domain: "https://panel.example.com"
   key: "ptla_0000000000000000000000000000000000000000000"
-
-linkvertise:
-  userid: 50000
-  coins: 5
-  timeToExpire: null
-  cooldown: null
-  dailyLimit: null
-  minTimeToComplete: null
 
 stripe:
   enabled: true
@@ -50,7 +41,6 @@ pages:
   account settings: true
 # Coins & Resources
   redeem coupon: true
-  linkvertise: true
 # Category miscellaneous
   panel: true
   admin: true
@@ -229,7 +219,6 @@ afk page:
 
 servercreation:
   cost: 0
-  ping: true
 
 renewals:
 # It's not advisable to use the renewals system, as it's unstable and doesn't work all the time.

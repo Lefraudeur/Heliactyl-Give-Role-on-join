@@ -31,23 +31,21 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
-
-        let failredirect = theme.settings.redirect.failedsetcoins || "/";
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
         let id = req.query.id;
         let coins = req.query.coins;
 
-        if (!id) return res.redirect(`${failredirect}?err=MISSINGID`);
-        if (!(await db.get(`users-${id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!id) return res.redirect("/admin?err=MISSINGID");
+        if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
 
-        if (!coins) return res.redirect(`${failredirect}?err=MISSINGCOINS`);
+        if (!coins) return res.redirect("/admin?err=MISSINGCOINS");
 
         coins = parseFloat(coins);
 
-        if (isNaN(coins)) return res.redirect(`${failredirect}?err=INVALIDCOINNUMBER`);
+        if (isNaN(coins)) return res.redirect("/admin?err=INVALIDCOINNUMBER");
 
-        if (coins < 0 || coins > 999999999999999) return res.redirect(`${failredirect}?err=COINSIZE`);
+        if (coins < 0 || coins > 999999999999999) return res.redirect("/admin?err=COINSIZE");
 
         if (coins == 0) {
             await db.delete(`coins-${id}`)
@@ -55,9 +53,8 @@ module.exports.load = async function (app, db) {
             await db.set(`coins-${id}`, coins);
         }
 
-        let successredirect = theme.settings.redirect.setcoins || "/";
         log(`set coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the coins of the user with the ID \`${id}\` to \`${coins}\`.`)
-        res.redirect(`${successredirect}?err=none`);
+        res.redirect("/admin?err=success");
     });
 
   /**
@@ -82,25 +79,23 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
-
-        let failredirect = theme.settings.redirect.failedsetcoins || "/";
+        if (!cacheAccountInfo.attributes.root_admin ) return four0four(req, res, theme);
 
         let id = req.query.id;
         let coins = req.query.coins;
 
-        if (!id) return res.redirect(`${failredirect}?err=MISSINGID`);
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!id) return res.redirect("/admin?err=MISSINGID");
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
 
-        if (!coins) return res.redirect(`${failredirect}?err=MISSINGCOINS`);
+        if (!coins) return res.redirect("/admin?err=MISSINGCOINS");
 
         let currentcoins = await db.get(`coins-${id}`) || 0;
 
         coins = currentcoins + parseFloat(coins);
 
-        if (isNaN(coins)) return res.redirect(`${failredirect}?err=INVALIDCOINNUMBER`);
+        if (isNaN(coins)) return res.redirect("/admin?err=INVALIDCOINNUMBER");
 
-        if (coins < 0 || coins > 999999999999999) return res.redirect(`${failredirect}?err=COINSIZE`);
+        if (coins < 0 || coins > 999999999999999) return res.redirect("/admin?err=COINSIZE");
 
         if (coins == 0) {
             await db.delete(`coins-${id}`)
@@ -108,9 +103,8 @@ module.exports.load = async function (app, db) {
             await db.set(`coins-${id}`, coins);
         }
 
-        let successredirect = theme.settings.redirect.setcoins || "/";
         log(`add coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added \`${req.query.coins}\` coins to the user with the ID \`${id}\`'s account.`)
-        res.redirect(`${successredirect}?err=none`);
+        res.redirect("/admin?err=success");
     });
 
   /**
@@ -135,82 +129,67 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
-        let failredirect = theme.settings.redirect.failedsetresources || "/";
+        if (!req.query.id) return res.redirect("/admin?err=MISSINGID");
 
-        if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
 
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!req.query.ram || !req.query.disk || !req.query.cpu || !req.query.servers) return res.redirect("/admin?err=MISSINGVARIABLES");
 
-        let successredirect = theme.settings.redirect.setresources || "/";
-
-        if (req.query.ram || req.query.disk || req.query.cpu || req.query.servers) {
-            let ramstring = req.query.ram;
-            let diskstring = req.query.disk;
-            let cpustring = req.query.cpu;
-            let serversstring = req.query.servers;
-            let id = req.query.id;
-
-            let currentextra = await db.get(`extra-${req.query.id}`);
-            let extra;
-
-            if (typeof currentextra == "object") {
-                extra = currentextra;
-            } else {
-                extra = {
-                    ram: 0,
-                    disk: 0,
-                    cpu: 0,
-                    servers: 0
-                }
-            }
-
-            if (ramstring) {
-                let ram = parseFloat(ramstring);
-                if (ram < 0 || ram > 999999999999999) {
-                    return res.redirect(`${failredirect}?err=RAMSIZE`);
-                }
-                extra.ram = ram;
-            }
-
-            if (diskstring) {
-                let disk = parseFloat(diskstring);
-                if (disk < 0 || disk > 999999999999999) {
-                    return res.redirect(`${failredirect}?err=DISKSIZE`);
-                }
-                extra.disk = disk;
-            }
-
-            if (cpustring) {
-                let cpu = parseFloat(cpustring);
-                if (cpu < 0 || cpu > 999999999999999) {
-                    return res.redirect(`${failredirect}?err=CPUSIZE`);
-                }
-                extra.cpu = cpu;
-            }
-
-            if (serversstring) {
-                let servers = parseFloat(serversstring);
-                if (servers < 0 || servers > 999999999999999) {
-                    return res.redirect(`${failredirect}?err=SERVERSIZE`);
-                }
-                extra.servers = servers;
-            }
-
-            if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
-                await db.delete(`extra-${req.query.id}`);
-            } else {
-                await db.set(`extra-${req.query.id}`, extra);
-            }
-
-            adminjs.suspend(req.query.id);
-
-            log(`set resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversstring}\nCPU: ${cpustring}%\nMemory: ${ramstring} MB\nDisk: ${diskstring} MB\`\`\``)
-            return res.redirect(`${successredirect}?err=none`);
+        let ramstring = req.query.ram;
+        let diskstring = req.query.disk;
+        let cpustring = req.query.cpu;
+        let serversstring = req.query.servers;
+        let id = req.query.id;
+        let currentextra = await db.get(`extra-${req.query.id}`);
+        let extra;
+        if (typeof currentextra == "object") {
+            extra = currentextra;
         } else {
-            res.redirect(`${failredirect}?err=MISSINGVARIABLES`);
+            extra = {
+                ram: 0,
+                disk: 0,
+                cpu: 0,
+                servers: 0
+            }
         }
+        if (ramstring) {
+            let ram = parseFloat(ramstring);
+            if (ram < 0 || ram > 999999999999999) {
+                return res.redirect("/admin?err=RAMSIZE");
+            }
+            extra.ram = ram;
+        }
+        if (diskstring) {
+            let disk = parseFloat(diskstring);
+            if (disk < 0 || disk > 999999999999999) {
+                return res.redirect("/admin?err=DISKSIZE");
+            }
+            extra.disk = disk;
+        }
+        if (cpustring) {
+            let cpu = parseFloat(cpustring);
+            if (cpu < 0 || cpu > 999999999999999) {
+                return res.redirect("/admin?err=CPUSIZE");
+            }
+            extra.cpu = cpu;
+        }
+        if (serversstring) {
+            let servers = parseFloat(serversstring);
+            if (servers < 0 || servers > 999999999999999) {
+                return res.redirect("/admin?err=SERVERSIZ");
+            }
+            extra.servers = servers;
+        }
+        if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
+            await db.delete(`extra-${req.query.id}`);
+        } else {
+            await db.set(`extra-${req.query.id}`, extra);
+        }
+        adminjs.suspend(req.query.id);
+        log(`set resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversstring}\nCPU: ${cpustring}%\nMemory: ${ramstring} MB\nDisk: ${diskstring} MB\`\`\``)
+        res.redirect("/admin?err=success");
     });
 
   /**
@@ -236,7 +215,7 @@ module.exports.load = async function (app, db) {
     let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
     req.session.pterodactyl = cacheAccountInfo.attributes;
-    if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+    if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
       const users = await db.get("users") || [];
   
@@ -269,17 +248,14 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
-        let failredirect = theme.settings.redirect.failedsetresources ? theme.settings.redirect.failedsetresources : "/";
+        if (!req.query.id) return res.redirect("/admin?err=MISSINGID");
 
-        if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
 
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
-
-        let successredirect = theme.settings.redirect.setresources ? theme.settings.redirect.setresources : "/";
-
-        if (req.query.ram || req.query.disk || req.query.cpu || req.query.servers) {
+        if (!req.query.cpu || !req.query.ram || !req.query.disk || !req.query.servers) return res.redirect("/admin?err=MISSINGVARIABLES");
+        
             let ramstring = req.query.ram;
             let diskstring = req.query.disk;
             let cpustring = req.query.cpu;
@@ -303,7 +279,7 @@ module.exports.load = async function (app, db) {
             if (ramstring) {
                 let ram = parseFloat(ramstring);
                 if (ram < 0 || ram > 999999999999999) {
-                    return res.redirect(`${failredirect}?err=RAMSIZE`);
+                    return res.redirect("/admin?err=RAMSIZE");
                 }
                 extra.ram = extra.ram + ram;
             }
@@ -311,7 +287,7 @@ module.exports.load = async function (app, db) {
             if (diskstring) {
                 let disk = parseFloat(diskstring);
                 if (disk < 0 || disk > 999999999999999) {
-                    return res.redirect(`${failredirect}?err=DISKSIZE`);
+                    return res.redirect("/admin?err=DISKSIZE");
                 }
                 extra.disk = extra.disk + disk;
             }
@@ -319,7 +295,7 @@ module.exports.load = async function (app, db) {
             if (cpustring) {
                 let cpu = parseFloat(cpustring);
                 if (cpu < 0 || cpu > 999999999999999) {
-                    return res.redirect(`${failredirect}?err=CPUSIZE`);
+                    return res.redirect("/admin?err=CPUSIZE");
                 }
                 extra.cpu = extra.cpu + cpu;
             }
@@ -327,7 +303,7 @@ module.exports.load = async function (app, db) {
             if (serversstring) {
                 let servers = parseFloat(serversstring);
                 if (servers < 0 || servers > 999999999999999) {
-                    return res.redirect(`${failredirect}?err=SERVERSIZE`);
+                    return res.redirect("/admin?err=SERVERSIZE");
                 }
                 extra.servers = extra.servers + servers;
             }
@@ -341,10 +317,7 @@ module.exports.load = async function (app, db) {
             adminjs.suspend(req.query.id);
 
             log(`add resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} add the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversstring}\nCPU: ${cpustring}%\nMemory: ${ramstring} MB\nDisk: ${diskstring} MB\`\`\``)
-            return res.redirect(`${successredirect}?err=none`);
-        } else {
-            res.redirect(`${failredirect}?err=MISSINGVARIABLES`);
-        }
+            return res.redirect("/admin?err=success");
     });
 
   /**
@@ -369,30 +342,20 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
-        let failredirect = theme.settings.redirect.failedsetplan || "/";
+        if (!req.query.id) return res.redirect("/admin?err=MISSINGID");
 
-        if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
 
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (req.query.package) {
+            if (!settings.packages.list[req.query.package]) return res.redirect("/admin?err=INVALIDPACKAGE");
 
-        let successredirect = theme.settings.redirect.setplan || "/";
-
-        if (!req.query.package) {
-            await db.delete(`package-${req.query.id}`);
-            adminjs.suspend(req.query.id);
-
-            log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the plan of the user with the ID \`${req.query.id}\`.`)
-            return res.redirect(`${successredirect}?err=none`);
-        } else {
-            if (!settings.packages.list[req.query.package]) 
-                return res.redirect(`${failredirect}?err=INVALIDPACKAGE`);
             await db.set(`package-${req.query.id}`, req.query.package);
             adminjs.suspend(req.query.id);
 
             log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the plan of the user with the ID \`${req.query.id}\` to \`${req.query.package}\`.`)
-            return res.redirect(`${successredirect}?err=none`);
+            return res.redirect("/admin?err=success");
         }
     });
 
@@ -418,11 +381,11 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
         let code = req.query.code ? req.query.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
 
-        if (!code.match(/^[a-z0-9]+$/i)) return res.redirect(`${theme.settings.redirect.couponcreationfailed}?err=CREATECOUPONINVALIDCHARACTERS`);
+        if (!code.match(/^[a-z0-9]+$/i)) return res.redirect("/admin?err=CREATECOUPONINVALIDCHARACTERS");
 
         let coins = req.query.coins || 0;
         let ram = req.query.ram * 1024 || 0;
@@ -436,11 +399,9 @@ module.exports.load = async function (app, db) {
         cpu = parseFloat(cpu);
         servers = parseFloat(servers);
 
-        if (coins < 0 || ram < 0 || disk < 0 || cpu < 0 || servers < 0) {
-            return res.redirect(`${theme.settings.redirect.couponcreationfailed}?err=CREATECOUPONLESSTHANONE`);
-        }
-
-        if (!coins && !ram && !disk && !cpu && !servers) return res.redirect(`${theme.settings.redirect.couponcreationfailed}?err=CREATECOUPONEMPTY`);
+        if (coins < 0 || ram < 0 || disk < 0 || cpu < 0 || servers < 0) return res.redirect("/admin?err=CREATECOUPONLESSTHANONE");
+        
+        if (!coins && !ram && !disk && !cpu && !servers) return res.redirect("/admin?err=CREATECOUPONEMPTY");
 
         await db.set(`coupon-${code}`, {
             coins: coins,
@@ -451,7 +412,7 @@ module.exports.load = async function (app, db) {
         });
 
         log(`create coupon`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``)
-        res.redirect(`${theme.settings.redirect.couponcreationsuccess}?code=${code}`)
+        res.redirect(`/admin?code=${code}`)
     });
 
   /**
@@ -476,18 +437,18 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
         let code = req.query.code;
 
-        if (!code.match(/^[a-z0-9]+$/i)) return res.redirect(`${theme.settings.redirect.couponrevokefailed}?err=REVOKECOUPONCANNOTFINDCODE`);
+        if (!code.match(/^[a-z0-9]+$/i)) return res.redirect("/admin?err=REVOKECOUPONCANNOTFINDCODE");
 
-        if (!(await db.get(`coupon-${code}`))) return res.redirect(`${theme.settings.redirect.couponrevokefailed}?err=REVOKECOUPONCANNOTFINDCODE`);
+        if (!(await db.get(`coupon-${code}`))) return res.redirect("/admin?err=REVOKECOUPONCANNOTFINDCODE");
 
         await db.delete(`coupon-${code}`);
 
         log(`revoke coupon`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} revoked the coupon code \`${code}\`.`)
-        res.redirect(`${theme.settings.redirect.couponrevokesuccess}?revokedcode=true`);
+        res.redirect("/admin?revokedcode=true");
     });
 
   /**
@@ -512,11 +473,11 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
         // This doesn't delete the account and doesn't touch the renewal system.
 
-        if (!req.query.id) return res.redirect(`${theme.settings.redirect.removeaccountfailed}?err=REMOVEACCOUNTMISSINGID`);
+        if (!req.query.id) return res.redirect("/dashboard?err=REMOVEACCOUNTMISSINGID");
 
         let discordid = req.query.id;
         let pteroid = await db.get(`users-${discordid}`);
@@ -579,7 +540,7 @@ module.exports.load = async function (app, db) {
         });
 
         log(`remove account`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the account with the ID \`${discordid}\`.`)
-        res.redirect(`${theme.settings.redirect.removeaccountsuccess}?success=REMOVEACCOUNT`);
+        res.redirect("/login?success=REMOVEACCOUNT");
     });
 
   /**
@@ -604,21 +565,17 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
-        let failredirect = theme.settings.redirect.failedgetip || "/";
-        let successredirect = theme.settings.redirect.getip || "/";
-        if (!req.query.id) return res.redirect(`${failredirect}?err=MISSINGID`);
+        if (!req.query.id) return res.redirect("/admin?err=MISSINGID");
 
-        if (!(await db.get(`users-${req.query.id}`))) 
-            return res.redirect(`${failredirect}?err=INVALIDID`);
+        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
 
-        if (!(await db.get(`ip-${req.query.id}`))) 
-            return res.redirect(`${failredirect}?err=NOIP`);
+        if (!(await db.get(`ip-${req.query.id}`))) return res.redirect("/admin?err=NOIP");
         
         let ip = await db.get(`ip-${req.query.id}`);
         log(`view ip`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${req.query.id}\`.`)
-        return res.redirect(`${successredirect}?err=NONE&ip=${ip}`)
+        return res.redirect(`/admin?err=success&ip=${ip}`)
     });
 
   /**
@@ -643,7 +600,7 @@ module.exports.load = async function (app, db) {
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (cacheAccountInfo.attributes.root_admin !== true) return four0four(req, res, theme);
+        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
 
         if (!req.query.id) return res.send({ status: "missing id" });
 
@@ -711,7 +668,7 @@ module.exports.load = async function (app, db) {
     }
 
     module.exports.suspend = async function (discordid) {
-        if (settings.allow.server.overresourcessuspend !== true) return;
+        if (!settings.allow.server.overresourcessuspend) return;
 
         let canpass = await indexjs.islimited();
         if (canpass == false) {

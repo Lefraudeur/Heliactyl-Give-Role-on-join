@@ -8,11 +8,9 @@ module.exports.load = async function(app, db) {
 
     const newsettings = require('../handlers/readSettings').settings(); 
 
-    if (newsettings["afk page"].enabled !== true || !req.session || !req.session.userinfo)
-      return ws.close();
+    if (!newsettings["afk page"].enabled || !req.session || !req.session.userinfo) return ws.close();
 
-    if (currentlyonpage[req.session.userinfo.id])
-      return ws.close();
+    if (currentlyonpage[req.session.userinfo.id]) return ws.close();
 
     currentlyonpage[req.session.userinfo.id] = true;
 
@@ -21,11 +19,10 @@ module.exports.load = async function(app, db) {
         let usercoins = await db.get(`coins-${req.session.userinfo.id}`);
         usercoins = usercoins ? usercoins : 0;
         usercoins = usercoins + newsettings["afk page"].coins;
-        if (usercoins > 999999999999999) 
-          return ws.close();
+        if (usercoins > 999999999999999) return ws.close();
         await db.set(`coins-${req.session.userinfo.id}`, usercoins);  
 
-        if (ws.readyState === ws.OPEN)
+        if (ws.readyState === ws.OPEN) 
           ws.send(JSON.stringify({"type":"coin"}));
         
       }, newsettings["afk page"].every * 1000

@@ -25,46 +25,34 @@
                       <p>Every <%= settings["afk page"].every !== 1 ? settings["afk page"].every + " seconds" : "second" %>, you will get <%= settings["afk page"].coins %> <%= settings["afk page"].coins === 1 ? "coin" : "coins" %></p>
                       <p2>This earning session you have earned <code id="sessionEarn">0 coins</code>.</p2>
 
-                        <script>
-                          let totalCoins = 0;
-                          let reconnecting = false;
-
-                          function connect() {
-                              const socket = new WebSocket(`${window.location.href.startsWith("https://") ? "wss" : "ws"}://${window.location.host}/afk/ws`);
-
-                              socket.onopen = () => {
-                                  console.log("WebSocket connection opened");
-                                  if (reconnecting) {
-                                      document.getElementById("sessionEarn").innerText = `${totalCoins} coins`;
-                                      reconnecting = false;
-                                  }
-                                  setInterval(() => {
-                                  socket.send(JSON.stringify({})); 
+                      <script>
+                        let totalCoins = 0;
+                      
+                        function connect() {
+                            const socket = new WebSocket(`${window.location.href.startsWith("https://") ? "wss" : "ws"}://${window.location.host}/afk/ws`);
+                      
+                            socket.onopen = () => {
+                                console.log("WebSocket connection opened");
+                                setInterval(() => {
+                                  socket.send(JSON.stringify({}));
                                 }, 1000);
-                              };
-
-                              socket.onmessage = (event) => {
-                                  let data = JSON.parse(event.data);
-                                  if (data.type === "coin") {
-                                      totalCoins += 1; 
-                                      document.getElementById("sessionEarn").innerText = `${totalCoins} coins`;
-                                  }
-                              };
-
-                              socket.onclose = (event) => {
-                                  console.log("WebSocket connection closed:", event.reason);
-                                  if (!reconnecting) reconnect();
-                              };
-
-                              function reconnect() {
-                                  reconnecting = true;
-                                  document.getElementById("sessionEarn").innerText = `Reconnecting...`;
-                                  setTimeout(connect, 750);
-                              }
-                          }
-
-                          connect();
-                      </script>
+                            };
+                      
+                            socket.onmessage = (event) => {
+                                let data = JSON.parse(event.data);
+                                if (data.type === "coin") {
+                                    totalCoins ++;
+                                    document.getElementById("sessionEarn").innerText = `${totalCoins} coins`;
+                                }
+                            };
+                      
+                            socket.onclose = (event) => {
+                                console.log("WebSocket connection closed:", event.reason);
+                            };
+                        }
+                      
+                        connect();
+                      </script>                      
                 </div>
                </div>
               </div>
@@ -78,19 +66,8 @@
         <!-- page-body-wrapper ends -->
       </div>
       <!-- container-scroller -->
-      <!-- plugins:js -->
-      <!-- endinject -->
-      <!-- Plugin js for this page -->
-      <script src="/assets/vendors/select2/select2.min.js"></script>
-      <script src="/assets/vendors/typeahead.js/typeahead.bundle.min.js"></script>
-      <!-- End plugin js for this page -->
       <!-- inject:js -->
       <%- include('./components/scripts') %>
       <!-- endinject -->
-      <!-- Custom js for this page -->
-      <script src="/assets/js/file-upload.js"></script>
-      <script src="/assets/js/typeahead.js"></script>
-      <script src="/assets/js/select2.js"></script>
-      <!-- End custom js for this page -->
     </body>
   </html>

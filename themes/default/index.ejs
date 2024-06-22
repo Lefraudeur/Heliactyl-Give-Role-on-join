@@ -14,9 +14,9 @@
                     <h3>Welcome!</h3>
                     <br><br>
                     <% if (!req.session.userinfo)  { %>
-                    <a role="button" class="button" href="/login" onclick="this.classList.toggle('button--loading')">
-                      <span class="button__text">Login</span>
-                    </a>
+                      <a role="button" class="button" href="/login" onclick="this.classList.toggle('button--loading')">
+                        <span class="button__text">Login</span>
+                      </a>
                     <% } else { %>
                       <a role="button" class="button" href="/dashboard" style="color: white;">Login as <%= req.session.userinfo.username %>#<%= req.session.userinfo.discriminator %></a>
                       <a role="button" class="btn btn-primary btn-lg logged-in-link justify-content-center align-items-center" href="/login" style="font-size: 18px; color: white;">Login on a different account</a>

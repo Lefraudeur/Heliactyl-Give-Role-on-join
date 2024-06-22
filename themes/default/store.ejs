@@ -16,30 +16,29 @@
             <div class="container mx-auto mt-1 text-center">
               <h2 class="title-page2">Resources Store</h2>
               <p class="text-gray">Buy extra resources to upgrade your server.</p>
-          </div>
+            </div>
           
-            <% if (req.query.err) { %>
-              <% if (req.query.err !== "none") { %>
-                <div class="alert">
-                  <% if (req.query.err == "CANNOTAFFORD") { %>
-                    Insufficient funds.
-                  <% } else if (req.query.err == "MAXCPUEXCEETED") { %>
-                    You have reached the cpu limit!
-                  <% } else if (req.query.err == "MAXRAMEXCEETED") { %>
-                    You have reached the RAM limit!
-                  <% } else if (req.query.err == "MAXDiskEXCEETED") { %>
-                    You have reached the disk limit!
-                  <% } else if (req.query.err == "MAXServersEXCEETED") { %>
-                    You have reached the servers limit!
-                  <% } %>
-                </div>
-              <% } else if (req.query.err == "none") { %>
-                <div class="alert alert-success">
-                  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                  Success!
-                </div>
+          <!-- alert -->
+          <% if (req.query.err && req.query.err !== "success") { %>
+            <div class="alert">
+              <% if (req.query.err === "CANNOTAFFORD") { %>
+                Insufficient funds.
+              <% } else if (req.query.err === "MAXCPUEXCEETED") { %>
+                You have reached the CPU limit!
+              <% } else if (req.query.err === "MAXRAMEXCEETED") { %>
+                You have reached the RAM limit!
+              <% } else if (req.query.err === "MAXDiskEXCEETED") { %>
+                You have reached the disk limit!
+              <% } else if (req.query.err === "MAXServersEXCEETED") { %>
+                You have reached the servers limit!
               <% } %>
-            <% } %>
+            </div>
+          <% } else if (req.query.err === "success") { %>
+            <div class="alert alert-success">
+              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+              Success!
+            </div>
+          <% } %>          
             
             <div class="row">
               <div class="col-md-6 grid-margin stretch-card">
@@ -53,7 +52,7 @@
                           <option value=2><%= settings.coins.store.cpu.per * 2 %>% CPU - <%= settings.coins.store.cpu.cost * 2 %> coins</option>
                         </select>
                       </div><br>
-                      <a class="button" href="javascript: buyCPU()" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
+                      <a onclick="buyCPU()" class="button" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
                     </form>
                   </div>
                 </div>
@@ -71,7 +70,7 @@
                           <option value=4><%= settings.coins.store.ram.per * 4 %>MB RAM - <%= settings.coins.store.ram.cost * 4 %> coins</option>
                         </select>
                       </div><br>
-                      <a class="button" href="javascript: buyRAM()" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
+                      <a onclick="buyRAM()" class="button" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
                     </form>
                   </div>
                 </div>
@@ -90,7 +89,7 @@
                           <option value=5><%= settings.coins.store.disk.per * 5 %>MB Disk - <%= settings.coins.store.disk.cost * 5 %> coins</option>
                         </select>
                       </div><br>
-                      <a class="button" href="javascript: buyDisk()" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
+                      <a onclick="buyDisk()" class="button" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
                     </form>
                   </div>
                 </div>
@@ -108,7 +107,7 @@
                           <option value=4><%= settings.coins.store.servers.per * 4 %> Servers - <%= settings.coins.store.servers.cost * 4 %> coins</option>
                         </select>
                       </div><br>
-                      <a class="button" href="javascript: buyServers()" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
+                      <a onclick="buyServers()" class="button" onclick="this.classList.toggle('button--loading')"><span class="button__text">Purchase</span></a><br><br>
                     </form>
                   </div>
                 </div>
@@ -125,23 +124,19 @@
     <!-- container-scroller -->
     <!-- Plugin js for this page -->
     <script src="/assets/vendors/select2/select2.min.js"></script>
-    <script src="/assets/vendors/typeahead.js/typeahead.bundle.min.js"></script>
     <script>
       async function buyCPU() {
         let cpu = encodeURIComponent(document.getElementById("cpuAmount").value);
         document.location.href = `/buycpu?amount=${cpu}`;
       };
-
       async function buyRAM() {
         let ram = encodeURIComponent(document.getElementById("ramAmount").value);
         document.location.href = `/buyram?amount=${ram}`;
       };
-
       async function buyDisk() {
         let disk = encodeURIComponent(document.getElementById("diskAmount").value);
         document.location.href = `/buydisk?amount=${disk}`;
       };
-
       async function buyServers() {
         let servers = encodeURIComponent(document.getElementById("serversAmount").value);
         document.location.href = `/buyservers?amount=${servers}`;
@@ -150,8 +145,6 @@
     <!-- End plugin js for this page -->
     <%- include('./components/scripts') %>
     <!-- Custom js for this page -->
-    <script src="/assets/js/file-upload.js"></script>
-    <script src="/assets/js/typeahead.js"></script>
     <script src="/assets/js/select2.js"></script>
     <!-- End custom js for this page -->
   </body>

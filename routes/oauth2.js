@@ -9,6 +9,7 @@ const getTemplate = require('../handlers/getTemplate.js').template;
 const fetch = require('node-fetch');
 
 module.exports.load = async function (app, db) {  
+  
   app.get("/login", async (req, res) => {
     if (req.query.redirect) req.session.redirect = "/" + req.query.redirect;
     res.redirect(
@@ -22,12 +23,11 @@ module.exports.load = async function (app, db) {
   );
   });
 
-app.get("/logout", (req, res) => {
-  let theme = indexjs.get(req);
-  req.session.destroy(() => {
-    return res.redirect(theme.settings.redirect.logout || "/");
+  app.get("/logout", (req, res) => {
+    req.session.destroy(() => {
+      return res.redirect("/");
+    });
   });
-});
 
   app.get(settings.oauth2.callbackpath, async (req, res) => {
     if (!req.query.code) return res.redirect(`/login`);
@@ -42,7 +42,6 @@ app.get("/logout", (req, res) => {
   
   app.get(`/submitlogin`, async (req, res) => {
     if (!req.query.code) return res.send("Missing code.");
-    let customredirect = req.session.redirect;
     delete req.session.redirect;
 
     const newsettings = require('../handlers/readSettings').settings(); 
@@ -114,8 +113,7 @@ app.get("/logout", (req, res) => {
 
       let guildsinfo = await guildsReponse.json();
 
-      if (userinfo.verified !== true) 
-        return res.send("Not verified a Discord account. Please verify the email on your Discord account.");
+      if (!userinfo.verified) return res.send("Not verified a Discord account. Please verify the email on your Discord account.");
 
       // Check if the user is "blacklisted" ip
 
@@ -249,8 +247,7 @@ app.get("/logout", (req, res) => {
         }
 
         if (!await db.get(`users-${userinfo.id}`)) {
-          if (newsettings.allow.newusers !== true) 
-            return res.send("New users cannot signup currently.");
+          if (!newsettings.allow.newusers) return res.send("New users cannot signup currently.");
           
           let genpassword = null;
           if (newsettings.passwordgenerator.signup == true) genpassword = makeid(newsettings.passwordgenerator["length"]);
@@ -325,8 +322,7 @@ app.get("/logout", (req, res) => {
         req.session.pterodactyl = cacheAccountInfo.attributes;
 
         req.session.userinfo = userinfo;
-        let theme = indexjs.get(req);
-        return res.redirect(customredirect || theme.settings.redirect.callback || "/");
+        return res.redirect("/dashboard");
     } else {
       res.redirect(`/login`);
     };

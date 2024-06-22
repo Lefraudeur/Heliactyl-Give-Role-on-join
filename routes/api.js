@@ -216,10 +216,8 @@ module.exports.load = async function (app, db) {
     let auth = await check(req, res);
     if (!auth) return;
 
-    if (typeof req.body !== "object") 
-      return res.send({status: "body must be an object"});
-    if (Array.isArray(req.body)) 
-      return res.send({status: "body cannot be an array"});
+    if (typeof req.body !== "object") return res.send({ status: "body must be an object" });
+    if (Array.isArray(req.body)) return res.send({ status: "body cannot be an array" });
 
     let code = req.body.code;
 

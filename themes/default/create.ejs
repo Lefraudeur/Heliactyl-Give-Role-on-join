@@ -18,51 +18,53 @@
             <p class="text-gray">Deploy your new server.</p>
            </div>
 
+           <!-- alert -->
            <% if (req.query.err) { %>
-            <div class="alert">
-                <% if (req.query.err == "MISSINGVARIABLE") { %>
-                    You have not filled out all of the server information.
-                <% } else if (req.query.err == "NOTANUMBER") { %>
-                    RAM, disk and CPU must be a number.
-                <% } else if (req.query.err == "ERRORONCREATE") { %>
-                    An error was reported by the Panel while attempting to create the server.
-                <% } else if (req.query.err == "BIGSERVERNAME") { %>
-                    Your server name must be less than <b>191</b> characters.
-                <% } else if (req.query.err == "TOOMUCHSERVERS") { %>
-                    Too many servers!
-                <% } else if (req.query.err == "PREMIUMLOCATION") { %>
-                    Please select a location.
-                <% } else if (req.query.err == "TOOLITTLECOINS") { %>
-                    You do not have enough coins to create a server
-                <% } else { %>
-                    <% if (req.query.num && !isNaN(parseFloat(req.query.num))) { %>
-                        <% if (req.query.err == "TOOLITTLERAM" || req.query.err == "TOOLITTLEDISK" || req.query.err == "TOOLITTLECPU") { %>
-                            You must make a server with at least <b><%= req.query.num %></b>
-                            <% if (req.query.err.slice(-3) == "RAM") { %>
-                                MB RAM
-                            <% } else if (req.query.err.slice(-4) == "DISK") { %>
-                                MB disk
-                            <% } else { // CPU %>
-                                % CPU
-                            <% } %>
-                            if you want to create a server with the server type you have selected.
-                        <% } else if (req.query.err == "TOOMUCHRAM" || req.query.err == "TOOMUCHDISK" || req.query.err == "TOOMUCHCPU") { %>
-                            With the selected server type, you can have a maximum of <b><%= req.query.num %></b>
-                            <% if (req.query.err.slice(-3) == "RAM") { %>
-                                MB RAM
-                            <% } else if (req.query.err.slice(-4) == "DISK") { %>
-                                MB disk
-                            <% } else { // CPU %>
-                                % CPU
-                            <% } %>
-                            on the server.
-                        <% } else if (req.query.err == "EXCEEDRAM" || req.query.err == "EXCEEDDISK" || req.query.err == "EXCEEDCPU") { %>
-                            You don't have enough resources to make this server.
-                        <% } %>
-                    <% } %>
-                <% } %>
-            </div>
-        <% } %>        
+             <div class="alert">
+               <% if (req.query.err === "MISSINGVARIABLE") { %>
+                 You have not filled out all of the server information.
+               <% } else if (req.query.err === "NOTANUMBER") { %>
+                 RAM, disk and CPU must be a number.
+               <% } else if (req.query.err === "ERRORONCREATE") { %>
+                 An error was reported by the Panel while attempting to create the server.
+               <% } else if (req.query.err === "BIGSERVERNAME") { %>
+                 Your server name must be less than <b>191</b> characters.
+               <% } else if (req.query.err === "TOOMUCHSERVERS") { %>
+                 Too many servers!
+               <% } else if (req.query.err === "PREMIUMLOCATION") { %>
+                 Please select a location.
+               <% } else if (req.query.err === "TOOLITTLECOINS") { %>
+                 You do not have enough coins to create a server
+               <% } else if (req.query.num && !isNaN(parseFloat(req.query.num))) { %>
+                 <% if (req.query.err === "TOOLITTLERAM" || req.query.err === "TOOLITTLEDISK" || req.query.err === "TOOLITTLECPU") { %>
+                   You must make a server with at least <b><%= req.query.num %></b>
+                   <% if (req.query.err.slice(-3) === "RAM") { %>
+                     MB RAM
+                   <% } else if (req.query.err.slice(-4) === "DISK") { %>
+                     MB disk
+                   <% } else { %>
+                     % CPU
+                   <% } %>
+                   if you want to create a server with the server type you have selected.
+                 <% } else if (req.query.err === "TOOMUCHRAM" || req.query.err === "TOOMUCHDISK" || req.query.err === "TOOMUCHCPU") { %>
+                   With the selected server type, you can have a maximum of <b><%= req.query.num %></b>
+                   <% if (req.query.err.slice(-3) === "RAM") { %>
+                     MB RAM
+                   <% } else if (req.query.err.slice(-4) === "DISK") { %>
+                     MB disk
+                   <% } else { %>
+                     % CPU
+                   <% } %>
+                   on the server.
+                 <% } else if (req.query.err === "EXCEEDRAM" || req.query.err === "EXCEEDDISK" || req.query.err === "EXCEEDCPU") { %>
+                   You don't have enough resources to make this server.
+                 <% } %>
+               <% } else if (req.query.err === "disabled") { %>
+                 This feature is currently disabled.
+               <% } %>
+             </div>
+           <% } %>
+                
             <div class="row justify-content-center">
               <div class="col-md-6 grid-margin stretch-card">
                 <div class="card">
@@ -90,7 +92,7 @@
                         <select class="btn btn-secondary dropdown-toggle" style="background-color: #2a3038; border: 1px solid #2c2e33; color: #e4eaec; border-radius: 15px; padding: 8px;" id="InputLoc">
                           <% for (let [name, value] of Object.entries(settings.locations)) { %>
                             <option value="<%= name %>">
-                              <%= value.name %><% if (settings.servercreation.ping == "true") { %>- Ping: <span id="ping">Loading...</span><% } %>
+                              <%= value.name %>
                             </option>
                           <% } %>
                         </select>
@@ -128,7 +130,6 @@
     <!-- endinject -->
     <!-- Plugin js for this page -->
     <script src="/assets/vendors/select2/select2.min.js"></script>
-    <script src="/assets/vendors/typeahead.js/typeahead.bundle.min.js"></script>
     <script>
       async function submitNew() {
         let name = encodeURIComponent(document.getElementById("InputName").value);
@@ -151,38 +152,12 @@
 
         document.location.href = `/create?name=${name}&egg=${egg}&ram=${ram}&disk=${disk}&cpu=${cpu}&location=${location}`;
       };
-      <% if (settings.servercreation.ping == "true") { %>
-  function fetchPingData(settings) {
-    fetch('/ping')
-    .then(response => response.json())
-    .then(data => {
-        const dropdownOptions = document.querySelectorAll('#InputLoc option');
-        dropdownOptions.forEach(option => {
-            const locationName = option.value;
-            if (data.pingData.hasOwnProperty(locationName) && settings.locations.hasOwnProperty(locationName)) {
-                option.innerHTML = `${settings.locations[locationName].name} - Ping: ${Math.round(data.pingData[locationName])}`;
-            }
-        });
-    })
-    .catch(error => console.error('Data recovery error:', error));
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-    fetchPingData(<%- JSON.stringify(settings) %>);
-
-    setInterval(() => {
-        fetchPingData(<%- JSON.stringify(settings) %>);
-    }, 5000);
-});
-<% } %>
     </script>
     <!-- End plugin js for this page -->
     <!-- inject:js -->
     <%- include('./components/scripts') %>
     <!-- endinject -->
     <!-- Custom js for this page -->
-    <script src="/assets/js/file-upload.js"></script>
-    <script src="/assets/js/typeahead.js"></script>
     <script src="/assets/js/select2.js"></script>
     <!-- End custom js for this page -->
   </body>

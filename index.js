@@ -32,10 +32,8 @@ const settings = require('./handlers/readSettings').settings();
 const themesettings = {
   index: "index.ejs",
   notfound: "index.ejs",
-  redirect: {},
   pages: {},
-  mustbeloggedin: [],
-  mustbeadmin: []
+  mustbeloggedin: []
 };
 
 module.exports.renderdataeval = async function(req) {
@@ -79,11 +77,6 @@ const session_db = new sqlite("sessions.db");
 // Load the website.
 
 module.exports.app = app;
-
-if (settings.website.helmet) {
-  const helmet = require('helmet');
-  app.use(helmet());
-}
 
 app.use(cookieParser());
 app.use(session({
@@ -180,10 +173,10 @@ app.all("*", async (req, res) => {
 
   let theme = indexjs.get(req);
   
-  if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session.userinfo || !req.session.pterodactyl)) 
+  if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session.userinfo || !req.session.pterodactyl || !req.session)) 
     return res.redirect("/login" + (req._parsedUrl.pathname.slice(0, 1) == "/" ? "?redirect=" + req._parsedUrl.pathname.slice(1) : ""));
 
-  if (theme.settings.mustbeadmin.includes(req._parsedUrl.pathname)) {
+  if (req._parsedUrl.pathname === "/admin") {
     ejs.renderFile(
       `./themes/${theme.name}/${theme.settings.notfound}`, 
       await indexjs.renderdataeval(req),
@@ -221,7 +214,7 @@ app.all("*", async (req, res) => {
       let cacheAccountInfo = JSON.parse(await cacheAccount.text());
     
       req.session.pterodactyl = cacheAccountInfo.attributes;
-      if (cacheAccountInfo.attributes.root_admin !== true) {
+      if (!cacheAccountInfo.attributes.root_admin) {
         if (err) {
           console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
           console.log(err);

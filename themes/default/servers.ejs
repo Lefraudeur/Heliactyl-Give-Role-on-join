@@ -13,28 +13,70 @@
         <div style="background-color: #111319" class="main-panel">
           <div style="background-color: #111319" class="content-wrapper">
 
-            <%- include('./components/alert') %>
-
            <div class="container mx-auto mt-1 text-center">
             <h2 class="title-page">Your Servers</h2>
             <p class="text-gray">You can edit, delete, create & update servers here.</p>
            </div>
 
-            <% if (req.query.err) { %>
-              <% if (req.query.err !== "none") { %>
-                <div class="alert alert-custom">
-                <% if (req.query.err == "CREATEDSERVER") { %>
-                  Success! Your server has been created
-                <% } %>
-                <% if (req.query.err == "DELETEDSERVER") { %>
-                  Success! Your server has been deleted, feel free to create a new one now
-                <% } %>
-                <% if (req.query.err == "MODIFYSERVER") { %>
-                  Success! Your server resources have been changed
-                <% } %>
-                </div>
-              <% } %>
-            <% } %>
+           <!-- alert -->
+           <% if (req.query.err && req.query.err !== "success") { %>
+             <div class="alert alert-custom">
+               <% if (req.query.err === "CREATEDSERVER") { %>
+                 Success! Your server has been created
+               <% } else if (req.query.err === "DELETEDSERVER") { %>
+                 Success! Your server has been deleted, feel free to create a new one now
+               <% } else if (req.query.err === "MODIFYSERVER") { %>
+                 Success! Your server resources have been changed
+               <% } else if (req.query.err === "MISSINGVARIABLE") { %>
+                 You have not filled out all of the server information.
+               <% } else if (req.query.err === "COULDNOTDECODENAME") { %>
+                 There was an error decoding the server name.
+               <% } else if (req.query.err === "TOOMUCHSERVERS") { %>
+                 Too many servers!
+               <% } else if (req.query.err === "LITTLESERVERNAME") { %>
+                 Your server name must be at least 3 characters.
+               <% } else if (req.query.err === "BIGSERVERNAME") { %>
+                 Your server name must be less than <b>191</b> characters.
+               <% } else if (req.query.err === "INVALIDLOCATION") { %>
+                 Invalid location selected.
+               <% } else if (req.query.err === "PREMIUMLOCATION") { %>
+                 Please select a location.
+               <% } else if (req.query.err === "INVALIDEGG") { %>
+                 Invalid server type selected.
+               <% } else if (req.query.err === "NOTANUMBER") { %>
+                 RAM, disk and CPU must be a number.
+               <% } else if (req.query.num && !isNaN(parseFloat(req.query.num))) { %>
+                 <% if (req.query.err === "EXCEEDRAM" || req.query.err === "EXCEEDDISK" || req.query.err === "EXCEEDCPU") { %>
+                   You don't have enough resources to make this server.
+                 <% } else if (req.query.err === "TOOLITTLERAM" || req.query.err === "TOOLITTLEDISK" || req.query.err === "TOOLITTLECPU") { %>
+                   You must make a server with at least <b><%= req.query.num %></b>
+                   <% if (req.query.err.slice(-3) === "RAM") { %>
+                     MB RAM
+                   <% } else if (req.query.err.slice(-4) === "DISK") { %>
+                     MB disk
+                   <% } else { %>
+                     % CPU
+                   <% } %>
+                   if you want to create a server with the server type you have selected.
+                 <% } else if (req.query.err === "TOOMUCHRAM" || req.query.err === "TOOMUCHDISK" || req.query.err === "TOOMUCHCPU") { %>
+                   With the selected server type, you can have a maximum of <b><%= req.query.num %></b>
+                   <% if (req.query.err.slice(-3) === "RAM") { %>
+                     MB RAM
+                   <% } else if (req.query.err.slice(-4) === "DISK") { %>
+                     MB disk
+                   <% } else { %>
+                     % CPU
+                   <% } %>
+                   on the server.
+                 <% } else if (req.query.err === "TOOLITTLECOINS") { %>
+                   You do not have enough coins to create a server
+                 <% } %>
+               <% } else if (req.query.err === "ERRORONCREATE") { %>
+                 An error was reported by the Panel while attempting to create the server.
+               <% } %>
+             </div>
+           <% } %>
+         
             
             <div class="row">
               <% if (pterodactyl.relationships.servers.data.length == 0) { %>

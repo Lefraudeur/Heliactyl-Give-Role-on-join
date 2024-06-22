@@ -14,20 +14,17 @@ module.exports.load = async function(app, db) {
     const amount = parseInt(req.query.amount);
     if (!amount || isNaN(amount) || amount < 1 || amount > 10) return res.send("Invalid amount");
 
-    const theme = indexjs.get(req);
-    const failedCallback = theme.settings.redirect[`failedPurchase${resourceName}`] || "/store";
-
     const userCoins = (await db.get(`coins-${req.session.userinfo.id}`)) || 0;
     const resourceCap = (await db.get(`${resourceType}-${req.session.userinfo.id}`)) || 0;
 
     // just idk
     if (resourceCap + amount > settings.coins.store.storelimits[resourceType]) 
-      return res.redirect(`${failedCallback}?err=MAX${resourceName}EXCEETED`);
+      return res.redirect(`/store?err=MAX${resourceName}EXCEETED`);
 
     const per = newsettings.coins.store[resourceType].per * amount;
     const cost = newsettings.coins.store[resourceType].cost * amount;
 
-    if (userCoins < cost) return res.redirect(`${failedCallback}?err=CANNOTAFFORD`);
+    if (userCoins < cost) return res.redirect(`/store?err=CANNOTAFFORD`);
 
     const newUserCoins = userCoins - cost;
     const newResource = resourceCap + amount;
@@ -52,7 +49,7 @@ module.exports.load = async function(app, db) {
 
     log(`resources purchased`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} bought ${per} ${resourceName} from the store for \`${cost}\` Credits.`);
 
-    res.redirect((theme.settings.redirect[`purchase${resourceName}`] || "/store") + "?err=none");
+    res.redirect("/store?err=success");
   };
 
   app.get("/buyram", async (req, res) => buyResource(req, res, "ram", "RAM"));

@@ -19,9 +19,9 @@ module.exports.load = async function(app, db) {
     let code = req.query.code ? req.query.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
     let couponInfo = await db.get(`coupon-${code}`);
 
-    if (!code) return res.redirect(`${theme.settings.redirect.missingorinvalidcouponcode}?err=MISSINGCOUPONCODE`);
+    if (!code) return res.redirect(`/redeem?err=MISSINGCOUPONCODE`);
 
-    if (!couponInfo) return res.redirect(`${theme.settings.redirect.missingorinvalidcouponcode}?err=INVALIDCOUPONCODE`);
+    if (!couponInfo) return res.redirect(`/redeem?err=INVALIDCOUPONCODE`);
 
     await db.delete(`coupon-${code}`);
 
@@ -48,6 +48,6 @@ module.exports.load = async function(app, db) {
 
     log(`coupon redeemed`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} redeemed the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``);
 
-    res.redirect(`${theme.settings.redirect.successfullyredeemedcoupon}?err=SUCCESSCOUPONCODE`);
+    res.redirect(`/redeem?err=SUCCESSCOUPONCODE`);
   });
 }

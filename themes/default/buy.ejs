@@ -17,6 +17,19 @@
               <h2 class="title-page">Buy Coins</h2>
               <p class="text-gray">Buy coins with your card.</p>
             </div>
+            <!-- alert -->
+            <% const alertClass = req.query.err === "SUCCESS" ? "alert-success" : "alert-danger"; %>
+            <% if (req.query.err) { %>
+              <div class="alert <%= alertClass %>">
+                <% if (req.query.err === "INVALIDCARDINFORMATION") { %>
+                  The information of the card is invalid.
+                <% } else if (req.query.err === "PAYMENTPROCESSINGERROR") { %>
+                  We have a error with the payment.
+                <% } else if (req.query.err === "SUCCESS") { %>
+                  Success!
+                <% } %>
+              </div>
+            <% } %>
 
             <div class="row justify-content-center">
               <div class="col-md-6 grid-margin stretch-card">
@@ -96,16 +109,11 @@
       <!-- page-body-wrapper ends -->
     </div>
     <!-- container-scroller -->
-    <!-- plugins:js -->
-    <!-- endinject -->
     <!-- Plugin js for this page -->
     <script src="/assets/vendors/select2/select2.min.js"></script>
-    <script src="/assets/vendors/typeahead.js/typeahead.bundle.min.js"></script>
     <!-- End plugin js for this page -->
     <%- include('./components/scripts') %>
     <!-- Custom js for this page -->
-    <script src="/assets/js/file-upload.js"></script>
-    <script src="/assets/js/typeahead.js"></script>
     <script src="/assets/js/select2.js"></script>
     <!-- End custom js for this page -->
   </body>
