@@ -79,7 +79,7 @@
          
             
             <div class="row">
-              <% if (pterodactyl.relationships.servers.data.length == 0) { %>
+              <% if (pterodactyl.relationships.servers.data.length === 0) { %>
               <% } else { %>
               <% for (let i = 0, len = pterodactyl.relationships.servers.data.length; i < len; i++) { %>                
                 <div class="col-md-6 grid-margin stretch-card">

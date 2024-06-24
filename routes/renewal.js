@@ -11,13 +11,13 @@ module.exports.load = async function (app, db) {
           || !req.query.id 
           || !req.session.pterodactyl 
           || !req.session 
-          || req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) 
+          || req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id === req.query.id).length == 0) 
           return res.json({ error: true });
 
-        const lastRenewal = await db.get(`lastrenewal-${req.query.id}`);
+        const lastRenewal = await db.get(`lastrenewal-${req.query.id}`); // c
         if (!lastRenewal) return res.json({ text: 'Disabled' });
 
-        if (!lastRenewal > Date.now()) {
+        if (!lastRenewal < Date.now()) {
           const renewalDelay = settings.renewals.delay * 86400000;
           if ((Date.now() - lastRenewal) > renewalDelay) return res.json({ text: 'Last chance to renew!', renewable: true });
           
@@ -33,7 +33,7 @@ module.exports.load = async function (app, db) {
       if (!req.query.id) return res.send(`Missing ID.`);
       if (!req.session.pterodactyl) return res.redirect(`/login`);
       
-      const server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id == req.query.id);
+      const server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id === req.query.id);
       if (!server) return res.send(`No server with that ID was found!`);
   
       const lastRenewal = await db.get(`lastrenewal-${req.query.id}`);
@@ -71,16 +71,13 @@ module.exports.load = async function (app, db) {
                     if (lastRenewal > Date.now()) continue;
                     if ((Date.now() - lastRenewal) > (settings.renewals.delay * 86400000)) {
                         // Server hasn't paid for renewal and gets suspended
-                        let deletionresults = await fetch(
-                          `${settings.pterodactyl.domain}/api/application/servers/${id}/suspend`,
-                            {
-                                method: "POST",
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    "Authorization": `Bearer ${settings.pterodactyl.key}`
-                                }
+                        let deletionresults = await fetch(`${settings.pterodactyl.domain}/api/application/servers/${id}/suspend`, {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                "Authorization": `Bearer ${settings.pterodactyl.key}`
                             }
-                        );
+                          });
                         let ok = await deletionresults.ok;
                         if (!ok) continue;
                         console.log(`Server with ID ${id} failed renewal and was deleted.`);

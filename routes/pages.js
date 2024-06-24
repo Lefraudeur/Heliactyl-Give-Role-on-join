@@ -20,14 +20,11 @@ module.exports.load = async function(app, db) {
                 console.log(err);
                 return res.render("404.ejs", { err });
             }
-            let cacheAccount = await fetch(
-                `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-                {
-                    method: "GET",
-                    headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-                }
-            );
-            if (await cacheAccount.statusText == "Not Found") return res.send(str);
+            let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+            });
+            if (await cacheAccount.statusText === "Not Found") return res.send(str);
             
             let cacheAccountInfo = JSON.parse(await cacheAccount.text());
             req.session.pterodactyl = cacheAccountInfo.attributes;

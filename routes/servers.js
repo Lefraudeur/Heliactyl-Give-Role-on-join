@@ -63,11 +63,11 @@ module.exports.load = async function (app, db) {
           return res.redirect("/servers?err=BIGSERVERNAME");
         }
         let location = req.query.location;
-        if (Object.entries(newsettings.locations).filter(vname => vname[0] == location).length !== 1) {
+        if (Object.entries(newsettings.locations).filter(vname => vname[0] === location).length !== 1) {
           cb();
           return res.redirect("/servers?err=INVALIDLOCATION");
         }
-        let requiredpackage = Object.entries(newsettings.locations).filter(vname => vname[0] == location)[0][1].package;
+        let requiredpackage = Object.entries(newsettings.locations).filter(vname => vname[0] === location)[0][1].package;
         if (requiredpackage && !requiredpackage.includes(packagename ? packagename : newsettings.packages.default)) {
           cb();
           return res.redirect("/servers?err=PREMIUMLOCATION");
@@ -151,18 +151,15 @@ module.exports.load = async function (app, db) {
           cb();
           return res.redirect("/servers/new?err=TOOLITTLECOINS");
         }
-        const serverResponse = await fetch(
-          `${newsettings.pterodactyl.domain}/api/application/servers`,
-          {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json',
-              "Authorization": `Bearer ${newsettings.pterodactyl.key}`,
-              "Accept": "application/json"
-            },
-            body: JSON.stringify(specs)
-          }
-        );
+        const serverResponse = await fetch(`${newsettings.pterodactyl.domain}/api/application/servers`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${newsettings.pterodactyl.key}`,
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(specs)
+        });
   
         if (!serverResponse.ok) {
           console.log(await serverResponse.text());
@@ -174,10 +171,9 @@ module.exports.load = async function (app, db) {
         req.session.pterodactyl.relationships.servers.data.push(serverInfo);
         
         // Bill user if they have created a server before
-        if (createdServer) 
-          await db.set(`coins-${req.session.userinfo.id}`, coins - cost);
+        if (createdServer) await db.set(`coins-${req.session.userinfo.id}`, coins - cost);
         
-        await db.set(`lastrenewal-${serverInfo.attributes.id}`, Date.now());
+        await db.set(`lastrenewal-${serverInfo.attributes.id}`, Date.now()); // c
         await db.set(`createdserver-${req.session.userinfo.id}`, true);
         cb();
         log('created server', `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created a new server named \`${name}\` with the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\nLocation ID: ${location}\nEgg: ${egg}\`\`\``)
@@ -201,7 +197,7 @@ module.exports.load = async function (app, db) {
     if (!cacheAccount) return;
     req.session.pterodactyl = cacheAccount.attributes;
 
-    let checkexist = req.session.pterodactyl.relationships.servers.data.filter(name => name.attributes.id == req.query.id);
+    let checkexist = req.session.pterodactyl.relationships.servers.data.filter(name => name.attributes.id === req.query.id);
     if (checkexist.length !== 1) return res.send("Invalid server id.");
 
     let ram = req.query.ram ? (isNaN(parseFloat(req.query.ram)) ? undefined : parseFloat(req.query.ram)) : undefined;
@@ -224,7 +220,7 @@ module.exports.load = async function (app, db) {
     let attemptegg = null;
     // let attemptname = null;
     for (let [name, value] of Object.entries(newsettings.eggs)) {
-      if (value.info.egg == checkexist[0].attributes.egg) {
+      if (value.info.egg === checkexist[0].attributes.egg) {
         attemptegg = newsettings.eggs[name];
         // attemptname = name;
       };
@@ -260,22 +256,19 @@ module.exports.load = async function (app, db) {
       io: egginfo ? checkexist[0].attributes.limits.io : 500
     };
 
-    let serverinfo = await fetch(
-      `${settings.pterodactyl.domain}/api/application/servers/${req.query.id}/build`,
-      {
-        method: "PATCH",
-        headers: { 
-          'Content-Type': 'application/json',
-          "Authorization": `Bearer ${settings.pterodactyl.key}`,
-          "Accept": "application/json" 
-        },
-        body: JSON.stringify({
-          limits: limits,
-          feature_limits: checkexist[0].attributes.feature_limits,
-          allocation: checkexist[0].attributes.allocation
-        })
-      }
-    );
+    let serverinfo = await fetch(`${settings.pterodactyl.domain}/api/application/servers/${req.query.id}/build`, {
+      method: "PATCH",
+      headers: { 
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${settings.pterodactyl.key}`,
+        "Accept": "application/json" 
+      },
+      body: JSON.stringify({
+        limits: limits,
+        feature_limits: checkexist[0].attributes.feature_limits,
+        allocation: checkexist[0].attributes.allocation
+      })
+    });
 
     if (await serverinfo.statusText !== "OK") return res.redirect(`/servers/edit?id=${req.query.id}&err=ERRORONMODIFY`);
     
@@ -295,21 +288,18 @@ module.exports.load = async function (app, db) {
   
     if (!newsettings.allow.server.delete) return res.redirect("/servers");
   
-    let server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id == req.query.id);
+    let server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id === req.query.id);
     if (!server) return res.send("Could not find server with that ID.");
   
     let serverName = server.attributes.name; // Get the server name before deletion
   
-    let deletionResults = await fetch(
-      `${settings.pterodactyl.domain}/api/application/servers/${req.query.id}`,
-      {
-        method: "delete",
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": `Bearer ${settings.pterodactyl.key}`
-        }
+    let deletionResults = await fetch(`${settings.pterodactyl.domain}/api/application/servers/${req.query.id}`, {
+      method: "delete",
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${settings.pterodactyl.key}`
       }
-    );
+    });
   
     if (!deletionResults.ok) return res.send("An error has occurred while attempting to delete the server.");
   

@@ -1,36 +1,32 @@
+const newsettings = require('../handlers/readSettings').settings();
 let currentlyonpage = {};
 
-module.exports.load = async function(app, db) {
+module.exports.load = function(app, db) {
 
-  app.ws("/afk/ws", async (ws, req, res) => {
+  app.ws("/afk/ws", async (ws, req) => {
 
-    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
+    if (!newsettings["afk page"].enabled && !req.session || !req.session.pterodactyl || !req.session.userinfo) return ws.close();
 
-    const newsettings = require('../handlers/readSettings').settings(); 
+    let userId = req.session.userinfo.id;
 
-    if (!newsettings["afk page"].enabled || !req.session || !req.session.userinfo) return ws.close();
+    if (currentlyonpage[userId]) return ws.close(); 
 
-    if (currentlyonpage[req.session.userinfo.id]) return ws.close();
+    currentlyonpage[userId] = true;
 
-    currentlyonpage[req.session.userinfo.id] = true;
+    let coinLoop = setInterval(async () => {
+      let userCoins = await db.get(`coins-${userId}`) || 0;
+      userCoins += newsettings["afk page"].coins;
 
-    let coinloop = setInterval(
-      async function() {
-        let usercoins = await db.get(`coins-${req.session.userinfo.id}`);
-        usercoins = usercoins ? usercoins : 0;
-        usercoins = usercoins + newsettings["afk page"].coins;
-        if (usercoins > 999999999999999) return ws.close();
-        await db.set(`coins-${req.session.userinfo.id}`, usercoins);  
+      if (userCoins > 999999999999999) return ws.close();
+      await db.set(`coins-${userId}`, userCoins);
 
-        if (ws.readyState === ws.OPEN) 
-          ws.send(JSON.stringify({"type":"coin"}));
-        
-      }, newsettings["afk page"].every * 1000
-    );
+      if (ws.readyState === ws.OPEN) ws.send(JSON.stringify({ type: "coin" }));
+      
+    }, newsettings["afk page"].every * 1000);
 
-    ws.on('close', async () => {
-      clearInterval(coinloop);
-      delete currentlyonpage[req.session.userinfo.id];
-    }); 
+    ws.on('close', () => {
+      clearInterval(coinLoop);
+      delete currentlyonpage[userId];
+    });
   });
 };

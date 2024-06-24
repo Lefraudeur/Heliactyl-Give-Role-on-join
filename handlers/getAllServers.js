@@ -8,14 +8,11 @@ module.exports = () => {
         const allServers = []
 
         async function getServersOnPage(page) {
-            const response = await fetch(
-                `${settings.pterodactyl.domain}/api/application/servers/?page=${page}`,
-                {
-                    headers: {
-                        "Authorization": `Bearer ${settings.pterodactyl.key}`
-                    }
+            const response = await fetch(`${settings.pterodactyl.domain}/api/application/servers/?page=${page}`, {
+                headers: {
+                    "Authorization": `Bearer ${settings.pterodactyl.key}`
                 }
-            );
+            });
             if (response.ok) {
                 return response.json();
             } else {

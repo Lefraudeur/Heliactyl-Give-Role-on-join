@@ -27,32 +27,29 @@ module.exports.load = async function(app, db) {
     try {
       if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
       const newsettings = require('../handlers/readSettings').settings(); 
-      if (!newsettings.allow.regen) return res.send("You cannot regenerate your password currently.");
+      if (!newsettings.allow.regen) return res.redirect("/settings?err=CANTREGENPASSWORD");
       
       
-      if (newsettings.pterodactyl.domain.slice(-1) == "/")
+      if (newsettings.pterodactyl.domain.slice(-1) === "/")
       newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
     
       let newpassword = generateRandomPassword(newsettings.passwordgenerator["length"]);
       req.session.password = newpassword;
   
-      await fetch(
-        `${settings.pterodactyl.domain}/api/application/users/${req.session.pterodactyl.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            'Content-Type': 'application/json',
-            "Authorization": `Bearer ${settings.pterodactyl.key}`
-          },
-          body: JSON.stringify({
-            username: req.session.pterodactyl.username,
-            email: req.session.pterodactyl.email,
-            first_name: req.session.pterodactyl.first_name,
-            last_name: req.session.pterodactyl.last_name,
-            password: newpassword
-          })
-        }
-      );
+      await fetch(`${settings.pterodactyl.domain}/api/application/users/${req.session.pterodactyl.id}`, {
+        method: "PATCH",
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${settings.pterodactyl.key}`
+        },
+        body: JSON.stringify({
+          username: req.session.pterodactyl.username,
+          email: req.session.pterodactyl.email,
+          first_name: req.session.pterodactyl.first_name,
+          last_name: req.session.pterodactyl.last_name,
+          password: newpassword
+        })
+      });
       res.redirect("/settings");
     } catch (error) {
       res.send("An error occurred while attempting to regenerate your password.");

@@ -8,17 +8,6 @@ const myCache = new NodeCache({
   deleteOnExpire: true,
   stdTTL: 59 
 });
-
-const newsettings = require('../handlers/readSettings').settings();
-if (newsettings.oauth2.link.slice(-1) == "/")
-  newsettings.oauth2.link = newsettings.oauth2.link.slice(0, -1);
-
-if (newsettings.oauth2.callbackpath.slice(0, 1) !== "/")
-  newsettings.oauth2.callbackpath = "/" + newsettings.oauth2.callbackpath;
-
-if (newsettings.pterodactyl.domain.slice(-1) == "/")
-  newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
-
 module.exports.load = async function (app, db) {
   /**
   * Information 
@@ -64,17 +53,14 @@ module.exports.load = async function (app, db) {
   
     let pterodactylid = await db.get(`users-${userId}`);
     
-    let userinforeq = await fetch(
-      `${newsettings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
-      {
-        method: "GET",
-        headers: { 
-          'Content-Type': 'application/json',
-          "Authorization": `Bearer ${newsettings.pterodactyl.key}` 
-        }
+    let userinforeq = await fetch(`${newsettings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`, {
+      method: "GET",
+      headers: { 
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${newsettings.pterodactyl.key}` 
       }
-    );
-    if (await userinforeq.statusText == "Not Found") {
+    });
+    if (await userinforeq.statusText === "Not Found") {
       console.log("[WEBSITE] An error has occurred while attempting to get a user's information");
       console.log(`- Discord ID: ${userId}`);
       console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
@@ -121,7 +107,7 @@ module.exports.load = async function (app, db) {
       return res.send({status: "coins must be number"});	
     if (coins < 0 || coins > 999999999999999) 
       return res.send({status: "too small or big coins"});	
-    if (coins == 0) {	
+    if (coins === 0) {	
       await db.delete(`coins-${id}`)	
     } else {	
       await db.set(`coins-${id}`, coins);	
@@ -145,7 +131,7 @@ module.exports.load = async function (app, db) {
   
     myCache.set(`coins_${userInfo.id}`, true, 59);
   
-    if (await db.get(`coins-${userInfo.id}`) == null) {
+    if (await db.get(`coins-${userInfo.id}`) === null) {
       await db.set(`coins-${userInfo.id}`, 0);
     } else {
       let currentCoins = await db.get(`coins-${userInfo.id}`);
@@ -171,16 +157,16 @@ module.exports.load = async function (app, db) {
     if (Array.isArray(req.body)) 
       return res.send({status: "body cannot be an array"});
 
-    let code = typeof req.body.code == "string" ? req.body.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
+    let code = typeof req.body.code === "string" ? req.body.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
 
     if (!code.match(/^[a-z0-9]+$/i)) 
       return res.json({ status: "illegal characters" });
 
-    let coins = typeof req.body.coins == "number" ? req.body.coins : 0;
-    let ram = typeof req.body.ram == "number" ? req.body.ram : 0;
-    let disk = typeof req.body.disk == "number" ? req.body.disk : 0;
-    let cpu = typeof req.body.cpu == "number" ? req.body.cpu : 0;
-    let servers = typeof req.body.servers == "number" ? req.body.servers : 0;
+    let coins = typeof req.body.coins === "number" ? req.body.coins : 0;
+    let ram = typeof req.body.ram === "number" ? req.body.ram : 0;
+    let disk = typeof req.body.disk === "number" ? req.body.disk : 0;
+    let cpu = typeof req.body.cpu === "number" ? req.body.cpu : 0;
+    let servers = typeof req.body.servers === "number" ? req.body.servers : 0;
 
     if (coins < 0) 
       return res.json({ status: "coins is less than 0" });
@@ -282,7 +268,7 @@ module.exports.load = async function (app, db) {
     if (!(await db.get(`users-${req.body.id}`))) 
       return res.send({ status: "invalid id" });
 
-    if (typeof req.body.ram == "number" || typeof req.body.disk == "number" || typeof req.body.cpu == "number" || typeof req.body.servers == "number") {
+    if (typeof req.body.ram === "number" || typeof req.body.disk === "number" || typeof req.body.cpu === "number" || typeof req.body.servers === "number") {
       let ram = req.body.ram;
       let disk = req.body.disk;
       let cpu = req.body.cpu;
@@ -291,7 +277,7 @@ module.exports.load = async function (app, db) {
       let currentextra = await db.get(`extra-${req.body.id}`);
       let extra;
 
-      if (typeof currentextra == "object") {
+      if (typeof currentextra === "object") {
         extra = currentextra;
       } else {
         extra = {
@@ -302,35 +288,35 @@ module.exports.load = async function (app, db) {
         };
       }
 
-      if (typeof ram == "number") {
+      if (typeof ram === "number") {
         if (ram < 0 || ram > 999999999999999) {
           return res.send({ status: "ram size" });
         }
         extra.ram = ram;
       }
 
-      if (typeof disk == "number") {
+      if (typeof disk === "number") {
         if (disk < 0 || disk > 999999999999999) {
           return res.send({ status: "disk size" });
         }
         extra.disk = disk;
       }
 
-      if (typeof cpu == "number") {
+      if (typeof cpu === "number") {
         if (cpu < 0 || cpu > 999999999999999) {
           return res.send({ status: "cpu size" });
         }
         extra.cpu = cpu;
       }
 
-      if (typeof servers == "number") {
+      if (typeof servers === "number") {
         if (servers < 0 || servers > 999999999999999) {
           return res.send({ status: "server size" });
         }
         extra.servers = servers;
       }
 
-      if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
+      if (extra.ram === 0 && extra.disk === 0 && extra.cpu === 0 && extra.servers === 0) {
         await db.delete(`extra-${req.body.id}`);
       } else {
         await db.set(`extra-${req.body.id}`, extra);
@@ -353,9 +339,7 @@ module.exports.load = async function (app, db) {
   async function check(req, res) {
     if (newsettings.api.enabled) {
       let auth = req.headers['authorization'];
-      if (auth && auth == `Bearer ${newsettings.api.code}`) {
-          return newsettings;
-      }
+      if (auth === `Bearer ${newsettings.api.code}`) return newsettings;
     }
 
     let theme = indexjs.get(req);

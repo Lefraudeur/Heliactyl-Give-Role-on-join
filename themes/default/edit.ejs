@@ -62,12 +62,12 @@
           <% } %>          
 
         <% if (req.query.id) { %>
-            <% if (pterodactyl.relationships.servers.data.filter(name => name.attributes.id == req.query.id).length == 1) {
-                let serverinfo = pterodactyl.relationships.servers.data.filter(name => name.attributes.id == req.query.id)[0];
+            <% if (pterodactyl.relationships.servers.data.filter(name => name.attributes.id === req.query.id).length === 1) {
+                let serverinfo = pterodactyl.relationships.servers.data.filter(name => name.attributes.id === req.query.id)[0];
                 let attemptegg = null;
                 let attemptname = null;
                 for (let [name, value] of Object.entries(settings.eggs)) {
-                    if (settings.eggs[name].info.egg == serverinfo.attributes.egg) {
+                    if (settings.eggs[name].info.egg === serverinfo.attributes.egg) {
                         attemptegg = settings.eggs[name];
                         attemptname = name;
                     };

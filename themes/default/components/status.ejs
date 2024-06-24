@@ -5,13 +5,13 @@
       let cpu = 0;
       let servers = pterodactyl.relationships.servers.data.length;
       for (let i = 0, len = pterodactyl.relationships.servers.data.length; i < len; i++) {
-          ram = ram + (typeof pterodactyl.relationships.servers.data[i].attributes.limits.memory == "number" ? pterodactyl.relationships.servers.data[i].attributes.limits.memory : 0);
-          disk = disk + (typeof pterodactyl.relationships.servers.data[i].attributes.limits.disk == "number" ? pterodactyl.relationships.servers.data[i].attributes.limits.disk : 0);
-          cpu = cpu + (typeof pterodactyl.relationships.servers.data[i].attributes.limits.cpu == "number" ? pterodactyl.relationships.servers.data[i].attributes.limits.cpu : 0);
+          ram = ram + (typeof pterodactyl.relationships.servers.data[i].attributes.limits.memory === "number" ? pterodactyl.relationships.servers.data[i].attributes.limits.memory : 0);
+          disk = disk + (typeof pterodactyl.relationships.servers.data[i].attributes.limits.disk === "number" ? pterodactyl.relationships.servers.data[i].attributes.limits.disk : 0);
+          cpu = cpu + (typeof pterodactyl.relationships.servers.data[i].attributes.limits.cpu === "number" ? pterodactyl.relationships.servers.data[i].attributes.limits.cpu : 0);
       }
     %>
 
-  <% if (settings.resources.typeRessources == "GB") { %>
+  <% if (settings.resources.typeRessources === "GB") { %>
     <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
       <div class="card">
           <div class="card-body">

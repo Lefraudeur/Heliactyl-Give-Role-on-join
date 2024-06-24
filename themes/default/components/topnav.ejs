@@ -32,7 +32,7 @@
             <% } %>
           <a class="dropdown-item preview-item" href="/dashboard">
             <div class="preview-item-content">
-              <p class="preview-subject mb-1">Plan: <%= typeof packagename.charAt(0) == 'number' ? packagename : packagename.charAt(0).toUpperCase() + packagename.slice(1) %></p>
+              <p class="preview-subject mb-1">Plan: <%= typeof packagename.charAt(0) === 'number' ? packagename : packagename.charAt(0).toUpperCase() + packagename.slice(1) %></p>
             </div>
           </a>
           <a class="dropdown-item preview-item" href="/">

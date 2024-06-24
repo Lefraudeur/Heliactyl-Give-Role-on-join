@@ -18,9 +18,7 @@ module.exports = async (key, db, ip, res) => {
     let vpncheck;
 
     if (!ipcache) {
-      vpncheck = (await
-        await fetch(`https://proxycheck.io/v2/${ip}?key=${key}&vpn=1`)
-      )
+      vpncheck = (await fetch(`https://proxycheck.io/v2/${ip}?key=${key}&vpn=1`))
         .json()
         .catch(() => null);
     };

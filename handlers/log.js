@@ -8,8 +8,8 @@ const fetch = require('node-fetch');
  * @param {string} message 
  */
 module.exports = (action, message) => {
-    if (!settings.logging.status) return
-    if (!settings.logging.actions.user[action] && !settings.logging.actions.admin[action]) return
+    if (!settings.logging.status) return;
+    if (!settings.logging.actions.user[action] && !settings.logging.actions.admin[action]) return;
 
     fetch(settings.logging.webhook, {
         method: 'POST',
@@ -43,5 +43,5 @@ module.exports = (action, message) => {
 }
 
 function hexToDecimal(hex) {
-    return parseInt(hex.replace("#", ""), 16)
+    return parseInt(hex.replace("#", ""), 16);
 }

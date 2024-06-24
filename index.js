@@ -70,10 +70,6 @@ require('express-ws')(app);
 const ejs = require("ejs");
 const indexjs = require("./index.js");
 
-const sqlite = require("better-sqlite3");
-const SqliteStore = require("better-sqlite3-session-store")(session);
-const session_db = new sqlite("sessions.db");
-
 // Load the website.
 
 module.exports.app = app;
@@ -81,15 +77,8 @@ module.exports.app = app;
 app.use(cookieParser());
 app.use(session({
   secret: settings.website.secret,
-  resave: true,
-  saveUninitialized: true,
-  store: new SqliteStore({
-    client: session_db, 
-    expired: {
-      clear: true,
-      intervalMs: 900000
-    }
-  })
+  resave: false,
+  saveUninitialized: false,
 }));
 
 app.use(express.json({
@@ -142,7 +131,7 @@ app.use(function(req, res, next) {
           querystring = `${querystring}&${query[0]}=${query[1]}`;
         }
         querystring = `?${querystring.slice(1)}`;
-        res.redirect((req._parsedUrl.pathname.slice(0, 1) == "/" ? req._parsedUrl.pathname : "/" + req._parsedUrl.pathname) + querystring);
+        res.redirect((req._parsedUrl.pathname.slice(0, 1) === "/" ? req._parsedUrl.pathname : "/" + req._parsedUrl.pathname) + querystring);
       }, 1000);
       return;
     } else {
@@ -174,7 +163,7 @@ app.all("*", async (req, res) => {
   let theme = indexjs.get(req);
   
   if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session.userinfo || !req.session.pterodactyl || !req.session)) 
-    return res.redirect("/login" + (req._parsedUrl.pathname.slice(0, 1) == "/" ? "?redirect=" + req._parsedUrl.pathname.slice(1) : ""));
+    return res.redirect("/login" + (req._parsedUrl.pathname.slice(0, 1) === "/" ? "?redirect=" + req._parsedUrl.pathname.slice(1) : ""));
 
   if (req._parsedUrl.pathname === "/admin") {
     ejs.renderFile(
@@ -194,15 +183,12 @@ app.all("*", async (req, res) => {
         return res.send(str);
       };
 
-      let cacheAccount = await fetch(
-        `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-        {
-          method: "GET",
-          headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        }
-      );
+      let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+      });
 
-      if (await cacheAccount.statusText == "Not Found") {
+      if (await cacheAccount.statusText === "Not Found") {
         if (err) {
           console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
           console.log(err);

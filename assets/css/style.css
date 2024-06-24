@@ -20697,7 +20697,7 @@ div.tagsinput {
         height: 28px;
         margin: auto;
         vertical-align: middle; }
-      .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini {
+        .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini {
         display: none; }
         .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini img {
           width: calc(70px - 50px);
@@ -20939,16 +20939,22 @@ div.tagsinput {
 
 @media (max-width: 991px) {
   .navbar {
-    flex-direction: row; }
-    .navbar .navbar-brand-wrapper {
-      width: 75px; }
-      .navbar .navbar-brand-wrapper .navbar-brand.brand-logo {
-        display: none; }
-      .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini {
-        display: inline-block; }
+    flex-direction: row; 
+  }
+  .navbar .navbar-brand-wrapper {
+    width: 75px; 
+  }
+  .navbar .navbar-brand-wrapper .navbar-brand.brand-logo {
+    display: none; 
+  }
+  .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini {
+    display: inline-block; 
+  }
   .navbar-collapse {
     display: flex;
-    margin-top: 0.5rem; } }
+    margin-top: 0.5rem; 
+  } 
+}
 
 @media (max-width: 480px) {
   .navbar .navbar-brand-wrapper {

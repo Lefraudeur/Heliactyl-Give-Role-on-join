@@ -18,15 +18,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
@@ -47,7 +44,7 @@ module.exports.load = async function (app, db) {
 
         if (coins < 0 || coins > 999999999999999) return res.redirect("/admin?err=COINSIZE");
 
-        if (coins == 0) {
+        if (coins === 0) {
             await db.delete(`coins-${id}`)
         } else {
             await db.set(`coins-${id}`, coins);
@@ -67,15 +64,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -97,7 +91,7 @@ module.exports.load = async function (app, db) {
 
         if (coins < 0 || coins > 999999999999999) return res.redirect("/admin?err=COINSIZE");
 
-        if (coins == 0) {
+        if (coins === 0) {
             await db.delete(`coins-${id}`)
         } else {
             await db.set(`coins-${id}`, coins);
@@ -117,15 +111,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -144,7 +135,7 @@ module.exports.load = async function (app, db) {
         let id = req.query.id;
         let currentextra = await db.get(`extra-${req.query.id}`);
         let extra;
-        if (typeof currentextra == "object") {
+        if (typeof currentextra === "object") {
             extra = currentextra;
         } else {
             extra = {
@@ -182,7 +173,7 @@ module.exports.load = async function (app, db) {
             }
             extra.servers = servers;
         }
-        if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
+        if (extra.ram === 0 && extra.disk === 0 && extra.cpu === 0 && extra.servers === 0) {
             await db.delete(`extra-${req.query.id}`);
         } else {
             await db.set(`extra-${req.query.id}`, extra);
@@ -203,15 +194,12 @@ module.exports.load = async function (app, db) {
 
     if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-    let cacheAccount = await fetch(
-        `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-        {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        }
-    );
+    let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+    });
 
-    if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+    if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
     let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
     req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -236,15 +224,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -265,7 +250,7 @@ module.exports.load = async function (app, db) {
             let currentextra = await db.get(`extra-${req.query.id}`);
             let extra;
 
-            if (typeof currentextra == "object") {
+            if (typeof currentextra === "object") {
                 extra = currentextra;
             } else {
                 extra = {
@@ -308,7 +293,7 @@ module.exports.load = async function (app, db) {
                 extra.servers = extra.servers + servers;
             }
 
-            if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
+            if (extra.ram === 0 && extra.disk === 0 && extra.cpu === 0 && extra.servers === 0) {
                 await db.delete(`extra-${req.query.id}`);
             } else {
                 await db.set(`extra-${req.query.id}`, extra);
@@ -330,15 +315,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -369,15 +351,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -425,15 +404,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -461,15 +437,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -490,7 +463,7 @@ module.exports.load = async function (app, db) {
             let allips = await db.get("ips") || [];
             allips = allips.filter(ip => ip !== selected_ip);
 
-            if (allips.length == 0) {
+            if (allips.length === 0) {
                 await db.delete("ips");
             } else {
                 await db.set("ips", allips);
@@ -504,7 +477,7 @@ module.exports.load = async function (app, db) {
         let userids = await db.get("users") || [];
         userids = userids.filter(user => user !== pteroid);
 
-        if (userids.length == 0) {
+        if (userids.length === 0) {
             await db.delete("users");
         } else {
             await db.set("users", userids);
@@ -553,15 +526,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -588,15 +558,12 @@ module.exports.load = async function (app, db) {
 
         if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
 
-        let cacheAccount = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`,
-            {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            }
-        );
+        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+        });
 
-        if (await cacheAccount.statusText == "Not Found") return four0four(req, res, theme);
+        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
         let cacheAccountInfo = JSON.parse(await cacheAccount.text());
 
         req.session.pterodactyl = cacheAccountInfo.attributes;
@@ -618,17 +585,14 @@ module.exports.load = async function (app, db) {
         package["name"] = packagename;
 
         let pterodactylid = await db.get(`users-${req.query.id}`);
-        let userinforeq = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
-            {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${settings.pterodactyl.key}` 
-                }
+        let userinforeq = await fetch(`${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${settings.pterodactyl.key}` 
             }
-        );
-        if (await userinforeq.statusText == "Not Found") {
+        });
+        if (await userinforeq.statusText === "Not Found") {
             console.log("[WEBSITE] An error has occurred while attempting to get a user's information");
             console.log(`- Discord ID: ${req.query.id}`);
             console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
@@ -671,7 +635,7 @@ module.exports.load = async function (app, db) {
         if (!settings.allow.server.overresourcessuspend) return;
 
         let canpass = await indexjs.islimited();
-        if (canpass == false) {
+        if (canpass === false) {
             setTimeout(async function () {
                     adminjs.suspend(discordid);
                 }, 1)
@@ -680,17 +644,14 @@ module.exports.load = async function (app, db) {
 
         indexjs.ratelimits(1);
         let pterodactylid = await db.get(`users-${discordid}`);
-        let userinforeq = await fetch(
-            `${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`,
-            {
-                method: "GET",
-                headers: { 
-                    'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${settings.pterodactyl.key}` 
-                }
+        let userinforeq = await fetch(`${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`, {
+            method: "GET",
+            headers: { 
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${settings.pterodactyl.key}` 
             }
-        );
-        if (await userinforeq.statusText == "Not Found") {
+        });
+        if (await userinforeq.statusText === "Not Found") {
             console.log("[WEBSITE] An error has occurred while attempting to check if a user's server should be suspended.");
             console.log(`- Discord ID: ${req.query.id}`);
             console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
@@ -735,31 +696,25 @@ module.exports.load = async function (app, db) {
         if (current.ram > plan.ram || current.disk > plan.disk || current.cpu > plan.cpu || current.servers > plan.servers) {
             for (let i = 0, len = userRelationShipServers.data.length; i < len; i++) {
                 let suspendid = userRelationShipServers.data[i].attributes.id;
-                await fetch(
-                    `${settings.pterodactyl.domain}/api/application/servers/${suspendid}/suspend`,
-                    {
-                        method: "POST",
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            "Authorization": `Bearer ${settings.pterodactyl.key}` 
-                        }
+                await fetch(`${settings.pterodactyl.domain}/api/application/servers/${suspendid}/suspend`, {
+                    method: "POST",
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${settings.pterodactyl.key}` 
                     }
-                );
+                });
             }
         } else {
             if (settings.renewals.status) return;
             for (let i = 0, len = userRelationShipServers.data.length; i < len; i++) {
                 let suspendid = userRelationShipServers.data[i].attributes.id;
-                await fetch(
-                    `${settings.pterodactyl.domain}/api/application/servers/${suspendid}/unsuspend`,
-                    {
-                        method: "POST",
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            "Authorization": `Bearer ${settings.pterodactyl.key}` 
-                        }
+                await fetch(`${settings.pterodactyl.domain}/api/application/servers/${suspendid}/unsuspend`, {
+                    method: "POST",
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${settings.pterodactyl.key}` 
                     }
-                );
+                });
             }
         };
     }
