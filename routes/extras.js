@@ -15,7 +15,7 @@ module.exports.load = async function(app, db) {
       req.session.pterodactyl = cacheAccount.attributes;
       
       if (req.query.redirect && typeof req.query.redirect === "string") 
-        return res.redirect("/" + req.query.redirect);
+        return res.redirect(`/${req.query.redirect}`);
       
       res.redirect("/settings?err=SUCCESS");
     } catch (error) {
@@ -28,10 +28,6 @@ module.exports.load = async function(app, db) {
       if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
       const newsettings = require('../handlers/readSettings').settings(); 
       if (!newsettings.allow.regen) return res.redirect("/settings?err=CANTREGENPASSWORD");
-      
-      
-      if (newsettings.pterodactyl.domain.slice(-1) === "/")
-      newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
     
       let newpassword = generateRandomPassword(newsettings.passwordgenerator["length"]);
       req.session.password = newpassword;

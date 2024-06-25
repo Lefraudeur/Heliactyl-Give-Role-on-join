@@ -11,7 +11,7 @@ module.exports.load = async function (app, db) {
           || !req.query.id 
           || !req.session.pterodactyl 
           || !req.session 
-          || req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id === req.query.id).length == 0) 
+          || req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) 
           return res.json({ error: true });
 
         const lastRenewal = await db.get(`lastrenewal-${req.query.id}`); // c
@@ -33,7 +33,7 @@ module.exports.load = async function (app, db) {
       if (!req.query.id) return res.send(`Missing ID.`);
       if (!req.session.pterodactyl) return res.redirect(`/login`);
       
-      const server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id === req.query.id);
+      const server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id == req.query.id);
       if (!server) return res.send(`No server with that ID was found!`);
   
       const lastRenewal = await db.get(`lastrenewal-${req.query.id}`);

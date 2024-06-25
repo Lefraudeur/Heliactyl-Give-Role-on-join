@@ -197,7 +197,7 @@ module.exports.load = async function (app, db) {
     if (!cacheAccount) return;
     req.session.pterodactyl = cacheAccount.attributes;
 
-    let checkexist = req.session.pterodactyl.relationships.servers.data.filter(name => name.attributes.id === req.query.id);
+    let checkexist = req.session.pterodactyl.relationships.servers.data.filter(name => name.attributes.id == req.query.id);
     if (checkexist.length !== 1) return res.send("Invalid server id.");
 
     let ram = req.query.ram ? (isNaN(parseFloat(req.query.ram)) ? undefined : parseFloat(req.query.ram)) : undefined;
@@ -288,7 +288,7 @@ module.exports.load = async function (app, db) {
   
     if (!newsettings.allow.server.delete) return res.redirect("/servers");
   
-    let server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id === req.query.id);
+    let server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id == req.query.id);
     if (!server) return res.send("Could not find server with that ID.");
   
     let serverName = server.attributes.name; // Get the server name before deletion
