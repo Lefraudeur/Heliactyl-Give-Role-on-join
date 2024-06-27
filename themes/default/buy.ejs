@@ -18,15 +18,18 @@
               <p class="text-gray">Buy coins with your card.</p>
             </div>
             <!-- alert -->
-            <% const alertClass = req.query.err === "SUCCESS" ? "alert-success" : "alert-danger"; %>
-            <% if (req.query.err) { %>
+            <% const alertClass = req.query.success === "SUCCESS" ? "alert-success" : "alert-danger"; %>
+            <% if (req.query.err || req.query.success) { %>
               <div class="alert <%= alertClass %>">
                 <% if (req.query.err === "INVALIDCARDINFORMATION") { %>
                   The information of the card is invalid.
                 <% } else if (req.query.err === "PAYMENTPROCESSINGERROR") { %>
                   We have a error with the payment.
-                <% } else if (req.query.err === "SUCCESS") { %>
-                  Success!
+                <% } else if (req.query.success === "SUCCESS") { %>
+                  <div class="alert alert-success">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    Success!
+                  </div>
                 <% } %>
               </div>
             <% } %>

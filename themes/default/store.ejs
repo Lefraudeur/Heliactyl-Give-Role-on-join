@@ -19,7 +19,7 @@
             </div>
           
           <!-- alert -->
-          <% if (req.query.err && req.query.err !== "success") { %>
+          <% if (req.query.err && req.query.err !== "SUCCESS") { %>
             <div class="alert">
               <% if (req.query.err === "CANNOTAFFORD") { %>
                 Insufficient funds.
@@ -33,7 +33,7 @@
                 You have reached the servers limit!
               <% } %>
             </div>
-          <% } else if (req.query.err === "success") { %>
+          <% } else if (req.query.success === "SUCCESS") { %>
             <div class="alert alert-success">
               <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
               Success!

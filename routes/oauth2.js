@@ -5,6 +5,7 @@ const log = require('../handlers/log');
 const vpnCheck = require("../handlers/vpnCheck");
 const getTemplate = require('../handlers/getTemplate.js').template;
 const fetch = require('node-fetch');
+const getPteroUser = require('../handlers/getPteroUser.js');
 
 module.exports.load = async function (app, db) {  
 
@@ -257,18 +258,10 @@ module.exports.load = async function (app, db) {
       log('signup', `${userinfo.username}#${userinfo.discriminator} logged in to the dashboard for the first time!`);
     }
 
-    let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${userinfo.id}`))}?include=servers`, {
-      method: "GET",
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": `Bearer ${settings.pterodactyl.key}` 
-      }
-    });
+    const cacheAccount = await getPteroUser(userinfo.id, db);
+    if (!cacheAccount) return;
 
-    if (await cacheAccount.statusText === "Not Found") return res.send("An error has occurred while attempting to get your user information.");
-    let cacheAccountInfo = await cacheAccount.json();
-    req.session.pterodactyl = cacheAccountInfo.attributes;
-
+    req.session.pterodactyl = cacheAccount.attributes;
     req.session.userinfo = userinfo;
     return res.redirect("/dashboard");
   });

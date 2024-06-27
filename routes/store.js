@@ -1,12 +1,10 @@
-const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
-const ejs = require("ejs");
 const log = require('../handlers/log');
 const settings = require('../handlers/readSettings').settings(); 
 
 module.exports.load = async function(app, db) {
   const buyResource = async (req, res, resourceType, resourceName) => {
-    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
+    if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
 
     let newsettings = await enabledCheck(req, res);
     if (!newsettings) return;
@@ -49,7 +47,7 @@ module.exports.load = async function(app, db) {
 
     log(`resources purchased`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} bought ${per} ${resourceName} from the store for \`${cost}\` Credits.`);
 
-    res.redirect("/store?err=success");
+    res.redirect("/store?success=SUCCESS");
   };
 
   app.get("/buyram", async (req, res) => buyResource(req, res, "ram", "RAM"));
@@ -57,26 +55,9 @@ module.exports.load = async function(app, db) {
   app.get("/buycpu", async (req, res) => buyResource(req, res, "cpu", "CPU"));
   app.get("/buyservers", async (req, res) => buyResource(req, res, "servers", "Servers"));
 
-  async function enabledCheck(req, res) {
+  async function enabledCheck (req, res) {
     let newsettings = require('../handlers/readSettings').settings(); 
     if (newsettings.coins.store.enabled) return newsettings;
-
-    const theme = indexjs.get(req);
-    ejs.renderFile(
-      `./themes/${theme.name}/${theme.settings.notfound}`,
-      await indexjs.renderdataeval(req),
-      null,
-      function (err, str) {
-        delete req.session.newaccount;
-        if (err) {
-          console.log(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
-          console.log(err);
-          return res.render("404.ejs", { err });
-        }
-        res.status(200);
-        res.send(str);
-      }
-    );
-    return null;
+    else return res.redirect("/dashboard?err=STOREDISABLED");
   }
 };

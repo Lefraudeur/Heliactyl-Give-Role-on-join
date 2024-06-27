@@ -11,18 +11,16 @@
 const fs = require("fs");
 const fetch = require("node-fetch");
 const chalk = require("chalk");
+const ejs = require("ejs");
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 if (!global.btoa) {
-  global.btoa = function (str) {
-    return Buffer.from(str, 'binary').toString('base64');
-  };
+  global.btoa = (str) => Buffer.from(str, 'binary').toString('base64');
 }
+
 if (!global.atob) {
-  global.atob = function (b64Encoded) {
-    return Buffer.from(b64Encoded, 'base64').toString('binary');
-  };
+  global.atob = (b64Encoded) => Buffer.from(b64Encoded, 'base64').toString('binary');
 }
 
 // Load settings.
@@ -30,8 +28,6 @@ if (!global.atob) {
 const settings = require('./handlers/readSettings').settings(); 
 
 const themesettings = {
-  index: "index.ejs",
-  notfound: "index.ejs",
   pages: {},
   mustbeloggedin: []
 };
@@ -59,18 +55,14 @@ const db = require("./handlers/db.js");
 
 module.exports.db = db;
 
-// Load express addons.
+// Load express.
 
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const session = require("express-session");
 const app = express();
 require('express-ws')(app);
-
-const ejs = require("ejs");
 const indexjs = require("./index.js");
-
-// Load the website.
 
 module.exports.app = app;
 
@@ -116,135 +108,123 @@ const listener = app.listen(settings.website.port, async () => {
 });
 
 const manager = require('./handlers/readSettings').settings(); 
-var cache = false
+let cache = false;
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   const rateLimitPath = manager.ratelimits[req._parsedUrl.pathname];
 
   if (rateLimitPath) {
     if (cache) {
       setTimeout(async () => {
-        let allqueries = Object.entries(req.query);
-        let querystring = "";
-
-        for (let query of allqueries) {
-          querystring = `${querystring}&${query[0]}=${query[1]}`;
-        }
-        querystring = `?${querystring.slice(1)}`;
-        res.redirect((req._parsedUrl.pathname.slice(0, 1) === "/" ? req._parsedUrl.pathname : "/" + req._parsedUrl.pathname) + querystring);
+        let querystring = Object.entries(req.query).map(([key, value]) => `${key}=${value}`).join('&');
+        res.redirect(`${req._parsedUrl.pathname}?${querystring}`);
       }, 1000);
       return;
     } else {
       cache = true;
-
-      setTimeout(async () => {
-        cache = false;
-      }, 1000 * rateLimitPath);
+      setTimeout(() => { cache = false; }, 1000 * rateLimitPath);
     }
   }
   next();
 });
 
-// Load the routes.
+ // Load routes.
 
 let routeFiles = fs.readdirSync('./routes').filter(file => file.endsWith('.js'));
 
 routeFiles.forEach(file => {
   let routeFile = require(`./routes/${file}`);
-	routeFile.load(app, db);
+  routeFile.load(app, db);
 });
 
- // Load route
-
 app.all("*", async (req, res) => {
-  if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) 
-    return res.redirect("/login?prompt=none");
+  if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) return res.redirect("/login?prompt=none");
 
   let theme = indexjs.get(req);
   
-  if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session.userinfo || !req.session.pterodactyl || !req.session)) 
+  if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session || !req.session.userinfo || !req.session.pterodactyl)) 
     return res.redirect("/login" + (req._parsedUrl.pathname.slice(0, 1) === "/" ? "?redirect=" + req._parsedUrl.pathname.slice(1) : ""));
 
   if (req._parsedUrl.pathname === "/admin") {
     ejs.renderFile(
-      `./themes/${theme.name}/${theme.settings.notfound}`, 
+      `./themes/${theme.name}/404.ejs`,
       await indexjs.renderdataeval(req),
       null,
-    async function (err, str) {
-      delete req.session.newaccount;
-      delete req.session.password;
-      if (!req.session.userinfo || !req.session.pterodactyl || err) {
-        if (err) {
-          console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
-          console.log(err);
-          return res.render("404.ejs", { err });
-        };
-        res.status(200);
-        return res.send(str);
-      };
-
-      let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-        method: "GET",
-        headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-      });
-
-      if (await cacheAccount.statusText === "Not Found") {
-        if (err) {
-          console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
-          console.log(err);
-          return res.render("404.ejs", { err });
-        };
-        return res.send(str);
-      };
-      
-      let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-    
-      req.session.pterodactyl = cacheAccountInfo.attributes;
-      if (!cacheAccountInfo.attributes.root_admin) {
-        if (err) {
-          console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
-          console.log(err);
-          return res.render("404.ejs", { err });
-        };
-        return res.send(str);
-      };
-
-      ejs.renderFile(
-        `./themes/${theme.name}/${theme.settings.pages[req._parsedUrl.pathname.slice(1)] ? theme.settings.pages[req._parsedUrl.pathname.slice(1)] : theme.settings.notfound}`, 
-        await indexjs.renderdataeval(req),
-        null,
-      function (err, str) {
+      async (err, str) => {
         delete req.session.newaccount;
         delete req.session.password;
-        if (err) {
-          console.log(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`);
-          console.log(err);
-          return res.render("404.ejs", { err });
-        };
-        res.status(200);
-        res.send(str);
-      });
-    });
+        if (!req.session.userinfo || !req.session.pterodactyl || err) {
+          if (err) {
+            console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
+            console.log(err);
+            return res.render("404.ejs", { err });
+          }
+          res.status(200).send(str);
+        } else {
+          let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${await db.get(`users-${req.session.userinfo.id}`)}?include=servers`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
+          });
+
+          if (await cacheAccount.statusText === "Not Found") {
+            if (err) {
+              console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
+              console.log(err);
+              return res.render("404.ejs", { err });
+            }
+            return res.send(str);
+          }
+
+          let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+        
+          req.session.pterodactyl = cacheAccountInfo.attributes;
+          if (!cacheAccountInfo.attributes.root_admin) {
+            if (err) {
+              console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
+              console.log(err);
+              return res.render("404.ejs", { err });
+            }
+            return res.send(str);
+          }
+
+          ejs.renderFile(
+            `./themes/${theme.name}/${theme.settings.pages[req._parsedUrl.pathname.slice(1)] || "404.ejs"}`, 
+            await indexjs.renderdataeval(req),
+            null,
+            (err, str) => {
+              delete req.session.newaccount;
+              delete req.session.password;
+              if (err) {
+                console.log(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`);
+                console.log(err);
+                return res.render("404.ejs", { err });
+              }
+              res.status(200).send(str);
+            }
+          );
+        }
+      }
+    );
     return;
-  };
+  }
 
   const data = await indexjs.renderdataeval(req);
-  
+
   ejs.renderFile(
-    `./themes/${theme.name}/${theme.settings.pages[req._parsedUrl.pathname.slice(1)] ? theme.settings.pages[req._parsedUrl.pathname.slice(1)] : theme.settings.notfound}`, 
+    `./themes/${theme.name}/${theme.settings.pages[req._parsedUrl.pathname.slice(1)] || "404.ejs"}`, 
     data,
     null,
-  function (err, str) {
-    delete req.session.newaccount;
-    delete req.session.password;
-    if (err) {
-      console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
-      console.log(err);
-      return res.render("404.ejs", { err });
-    };
-    res.status(200);
-    res.send(str);
-  });
+    (err, str) => {
+      delete req.session.newaccount;
+      delete req.session.password;
+      if (err) {
+        console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
+        console.log(err);
+        return res.render("404.ejs", { err });
+      }
+      res.status(200).send(str);
+    }
+  );
 });
 
 module.exports.get = function(req) {
@@ -268,19 +248,15 @@ module.exports.get = function(req) {
 };
 
 module.exports.islimited = async function() {
-  return cache ? false : true;
+  return !cache;
 }
 
 module.exports.ratelimits = async function(length) {
-  if (cache) 
-  return setTimeout(
-    indexjs.ratelimits, 1
-  );
+  if (cache) {
+    setTimeout(indexjs.ratelimits, 1);
+    return;
+  }
   
   cache = true;
-  setTimeout(
-    async function() {
-      cache = false;
-    }, length * 1000
-  )
+  setTimeout(() => { cache = false; }, length * 1000);
 }

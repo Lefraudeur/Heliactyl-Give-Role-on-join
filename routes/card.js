@@ -4,7 +4,7 @@ const stripe = require('stripe')(settings.stripe.key);
 module.exports.load = async function(app, db) {
   app.get("/buycoins", async (req, res) => {
     try {
-      if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
+      if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
       
       const token = await stripe.tokens.create({
           card: {
@@ -27,7 +27,7 @@ module.exports.load = async function(app, db) {
         ccoins += settings.stripe.coins * req.query.amt;
       	await db.set(`coins-${req.session.userinfo.id}`, ccoins);
 
-        res.redirect("/buy?err=SUCCESS");
+        res.redirect("/buy?success=SUCCESS");
       } catch (err) {
         console.error("Error processing payment:", err);
         res.redirect("/buy?err=PAYMENTPROCESSINGERROR");

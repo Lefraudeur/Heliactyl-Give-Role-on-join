@@ -1,6 +1,4 @@
 {
-    "index": "index.ejs",
-    "notfound": "404.ejs",
     "pages": {
         "dashboard": "dashboard.ejs",
         "servers": "servers.ejs",

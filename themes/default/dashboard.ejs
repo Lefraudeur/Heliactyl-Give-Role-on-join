@@ -24,6 +24,18 @@
               <div class="alert alert-custom">
                 You need at least <%= settings.renewals.cost %> coins to purchase a server renewal!
               </div>
+            <% } else if (req.query.err === 'RENEWALSDISABLED') { %>
+              <div class="alert alert-custom">
+                Renewals are currently disabled.
+              </div>
+            <% } else if (req.query.err === 'NORENEWRECORD') { %>
+              <div class="alert alert-custom">
+                No renewals are recorded for this ID. A new renewal timestamp has been set.
+              </div>
+            <% } else if (req.query.err === 'STOREDISABLED') { %>
+              <div class="alert alert-custom">
+                Store are currently disabled.
+              </div>
             <% } else if (req.query.success === 'RENEWED') { %>
               <div class="alert alert-custom">
                 Successfully purchased renewal for server!
@@ -33,8 +45,8 @@
                 You have to wait until your server is suspended to renew it.
               </div>
             <% } else if (req.session.newaccount || req.session.password) { %>
-              <div class="alert alert-custom">
-                <% if (req.session.newaccount) { %>
+             <div class="alert alert-custom">
+                 <% if (req.session.newaccount) { %>
                   Welcome, <%= pterodactyl.first_name %>! We're glad to have you here for the first time.<br>
                 <% } %>
                 <% if (req.session.password) { %>
@@ -85,7 +97,11 @@
                     <div class="col-md-4 grid-margin stretch-card">
                       <div class="card">
                         <div class="card-body">
-                          <h4 class="card-title"><%= pterodactyl.relationships.servers.data[i].attributes.name.length > 40 ? pterodactyl.relationships.servers.data[i].attributes.name.slice(0, 40) + "..." : pterodactyl.relationships.servers.data[i].attributes.name %></h4>
+                          <h4 class="card-title" id="server-name-<%= pterodactyl.relationships.servers.data[i].attributes.id %>">
+                            <%= pterodactyl.relationships.servers.data[i].attributes.name.length > 40 ? 
+                                pterodactyl.relationships.servers.data[i].attributes.name.slice(0, 40) + "..." : 
+                                pterodactyl.relationships.servers.data[i].attributes.name %>
+                          </h4>
                           <% if (settings.renewals.status) { %> 
                           <p>
                             <i class="mdi mdi-clock"></i> Time Left: 
@@ -94,8 +110,10 @@
                               fetch(`/api/renewalstatus?id=<%= pterodactyl.relationships.servers.data[i].attributes.id %>`)
                                 .then(response => response.json())
                                 .then(data => {
+                                  console.log(data)
+                                  const serverNameElement = document.getElementById('server-name-<%= pterodactyl.relationships.servers.data[i].attributes.id %>');
                                   const timeLeftElement = document.getElementById('time-left-<%= pterodactyl.relationships.servers.data[i].attributes.id %>');
-                                  if (data.renewable) {
+                                  if (!data.renewable) {
                                     if (data.text.includes("day")) {
                                       const regexResult = /(\d+) days and (\d+\.\d+) hours/.exec(data.text);
                                       if (regexResult) {
@@ -104,15 +122,16 @@
                                         const minutes = Math.round((parseFloat(regexResult[2]) - hours) * 60);
                                         const formattedTime = days > 0 ? `${days} days, ${hours} hours, and ${minutes} minutes` : `${hours} hours and ${minutes} minutes`;
                                         timeLeftElement.innerText = formattedTime;
-                                      } else {
-                                        timeLeftElement.innerText = data.text;
-                                      } 
+                                      }
                                     } else {
                                       const timeParts = data.text.split(" ");
                                       const hours = Math.floor(parseFloat(timeParts[0]));
                                       const minutes = Math.round((parseFloat(timeParts[0]) - hours) * 60);
                                       timeLeftElement.innerText = `${hours} hours and ${minutes} minutes`;
                                     }
+                                  } else if (data.renewable) {
+                                    timeLeftElement.innerText = data.text;
+                                    serverNameElement.innerText += ' Suspended';
                                   } else {
                                     timeLeftElement.innerText = 'Not Renewable';
                                   }

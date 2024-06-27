@@ -10,7 +10,7 @@ const fetch = require("node-fetch");
 module.exports.load = async function (app, db) {
   const queue = new Queue();
   app.get("/create", async (req, res) => {
-    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
+    if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
 
     const newsettings = require('../handlers/readSettings').settings();
 
@@ -183,7 +183,7 @@ module.exports.load = async function (app, db) {
     });
 
   app.get("/modify", async (req, res) => {
-    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
+    if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
   
     const newsettings = require('../handlers/readSettings').settings(); 
     if (!newsettings.allow.server.modify) return res.redirect("/servers/modify?err=disabled");
@@ -281,7 +281,7 @@ module.exports.load = async function (app, db) {
   });  
 
   app.get("/delete", async (req, res) => {
-    if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
+    if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
     if (!req.query.id) return res.send("Missing id.");
   
     const newsettings = require('../handlers/readSettings').settings();

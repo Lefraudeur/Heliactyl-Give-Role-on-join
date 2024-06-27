@@ -1,8 +1,7 @@
-const settings = require('../handlers/readSettings').settings(); 
 const indexjs = require("../index.js");
 const ejs = require("ejs");
 const express = require("express");
-const fetch = require("node-fetch");
+const getPteroUser = require('../handlers/getPteroUser.js');
 
 module.exports.load = async function(app, db) {
   app.use('/assets', express.static('./assets'));
@@ -10,7 +9,7 @@ module.exports.load = async function(app, db) {
     if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) return res.redirect("/login?prompt=none");
     
     let theme = indexjs.get(req);
-    if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session.userinfo || !req.session.pterodactyl || !req.session)) return res.redirect("/login");
+    if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session.userinfo || !req.session || !req.session.pterodactyl)) return res.redirect("/login");
   
     if (req._parsedUrl.pathname === "/admin") {
         const renderPage = async (err, str) => {
@@ -20,19 +19,15 @@ module.exports.load = async function(app, db) {
                 console.log(err);
                 return res.render("404.ejs", { err });
             }
-            let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-            });
-            if (await cacheAccount.statusText === "Not Found") return res.send(str);
-            
-            let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-            req.session.pterodactyl = cacheAccountInfo.attributes;
 
-            if (!cacheAccountInfo.attributes.root_admin) return res.send(str);
+            const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+            if (!cacheAccount) return;
+
+            req.session.pterodactyl = cacheAccount.attributes;
+            if (!cacheAccount.attributes.root_admin) return res.send(str);
             
             ejs.renderFile(
-                `./themes/${theme.name}/${theme.settings.index}`, 
+                `./themes/${theme.name}/index.ejs`, 
                 await indexjs.renderdataeval(req),
                 null,
                 (err, str) => {
@@ -47,7 +42,7 @@ module.exports.load = async function(app, db) {
             );
         };
         ejs.renderFile(
-            `./themes/${theme.name}/${theme.settings.notfound}`, 
+            `./themes/${theme.name}/404.ejs`, 
             await indexjs.renderdataeval(req),
             null,
             renderPage
@@ -55,7 +50,7 @@ module.exports.load = async function(app, db) {
         return;
     }
     ejs.renderFile(
-        `./themes/${theme.name}/${theme.settings.index}`, 
+        `./themes/${theme.name}/index.ejs`, 
         await indexjs.renderdataeval(req),
         null,
         (err, str) => {

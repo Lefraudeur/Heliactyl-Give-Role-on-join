@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
 const log = require("../handlers/log.js");
-
+const getPteroUser = require('../handlers/getPteroUser.js');
 const settings = require('../handlers/readSettings').settings();
 
 module.exports.load = async function (app, db) {
@@ -14,24 +14,15 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/setcoins", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
-
-        let id = req.query.id;
-        let coins = req.query.coins;
+        let { id, coins } = req.query;
 
         if (!id) return res.redirect("/admin?err=MISSINGID");
         if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
@@ -51,7 +42,7 @@ module.exports.load = async function (app, db) {
         }
 
         log(`set coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the coins of the user with the ID \`${id}\` to \`${coins}\`.`)
-        res.redirect("/admin?err=success");
+        res.redirect("/admin?success=SUCCESS");
     });
 
   /**
@@ -60,26 +51,18 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/addcoins", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin ) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin ) return four0four(req, res, theme);
-
-        let id = req.query.id;
-        let coins = req.query.coins;
+        let { id, coins } = req.query;
 
         if (!id) return res.redirect("/admin?err=MISSINGID");
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
+        if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
 
         if (!coins) return res.redirect("/admin?err=MISSINGCOINS");
 
@@ -97,8 +80,8 @@ module.exports.load = async function (app, db) {
             await db.set(`coins-${id}`, coins);
         }
 
-        log(`add coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added \`${req.query.coins}\` coins to the user with the ID \`${id}\`'s account.`)
-        res.redirect("/admin?err=success");
+        log(`add coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added \`${coins}\` coins to the user with the ID \`${id}\`'s account.`)
+        res.redirect("/admin?success=SUCCESS");
     });
 
   /**
@@ -107,36 +90,28 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/setresources", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+        let { id, cpu, ram, disk, servers  } = req.query;
 
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
+        if (!id) return res.redirect("/admin?err=MISSINGID");
+        if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID"); 
+        if (!cpu || !ram || !disk || !servers) return res.redirect("/admin?err=MISSINGVARIABLES");
 
-        if (!req.query.id) return res.redirect("/admin?err=MISSINGID");
-
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
-
-        if (!req.query.ram || !req.query.disk || !req.query.cpu || !req.query.servers) return res.redirect("/admin?err=MISSINGVARIABLES");
-
-        let ramstring = req.query.ram;
-        let diskstring = req.query.disk;
-        let cpustring = req.query.cpu;
-        let serversstring = req.query.servers;
-        let id = req.query.id;
-        let currentextra = await db.get(`extra-${req.query.id}`);
+        let ramString = ram;
+        let diskString = disk;
+        let cpuString = cpu;
+        let serversString = servers;
+        let currentExtra = await db.get(`extra-${id}`);
         let extra;
-        if (typeof currentextra === "object") {
-            extra = currentextra;
+        if (typeof currentExtra === "object") {
+            extra = currentExtra;
         } else {
             extra = {
                 ram: 0,
@@ -145,42 +120,108 @@ module.exports.load = async function (app, db) {
                 servers: 0
             }
         }
-        if (ramstring) {
-            let ram = parseFloat(ramstring);
-            if (ram < 0 || ram > 999999999999999) {
-                return res.redirect("/admin?err=RAMSIZE");
-            }
-            extra.ram = ram;
+        if (ramString) {
+            let ram2 = parseFloat(ramString);
+            if (ram2 < 0 || ram2 > 999999999999999) return res.redirect("/admin?err=RAMSIZE");
+
+            extra.ram = ram2;
         }
-        if (diskstring) {
-            let disk = parseFloat(diskstring);
-            if (disk < 0 || disk > 999999999999999) {
-                return res.redirect("/admin?err=DISKSIZE");
-            }
-            extra.disk = disk;
+        if (diskString) {
+            let disk2 = parseFloat(diskString);
+            if (disk2 < 0 || disk2 > 999999999999999) return res.redirect("/admin?err=DISKSIZE");
+
+            extra.disk = disk2;
         }
-        if (cpustring) {
-            let cpu = parseFloat(cpustring);
-            if (cpu < 0 || cpu > 999999999999999) {
-                return res.redirect("/admin?err=CPUSIZE");
-            }
-            extra.cpu = cpu;
+        if (cpuString) {
+            let cpu2 = parseFloat(cpuString);
+            if (cpu2 < 0 || cpu2 > 999999999999999) return res.redirect("/admin?err=CPUSIZE");
+
+            extra.cpu = cpu2;
         }
-        if (serversstring) {
-            let servers = parseFloat(serversstring);
-            if (servers < 0 || servers > 999999999999999) {
-                return res.redirect("/admin?err=SERVERSIZ");
-            }
-            extra.servers = servers;
+        if (serversString) {
+            let servers2 = parseFloat(serversString);
+            if (servers2 < 0 || servers2 > 999999999999999) return res.redirect("/admin?err=SERVERSIZ");
+
+            extra.servers = servers2;
         }
         if (extra.ram === 0 && extra.disk === 0 && extra.cpu === 0 && extra.servers === 0) {
-            await db.delete(`extra-${req.query.id}`);
+            await db.delete(`extra-${id}`);
         } else {
-            await db.set(`extra-${req.query.id}`, extra);
+            await db.set(`extra-${id}`, extra);
         }
-        adminjs.suspend(req.query.id);
-        log(`set resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversstring}\nCPU: ${cpustring}%\nMemory: ${ramstring} MB\nDisk: ${diskstring} MB\`\`\``)
-        res.redirect("/admin?err=success");
+        adminjs.suspend(id);
+        log(`set resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversString}\nCPU: ${cpuString}%\nMemory: ${ramString} MB\nDisk: ${diskString} MB\`\`\``)
+        res.redirect("/admin?success=SUCCESS");
+    });
+
+      /**
+   * GET /addresources
+   * Endpoint to add additional resources to a user's account.
+   */
+
+    app.get("/addresources", async (req, res) => {
+      if (!req.session || !req.session.pterodactyl) return four0four(req, res);
+      
+      const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+      if (!cacheAccount) return;
+
+      req.session.pterodactyl = cacheAccount.attributes;
+      if (!cacheAccount.attributes.root_admin) return four0four(req, res);
+
+      let { id, cpu, ram, disk, servers  } = req.query;
+
+      if (!id) return res.redirect("/admin?err=MISSINGID");
+      if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
+      if (!cpu || !ram || !disk || !servers) return res.redirect("/admin?err=MISSINGVARIABLES");
+      
+      let ramString = ram;
+      let diskString = disk;
+      let cpuString = cpu;
+      let serversString = servers;
+      let currentExtra = await db.get(`extra-${id}`);
+      let extra;
+      if (typeof currentExtra === "object") {
+          extra = currentExtra;
+      } else {
+          extra = {
+              ram: 0,
+              disk: 0,
+              cpu: 0,
+              servers: 0
+          }
+      }
+      if (ramString) {
+          let ram2 = parseFloat(ramString);
+          if (ram2 < 0 || ram2 > 999999999999999) return res.redirect("/admin?err=RAMSIZE");
+          
+          extra.ram = extra.ram + ram2;
+      }
+      if (diskString) {
+          let disk2 = parseFloat(diskString);
+          if (disk2 < 0 || disk2 > 999999999999999) return res.redirect("/admin?err=DISKSIZE");
+          
+          extra.disk = extra.disk + disk2;
+      }
+      if (cpuString) {
+          let cpu2 = parseFloat(cpuString);
+          if (cpu2 < 0 || cpu2 > 999999999999999) return res.redirect("/admin?err=CPUSIZE");
+          
+          extra.cpu = extra.cpu + cpu2;
+      }
+      if (serversString) {
+          let servers2 = parseFloat(serversString);
+          if (servers2 < 0 || servers2 > 999999999999999) return res.redirect("/admin?err=SERVERSIZE");
+          
+          extra.servers = extra.servers + servers2;
+      }
+      if (extra.ram === 0 && extra.disk === 0 && extra.cpu === 0 && extra.servers === 0) {
+          await db.delete(`extra-${id}`);
+      } else {
+          await db.set(`extra-${id}`, extra);
+      }
+      adminjs.suspend(id);
+      log(`add resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} add the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversString}\nCPU: ${cpuString}%\nMemory: ${ramString} MB\nDisk: ${diskString} MB\`\`\``)
+      return res.redirect("/admin?success=SUCCESS");
     });
 
   /**
@@ -190,120 +231,22 @@ module.exports.load = async function (app, db) {
    */
   
   app.get("/stats", async (req, res) => {
-    let theme = indexjs.get(req);
+    if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-    if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+    const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+    if (!cacheAccount) return;
 
-    let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-        method: "GET",
-        headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-    });
+    req.session.pterodactyl = cacheAccount.attributes;
+    if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-    if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-    let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+    const users = await db.get("users") || [];
 
-    req.session.pterodactyl = cacheAccountInfo.attributes;
-    if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
+    const stats = {
+      total_users: users.length,
+    };
 
-      const users = await db.get("users") || [];
-  
-      const stats = {
-        total_users: users.length,
-      };
-  
-      res.json(stats);
+    res.json(stats);
   });
-  
-  /**
-   * GET /addresources
-   * Endpoint to add additional resources to a user's account.
-   */
-
-    app.get("/addresources", async (req, res) => {
-        let theme = indexjs.get(req);
-
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
-
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
-
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
-
-        if (!req.query.id) return res.redirect("/admin?err=MISSINGID");
-
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
-
-        if (!req.query.cpu || !req.query.ram || !req.query.disk || !req.query.servers) return res.redirect("/admin?err=MISSINGVARIABLES");
-        
-            let ramstring = req.query.ram;
-            let diskstring = req.query.disk;
-            let cpustring = req.query.cpu;
-            let serversstring = req.query.servers;
-            let id = req.query.id;
-
-            let currentextra = await db.get(`extra-${req.query.id}`);
-            let extra;
-
-            if (typeof currentextra === "object") {
-                extra = currentextra;
-            } else {
-                extra = {
-                    ram: 0,
-                    disk: 0,
-                    cpu: 0,
-                    servers: 0
-                }
-            }
-
-            if (ramstring) {
-                let ram = parseFloat(ramstring);
-                if (ram < 0 || ram > 999999999999999) {
-                    return res.redirect("/admin?err=RAMSIZE");
-                }
-                extra.ram = extra.ram + ram;
-            }
-
-            if (diskstring) {
-                let disk = parseFloat(diskstring);
-                if (disk < 0 || disk > 999999999999999) {
-                    return res.redirect("/admin?err=DISKSIZE");
-                }
-                extra.disk = extra.disk + disk;
-            }
-
-            if (cpustring) {
-                let cpu = parseFloat(cpustring);
-                if (cpu < 0 || cpu > 999999999999999) {
-                    return res.redirect("/admin?err=CPUSIZE");
-                }
-                extra.cpu = extra.cpu + cpu;
-            }
-
-            if (serversstring) {
-                let servers = parseFloat(serversstring);
-                if (servers < 0 || servers > 999999999999999) {
-                    return res.redirect("/admin?err=SERVERSIZE");
-                }
-                extra.servers = extra.servers + servers;
-            }
-
-            if (extra.ram === 0 && extra.disk === 0 && extra.cpu === 0 && extra.servers === 0) {
-                await db.delete(`extra-${req.query.id}`);
-            } else {
-                await db.set(`extra-${req.query.id}`, extra);
-            }
-
-            adminjs.suspend(req.query.id);
-
-            log(`add resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} add the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversstring}\nCPU: ${cpustring}%\nMemory: ${ramstring} MB\nDisk: ${diskstring} MB\`\`\``)
-            return res.redirect("/admin?err=success");
-    });
 
   /**
    * GET /setplan
@@ -311,34 +254,27 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/setplan", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+        let { id, package } = req.query;
 
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
+        if (!id) return res.redirect("/admin?err=MISSINGID");
 
-        if (!req.query.id) return res.redirect("/admin?err=MISSINGID");
+        if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
 
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
+        if (!package) return;
 
-        if (req.query.package) {
-            if (!settings.packages.list[req.query.package]) return res.redirect("/admin?err=INVALIDPACKAGE");
-
-            await db.set(`package-${req.query.id}`, req.query.package);
-            adminjs.suspend(req.query.id);
-
-            log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the plan of the user with the ID \`${req.query.id}\` to \`${req.query.package}\`.`)
-            return res.redirect("/admin?err=success");
-        }
+        if (!settings.packages.list[package]) return res.redirect("/admin?err=INVALIDPACKAGE");
+        await db.set(`package-${id}`, package);
+        adminjs.suspend(id);
+        log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the plan of the user with the ID \`${id}\` to \`${package}\`.`)
+        return res.redirect("/admin?success=SUCCESS");
     });
 
   /**
@@ -347,30 +283,23 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/create_coupon", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
-
-        let code = req.query.code ? req.query.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
+        let { cpu = cpu * 100 || 0,
+              ram = ram * 1024 || 0,
+              disk = disk * 1024 || 0,
+              servers = servers || 0,
+              coins = coins || 0 ,
+              code = code ? code.slice(0, 200) : Math.random().toString(36).substring(2, 15)
+        } = req.query;
 
         if (!code.match(/^[a-z0-9]+$/i)) return res.redirect("/admin?err=CREATECOUPONINVALIDCHARACTERS");
-
-        let coins = req.query.coins || 0;
-        let ram = req.query.ram * 1024 || 0;
-        let disk = req.query.disk * 1024 || 0;
-        let cpu = req.query.cpu * 100 || 0;
-        let servers = req.query.servers || 0;
 
         coins = parseFloat(coins);
         ram = parseFloat(ram);
@@ -400,22 +329,15 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/revoke_coupon", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
-
-        let code = req.query.code;
+        let { code } = req.query;
 
         if (!code.match(/^[a-z0-9]+$/i)) return res.redirect("/admin?err=REVOKECOUPONCANNOTFINDCODE");
 
@@ -433,31 +355,25 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/remove_account", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
+        let { id } = req.query;
 
         // This doesn't delete the account and doesn't touch the renewal system.
 
-        if (!req.query.id) return res.redirect("/dashboard?err=REMOVEACCOUNTMISSINGID");
+        if (!id) return res.redirect("/dashboard?err=REMOVEACCOUNTMISSINGID");
 
-        let discordid = req.query.id;
-        let pteroid = await db.get(`users-${discordid}`);
+        let pteroid = await db.get(`users-${id}`);
 
         // Remove IP.
 
-        let selected_ip = await db.get(`ip-${discordid}`);
+        let selected_ip = await db.get(`ip-${id}`);
 
         if (selected_ip) {
             let allips = await db.get("ips") || [];
@@ -469,7 +385,7 @@ module.exports.load = async function (app, db) {
                 await db.set("ips", allips);
             }
 
-            await db.delete(`ip-${discordid}`);
+            await db.delete(`ip-${id}`);
         }
 
         // Remove user from dashboard.
@@ -483,17 +399,17 @@ module.exports.load = async function (app, db) {
             await db.set("users", userids);
         }
 
-        await db.delete(`users-${discordid}`);
+        await db.delete(`users-${id}`);
 
         // Remove coins/resources.
 
-        await db.delete(`coins-${discordid}`);
-        await db.delete(`extra-${discordid}`);
-        await db.delete(`package-${discordid}`);
+        await db.delete(`coins-${id}`);
+        await db.delete(`extra-${id}`);
+        await db.delete(`package-${id}`);
 
         // Remove server and user account
 
-        let servers = cacheAccountInfo.attributes.relationships.servers.data;
+        let servers = cacheAccount.attributes.relationships.servers.data;
         for (let server of servers) {
             await fetch(`${settings.pterodactyl.domain}/api/application/servers/${server.id}`, {
                 method: "DELETE",
@@ -512,7 +428,7 @@ module.exports.load = async function (app, db) {
             }
         });
 
-        log(`remove account`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the account with the ID \`${discordid}\`.`)
+        log(`remove account`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the account with the ID \`${id}\`.`)
         res.redirect("/login?success=REMOVEACCOUNT");
     });
 
@@ -522,30 +438,25 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/getip", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+        let { id } = req.query;
 
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
+        if (!id) return res.redirect("/admin?err=MISSINGID");
 
-        if (!req.query.id) return res.redirect("/admin?err=MISSINGID");
+        if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
 
-        if (!(await db.get(`users-${req.query.id}`))) return res.redirect("/admin?err=INVALIDID");
-
-        if (!(await db.get(`ip-${req.query.id}`))) return res.redirect("/admin?err=NOIP");
+        if (!(await db.get(`ip-${id}`))) return res.redirect("/admin?err=NOIP");
         
-        let ip = await db.get(`ip-${req.query.id}`);
-        log(`view ip`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${req.query.id}\`.`)
-        return res.redirect(`/admin?err=success&ip=${ip}`)
+        let ip = await db.get(`ip-${id}`);
+        log(`view ip`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${id}\`.`)
+        return res.redirect(`/admin?success=IP&ip=${ip}`);
     });
 
   /**
@@ -554,26 +465,21 @@ module.exports.load = async function (app, db) {
    */
 
     app.get("/userinfo", async (req, res) => {
-        let theme = indexjs.get(req);
+        if (!req.session || !req.session.pterodactyl) return four0four(req, res);
 
-        if (!req.session.pterodactyl || !req.session) return four0four(req, res, theme);
+        const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
+        if (!cacheAccount) return;
 
-        let cacheAccount = await fetch(`${settings.pterodactyl.domain}/api/application/users/${(await db.get(`users-${req.session.userinfo.id}`))}?include=servers`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
-        });
+        req.session.pterodactyl = cacheAccount.attributes;
+        if (!cacheAccount.attributes.root_admin) return four0four(req, res);
 
-        if (await cacheAccount.statusText === "Not Found") return four0four(req, res, theme);
-        let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+        let { id } = req.query;
 
-        req.session.pterodactyl = cacheAccountInfo.attributes;
-        if (!cacheAccountInfo.attributes.root_admin) return four0four(req, res, theme);
+        if (!id) return res.send({ status: "missing id" });
 
-        if (!req.query.id) return res.send({ status: "missing id" });
+        if (!(await db.get(`users-${id}`))) return res.send({ status: "invalid id" });
 
-        if (!(await db.get(`users-${req.query.id}`))) return res.send({ status: "invalid id" });
-
-        let packagename = await db.get(`package-${req.query.id}`);
+        let packagename = await db.get(`package-${id}`);
         let package = settings.packages.list[packagename ? packagename : settings.packages.default];
         if (!package) package = {
             ram: 0,
@@ -584,7 +490,7 @@ module.exports.load = async function (app, db) {
 
         package["name"] = packagename;
 
-        let pterodactylid = await db.get(`users-${req.query.id}`);
+        let pterodactylid = await db.get(`users-${id}`);
         let userinforeq = await fetch(`${settings.pterodactyl.domain}/api/application/users/${pterodactylid}?include=servers`, {
             method: "GET",
             headers: {
@@ -594,7 +500,7 @@ module.exports.load = async function (app, db) {
         });
         if (await userinforeq.statusText === "Not Found") {
             console.log("[WEBSITE] An error has occurred while attempting to get a user's information");
-            console.log(`- Discord ID: ${req.query.id}`);
+            console.log(`- Discord ID: ${id}`);
             console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
             return res.send({ status: "could not find user on panel" });
         }
@@ -603,23 +509,24 @@ module.exports.load = async function (app, db) {
         res.send({
             status: "success",
             package: package,
-            extra: await db.get(`extra-${req.query.id}`) ? await db.get(`extra-${req.query.id}`) : {
+            extra: await db.get(`extra-${id}`) ? await db.get(`extra-${id}`) : {
                 ram: 0,
                 disk: 0,
                 cpu: 0,
                 servers: 0
             },
             userinfo: userinfo,
-            coins: settings.coins.enabled ? (await db.get(`coins-${req.query.id}`) ? await db.get(`coins-${req.query.id}`) : 0) : null
+            coins: settings.coins.enabled ? (await db.get(`coins-${id}`) ? await db.get(`coins-${id}`) : 0) : null
         });
     });
     
-    async function four0four(req, res, theme) {
+    async function four0four(req, res) {
+        let theme = indexjs.get(req);
         ejs.renderFile(
-            `./themes/${theme.name}/${theme.settings.notfound}`,
+            `./themes/${theme.name}/404.ejs`,
             await indexjs.renderdataeval(req),
             null,
-            function (err, str) {
+            (err, str) => {
                 delete req.session.newaccount;
                 if (err) {
                     console.log(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
@@ -636,7 +543,7 @@ module.exports.load = async function (app, db) {
 
         let canpass = await indexjs.islimited();
         if (canpass === false) {
-            setTimeout(async function () {
+            setTimeout(() => {
                     adminjs.suspend(discordid);
                 }, 1)
             return;

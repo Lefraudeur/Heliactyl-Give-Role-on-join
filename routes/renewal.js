@@ -15,23 +15,23 @@ module.exports.load = async function (app, db) {
           return res.json({ error: true });
 
         const lastRenewal = await db.get(`lastrenewal-${req.query.id}`); // c
-        if (!lastRenewal) return res.json({ text: 'Disabled' });
+        if (!lastRenewal) return res.json({ text: "Disabled" });
 
         if (!lastRenewal < Date.now()) {
           const renewalDelay = settings.renewals.delay * 86400000;
-          if ((Date.now() - lastRenewal) > renewalDelay) return res.json({ text: 'Last chance to renew!', renewable: true });
+          if ((Date.now() - lastRenewal) > renewalDelay) return res.json({ text: "Time to renew", renewable: true });
           
           const time = msToDaysAndHours(renewalDelay - (Date.now() - lastRenewal));
-          return res.json({ text: time, renewable: true });
+          return res.json({ text: time, renewable: false });
         }
 
-        return res.json({ text: 'Renewed', success: true });
+        return res.json({ text: "Renewed", success: true });
     })
 
     app.get(`/renew`, async (req, res) => {
-      if (!settings.renewals.status) return res.send(`Renewals are currently disabled.`);
-      if (!req.query.id) return res.send(`Missing ID.`);
-      if (!req.session.pterodactyl) return res.redirect(`/login`);
+      if (!settings.renewals.status) return res.redirect("/dashboard?err=RENEWALSDISABLED");
+      if (!req.query.id) return res.send("Missing ID.");
+      if (!req.session.pterodactyl) return res.redirect("/login");
       
       const server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id == req.query.id);
       if (!server) return res.send(`No server with that ID was found!`);
@@ -41,22 +41,24 @@ module.exports.load = async function (app, db) {
   
       if (!lastRenewal) {
           await db.set(`lastrenewal-${req.query.id}`, currentTime);
-          return res.send("No renewals are recorded for this ID. A new renewal timestamp has been set.");
+          return res.redirect("/dashboard?err=NORENEWRECORD");
       }
   
       const nextEligibleRenewalTime = lastRenewal + (settings.renewals.delay * 86400000);
   
-      if (currentTime < nextEligibleRenewalTime) return res.redirect(`/dashboard?success=NEXTELIGIBLERENEWALTIME`);
+      if (currentTime < nextEligibleRenewalTime) return res.redirect("/dashboard?success=NEXTELIGIBLERENEWALTIME");
   
       let coins = await db.get(`coins-${req.session.userinfo.id}`);
       coins = coins ? coins : 0;
+
+      const renewCost = settings.renewals.cost
   
-      if (settings.renewals.cost > coins) return res.redirect(`/dashboard?err=CANNOTAFFORDRENEWAL`);
+      if (renewCost > coins) return res.redirect("/dashboard?err=CANNOTAFFORDRENEWAL");
       
-      await db.set(`coins-${req.session.userinfo.id}`, coins - settings.renewals.cost);
+      await db.set(`coins-${req.session.userinfo.id}`, coins - renewCost);
       await db.set(`lastrenewal-${req.query.id}`, currentTime);
   
-      return res.redirect(`/dashboard?success=RENEWED`);
+      return res.redirect("/dashboard?success=RENEWED");
   });
 
     new CronJob(`0 0 * * *`, async () => {

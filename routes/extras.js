@@ -7,15 +7,14 @@ module.exports.load = async function(app, db) {
 
   app.get("/updateinfo", async (req, res) => {
     try {
-      if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
+      if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
 
       const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
-
       if (!cacheAccount) return;
+      
       req.session.pterodactyl = cacheAccount.attributes;
       
-      if (req.query.redirect && typeof req.query.redirect === "string") 
-        return res.redirect(`/${req.query.redirect}`);
+      if (req.query.redirect && typeof req.query.redirect === "string") return res.redirect(`/${req.query.redirect}`);
       
       res.redirect("/settings?err=SUCCESS");
     } catch (error) {
@@ -25,7 +24,7 @@ module.exports.load = async function(app, db) {
 
   app.get("/regen", async (req, res) => {
     try {
-      if (!req.session.pterodactyl || !req.session) return res.redirect("/login");
+      if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
       const newsettings = require('../handlers/readSettings').settings(); 
       if (!newsettings.allow.regen) return res.redirect("/settings?err=CANTREGENPASSWORD");
     

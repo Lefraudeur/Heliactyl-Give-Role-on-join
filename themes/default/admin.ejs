@@ -58,18 +58,25 @@
               <% } else if (req.query.err === "NOIP") { %>
                 <div class="alert alert-danger">No IP address found</div>
               <% } %>
+
+              <% if (req.query.success === "IP" && req.query.ip) { %>
+                <div class="alert alert-success">IP address: <%= req.query.ip %></div>
+              <% } %>
               
-            <% } else if (req.query.err === "success" || req.query.code) { %>
-              <div class="alert alert-custom">
-                <% if (req.query.err === "success") { %>
-                  Success! Action completed
+            <% } else if (req.query.success === "SUCCESS" || req.query.code) { %>
+                <% if (req.query.success === "SUCCESS") { %>
+                  <div class="alert alert-success">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    Success!
+                  </div>
                 <% } else if (req.query.code) { %>
+                <div class="alert alert-success">
+                  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
                   Success! You have created a coupon code with the name of: <%= req.query.code %>
+                </div>
                 <% } %>
               </div>
             <% } %>
-
-          
   
           <div class="row">
 
