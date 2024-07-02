@@ -7,7 +7,7 @@ const getTemplate = require('../handlers/getTemplate.js').template;
 const fetch = require('node-fetch');
 const getPteroUser = require('../handlers/getPteroUser.js');
 
-module.exports.load = async function (app, db) {  
+module.exports.load = async (app, db) => {  
 
   app.get("/login", async (req, res) => {
     if (req.query.redirect) req.session.redirect = "/" + req.query.redirect;

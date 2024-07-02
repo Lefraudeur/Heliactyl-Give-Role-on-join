@@ -1,17 +1,15 @@
 const settings = require('../handlers/readSettings').settings(); 
-const indexjs = require("../index.js");
 const adminjs = require("./admin.js");
 const getPteroUser = require("../handlers/getPteroUser.js");
 const Queue = require("../handlers/Queue.js");
 const log = require("../handlers/log.js");
-
 const fetch = require("node-fetch");
 
-module.exports.load = async function (app, db) {
-  const queue = new Queue();
+module.exports.load = async (app, db) => {
   app.get("/create", async (req, res) => {
     if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
 
+    const queue = new Queue();
     const newsettings = require('../handlers/readSettings').settings();
 
     if (!newsettings.allow.server.create) return res.redirect("/servers/new?err=disabled");

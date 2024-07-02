@@ -1,27 +1,32 @@
-const indexjs = require("../index.js");
 const adminjs = require('./admin.js');
-const ejs = require("ejs");
 const fetch = require("node-fetch");
-const NodeCache = require("node-cache");
+const newsettings = require('../handlers/readSettings').settings();
 
-const myCache = new NodeCache({ 
-  deleteOnExpire: true,
-  stdTTL: 59 
-});
-module.exports.load = async function (app, db) {
+module.exports.load = async (app, db) => {
   /**
   * Information 
   * A lot of the API information is taken from Heliactyl v14 (heliactyloss).
   */
 
   /**
+   * Checks the authorization and returns the settings if authorized.
+   * Renders the file based on the theme and sends the response.
+   */
+  async function checkAPI(req, res) {
+    if (!newsettings.api.enabled) return res.status().send('Disabled')
+    let auth = req.headers['authorization'];
+    if (auth === `Bearer ${newsettings.api.code}`) return newsettings;
+    
+    return res.status(401).send('Unauthorized');
+  }
+
+
+
+  /**
    * GET /api
    * Returns the status of the API.
    */
-  app.get("/api", async (req, res) => {
-    /* Check if the API key is valid */
-    let auth = await check(req, res);
-    if (!auth) return;
+  app.get("/api", checkAPI, async (req, res) => {
     res.send({ "status": true });
   });
 
@@ -113,34 +118,6 @@ module.exports.load = async function (app, db) {
       await db.set(`coins-${id}`, coins);	
     }	
     res.send({status: "success"});	
-  });
-
-  /**
-   * POST /api/updateCoins
-   * Updates the number of coins for a user.
-   * Never used
-   */
-  app.get("/api/updateCoins", async (req, res) => {
-    if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
-  
-    let userInfo = req.session.userinfo;
-    let initialCoins = await db.get(`coins-${userInfo.id}`);
-  
-    if (myCache.get(`coins_${userInfo.id}`)) 
-      return res.send({coins: initialCoins});
-  
-    myCache.set(`coins_${userInfo.id}`, true, 59);
-  
-    if (await db.get(`coins-${userInfo.id}`) === null) {
-      await db.set(`coins-${userInfo.id}`, 0);
-    } else {
-      let currentCoins = await db.get(`coins-${userInfo.id}`);
-      currentCoins = currentCoins + newsettings["afk page"].coins;
-      await db.set(`coins-${userInfo.id}`, currentCoins);
-    }
-  
-    let updatedCoins = await db.get(`coins-${userInfo.id}`);
-    res.send({coins: updatedCoins});
   });
   
   /**
@@ -328,36 +305,4 @@ module.exports.load = async function (app, db) {
       res.send({ status: "missing variables" });
     }
   });
-
-  /**
-   * Checks the authorization and returns the settings if authorized.
-   * Renders the file based on the theme and sends the response.
-   * @param {Object} req - The request object.
-   * @param {Object} res - The response object.
-   * @returns {Object|null} - The settings object if authorized, otherwise null.
-   */
-  async function check(req, res) {
-    if (newsettings.api.enabled) {
-      let auth = req.headers['authorization'];
-      if (auth === `Bearer ${newsettings.api.code}`) return newsettings;
-    }
-
-    let theme = indexjs.get(req);
-    ejs.renderFile(
-      `./themes/${theme.name}/404.ejs`,
-      await indexjs.renderdataeval(req),
-      null,
-      (err, str) => {
-        delete req.session.newaccount;
-        if (err) {
-          console.log(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
-          console.log(err);
-          return res.render("404.ejs", { err });
-        }
-        res.status(200);
-        res.send(str);
-      }
-    );
-    return null;
-  }
 };

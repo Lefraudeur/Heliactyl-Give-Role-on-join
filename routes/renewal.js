@@ -4,7 +4,7 @@ const getAllServers = require("../handlers/getAllServers");
 const fetch = require("node-fetch");
 const chalk = require("chalk");
 
-module.exports.load = async function (app, db) {
+module.exports.load = async (app, db) => {
 
     app.get(`/api/renewalstatus`, async (req, res) => {
         if (!settings.renewals.status 

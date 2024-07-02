@@ -13,14 +13,14 @@ const fetch = require("node-fetch");
 const chalk = require("chalk");
 const ejs = require("ejs");
 
-global.Buffer = global.Buffer || require('buffer').Buffer;
+const globalBuffer = global.Buffer || require('buffer').Buffer;
 
 if (!global.btoa) {
-  global.btoa = (str) => Buffer.from(str, 'binary').toString('base64');
+  global.btoa = (str) => globalBuffer.from(str, 'binary').toString('base64');
 }
 
 if (!global.atob) {
-  global.atob = (b64Encoded) => Buffer.from(b64Encoded, 'base64').toString('binary');
+  global.atob = (b64Encoded) => globalBuffer.from(b64Encoded, 'base64').toString('binary');
 }
 
 // Load settings.
@@ -49,10 +49,9 @@ module.exports.renderdataeval = async function(req) {
   };
 };
 
-// Load database
+// Load database.
 
 const db = require("./handlers/db.js");
-
 module.exports.db = db;
 
 // Load express.
@@ -63,7 +62,6 @@ const session = require("express-session");
 const app = express();
 require('express-ws')(app);
 const indexjs = require("./index.js");
-
 module.exports.app = app;
 
 app.use(cookieParser());
@@ -82,7 +80,7 @@ app.use(express.json({
   verify: undefined
 }));
 
-// Load the console
+// Load console listener.
 
 const listener = app.listen(settings.website.port, async () => {
   console.clear();
@@ -107,28 +105,22 @@ const listener = app.listen(settings.website.port, async () => {
   console.log(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.white(" You can now access the dashboard at ")}${chalk.underline(`${settings.oauth2.link}/`)}`);
 });
 
-const manager = require('./handlers/readSettings').settings(); 
+// Handle rate limiting.
 let cache = false;
 
 app.use((req, res, next) => {
-  const rateLimitPath = manager.ratelimits[req._parsedUrl.pathname];
+  const rateLimitPath = settings.ratelimits[req._parsedUrl.pathname];
 
-  if (rateLimitPath) {
-    if (cache) {
-      setTimeout(async () => {
-        let querystring = Object.entries(req.query).map(([key, value]) => `${key}=${value}`).join('&');
-        res.redirect(`${req._parsedUrl.pathname}?${querystring}`);
-      }, 1000);
-      return;
-    } else {
-      cache = true;
-      setTimeout(() => { cache = false; }, 1000 * rateLimitPath);
-    }
-  }
+  if (!rateLimitPath) return next();
+  if (cache) return res.status(429).send('Too Many Requests');
+
+  cache = true;
+  setTimeout(() => { cache = false; }, 1000 * rateLimitPath);
+  
   next();
 });
 
- // Load routes.
+// Load routes.
 
 let routeFiles = fs.readdirSync('./routes').filter(file => file.endsWith('.js'));
 
@@ -137,6 +129,7 @@ routeFiles.forEach(file => {
   routeFile.load(app, db);
 });
 
+// Handle all other requests.
 app.all("*", async (req, res) => {
   if (req.session.pterodactyl && req.session.pterodactyl.id !== await db.get(`users-${req.session.userinfo.id}`)) return res.redirect("/login?prompt=none");
 
@@ -176,8 +169,8 @@ app.all("*", async (req, res) => {
           }
 
           let cacheAccountInfo = JSON.parse(await cacheAccount.text());
-        
           req.session.pterodactyl = cacheAccountInfo.attributes;
+
           if (!cacheAccountInfo.attributes.root_admin) {
             if (err) {
               console.log(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`));
@@ -247,11 +240,11 @@ module.exports.get = function(req) {
   };
 };
 
-module.exports.islimited = async function() {
+module.exports.islimited = async () => { 
   return !cache;
 }
 
-module.exports.ratelimits = async function(length) {
+module.exports.ratelimits = async (length) => {
   if (cache) {
     setTimeout(indexjs.ratelimits, 1);
     return;

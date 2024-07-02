@@ -1,5 +1,5 @@
 > [!WARNING]
-> Overnode has deprecated Fixed Heliactyl. Overnode is now developing [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium). Warning: **Heliactyl and Fixed Heliactyl may contain security vulnerabilities.** If you are looking for a still updated version of Heliactyl (and by the official team) take a look at [Heliactyl 14](https://github.com/heliactyloss/heliactyl). 
+> Overnode has semi-deprecated Fixed Heliactyl. Overnode is now developing [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium). Warning: **Heliactyl and Fixed Heliactyl may contain security vulnerabilities.** If you are looking for a still updated version of Heliactyl (and by the official team) take a look at [Heliactyl 14](https://github.com/heliactyloss/heliactyl) or [Heliactyl (by Ghostload)](https://github.com/Heliactyl-Project/Heliactyl). 
 # Fixed Heliactyl • The Modern Client Panel for Pterodactyl
 
 ![Heliactyl](https://github.com/OvernodeProjets/Fixed-Heliactyl/assets/73477238/fe5aaf5c-1c01-4145-b37a-b91b184354b5)
