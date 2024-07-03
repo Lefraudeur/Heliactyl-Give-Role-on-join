@@ -106,17 +106,20 @@ const listener = app.listen(settings.website.port, async () => {
 });
 
 // Handle rate limiting.
-let cache = false;
+const rateLimitCache = {};
 
 app.use((req, res, next) => {
   const rateLimitPath = settings.ratelimits[req._parsedUrl.pathname];
 
   if (!rateLimitPath) return next();
-  if (cache) return res.status(429).send('Too Many Requests');
-
-  cache = true;
-  setTimeout(() => { cache = false; }, 1000 * rateLimitPath);
   
+  const currentTime = Date.now();
+  const rateLimitKey = `${req._parsedUrl.pathname}:${req.ip}`;
+
+  if (rateLimitCache[rateLimitKey] && rateLimitCache[rateLimitKey] > currentTime) return res.status(429).send('Too Many Requests');
+  
+  rateLimitCache[rateLimitKey] = currentTime + rateLimitPath * 1000;
+
   next();
 });
 

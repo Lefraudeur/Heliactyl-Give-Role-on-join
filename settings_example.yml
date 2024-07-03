@@ -114,16 +114,51 @@ allow:
     overresourcessuspend: false
 
 ratelimits:
-  /callback: 2
-  /create: 1
+  /callback: 2 #Utils
+  /submitlogin: 2
+  /dashboard: 2
+  /panel: 2
+  /logout: 1
+  /create: 1 
   /delete: 1
   /modify: 1
-  /updateinfo: 1
-  /setplan: 2
+  /redeem: 1 #Pages
+  /servers: 1
+  /servers/new: 2
+  /servers/edit: 2
+  /settings: 1
+  /store: 1
+  /buy: 1
+  /j4r: 1
+  /afk: 1
   /admin: 1
+  /buycoins: 1 #Routes
+  /buyram: 1
+  /buydisk: 1
+  /buycpu: 1
+  /buyservers: 1
+  /updateinfo: 1
+  /coupon_redeem: 1
   /regen: 1
   /renew: 1
-  /api/userinfo: 1
+  /setcoins: 2
+  /addcoins: 2
+  /setresources: 2
+  /addresources: 2
+  /stats: 2
+  /setplan: 2
+  /create_coupon: 2
+  /revoke_coupon: 2
+  /remove_account: 2
+  /getip: 2
+  /userinfo: 2
+  /api/userinfo: 3
+  /api/setcoins: 3
+  /api/createcoupon: 3
+  /api/revokecoupon: 3
+  /api/setplan: 3
+  /api/setresources: 3
+  /api/renewalstatus: 3
 
 packages:
   default: default

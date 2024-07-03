@@ -47,6 +47,7 @@
                             };
 
                             socket.onclose = (event) => {
+                                document.getElementById("sessionEarn").innerText = `Connection closed`;
                                 console.log("WebSocket connection closed:", event.reason);
                             };
                         }

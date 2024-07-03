@@ -1,4 +1,3 @@
-const indexjs = require("../index.js");
 const log = require('../handlers/log.js');
 
     /*

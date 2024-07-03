@@ -20,8 +20,6 @@ module.exports.load = async (app, db) => {
     return res.status(401).send('Unauthorized');
   }
 
-
-
   /**
    * GET /api
    * Returns the status of the API.

@@ -4,8 +4,7 @@ let currentlyonpage = {};
 module.exports.load = function(app, db) {
 
   app.ws("/afk/ws", async (ws, req) => {
-
-    if (!newsettings["afk page"].enabled && !req.session || !req.session || !req.session.pterodactyl.userinfo) return ws.close();
+    if (!newsettings["afk page"].enabled && !req.session || !req.session.userinfo || !req.session.pterodactyl) return ws.close();
 
     let userId = req.session.userinfo.id;
 
