@@ -5,7 +5,7 @@ const log = require("../handlers/log.js");
 const getPteroUser = require('../handlers/getPteroUser.js');
 const settings = require('../handlers/readSettings').settings();
 
-module.exports.load = async (app, db) => {
+module.exports.load = async (app, db, next) => {
 
 async function checkAuthenticated (req, res) {
     if (!req.session || !req.session.pterodactyl) return res.redirect("/");
@@ -15,6 +15,8 @@ async function checkAuthenticated (req, res) {
 
     req.session.pterodactyl = cacheAccount.attributes;
     if (!cacheAccount.attributes.root_admin) return res.redirect("/dashboard");
+
+    next();
 };
 
   /**
