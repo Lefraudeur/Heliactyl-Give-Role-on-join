@@ -32,6 +32,10 @@
               <div class="alert alert-custom">
                 No renewals are recorded for this ID. A new renewal timestamp has been set.
               </div>
+            <% } else if (req.query.err === 'INTERNALERROR') { %>
+              <div class="alert alert-custom">
+                Internal Server Error
+              </div>
             <% } else if (req.query.err === 'STOREDISABLED') { %>
               <div class="alert alert-custom">
                 Store are currently disabled.
@@ -110,7 +114,6 @@
                               fetch(`/api/renewalstatus?id=<%= pterodactyl.relationships.servers.data[i].attributes.id %>`)
                                 .then(response => response.json())
                                 .then(data => {
-                                  console.log(data)
                                   const serverNameElement = document.getElementById('server-name-<%= pterodactyl.relationships.servers.data[i].attributes.id %>');
                                   const timeLeftElement = document.getElementById('time-left-<%= pterodactyl.relationships.servers.data[i].attributes.id %>');
                                   if (!data.renewable) {

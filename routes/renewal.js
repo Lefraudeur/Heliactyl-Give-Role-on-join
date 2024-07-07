@@ -49,7 +49,7 @@ module.exports.load = async (app, db) => {
       if (currentTime < nextEligibleRenewalTime) return res.redirect("/dashboard?success=NEXTELIGIBLERENEWALTIME");
   
       let coins = await db.get(`coins-${req.session.userinfo.id}`);
-      coins = coins ? coins : 0;
+      coins = coins || 0;
 
       const renewCost = settings.renewals.cost
   
@@ -82,7 +82,7 @@ module.exports.load = async (app, db) => {
                           });
                         let ok = await deletionresults.ok;
                         if (!ok) continue;
-                        console.log(`Server with ID ${id} failed renewal and was deleted.`);
+                        console.error(`Server with ID ${id} failed renewal and was deleted.`);
                         await db.delete(`lastrenewal-${id}`);
                     }
                 }

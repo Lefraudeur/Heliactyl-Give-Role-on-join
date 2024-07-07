@@ -16,9 +16,12 @@ module.exports.load = async function(app, db) {
     const resourceCap = (await db.get(`${resourceType}-${req.session.userinfo.id}`)) || 0;
 
     // just idk
-    if (resourceCap + amount > settings.coins.store.storelimits[resourceType]) 
-      return res.redirect(`/store?err=MAX${resourceName}EXCEETED`);
+    if (resourceCap + amount > settings.coins.store.storelimits[resourceType]) {
+      const resourceName = resourceType.toUpperCase();
+      return res.redirect(`/store?err=MAX${resourceName}EXCEEDED`);
+  }
 
+  // Old code : if (ramcap + amount > settings.storelimits.ram) return res.redirect(failedcallback + "?err=MAXRAMEXCEETED");
     const per = newsettings.coins.store[resourceType].per * amount;
     const cost = newsettings.coins.store[resourceType].cost * amount;
 
@@ -34,7 +37,12 @@ module.exports.load = async function(app, db) {
       await db.set(`${resourceType}-${req.session.userinfo.id}`, newResource);
     }
 
-    let extra = (await db.get(`extra-${req.session.userinfo.id}`)) || { ram: 0, disk: 0, cpu: 0, servers: 0 };
+    let extra = await db.get(`extra-${req.session.userinfo.id}`) || {
+      ram: 0,
+      disk: 0,
+      cpu: 0,
+      servers: 0 
+    };
     extra[resourceType] = extra[resourceType] + per;
 
     if (Object.values(extra).every(val => val === 0)) {

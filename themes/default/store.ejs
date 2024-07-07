@@ -23,13 +23,13 @@
             <div class="alert">
               <% if (req.query.err === "CANNOTAFFORD") { %>
                 Insufficient funds.
-              <% } else if (req.query.err === "MAXCPUEXCEETED") { %>
+              <% } else if (req.query.err === "MAXCPUEXCEEDED") { %>
                 You have reached the CPU limit!
-              <% } else if (req.query.err === "MAXRAMEXCEETED") { %>
+              <% } else if (req.query.err === "MAXRAMEXCEEDED") { %>
                 You have reached the RAM limit!
-              <% } else if (req.query.err === "MAXDiskEXCEETED") { %>
+              <% } else if (req.query.err === "MAXDISKEXCEEDED") { %>
                 You have reached the disk limit!
-              <% } else if (req.query.err === "MAXServersEXCEETED") { %>
+              <% } else if (req.query.err === "MAXSERVERSEXCEEDED") { %>
                 You have reached the servers limit!
               <% } %>
             </div>

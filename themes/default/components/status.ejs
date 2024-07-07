@@ -1,8 +1,6 @@
 <div class="row">
     <%
-      let ram = 0;
-      let disk = 0;
-      let cpu = 0;
+      let ram = 0, disk = 0, cpu = 0;
       let servers = pterodactyl.relationships.servers.data.length;
       for (let i = 0, len = pterodactyl.relationships.servers.data.length; i < len; i++) {
           ram = ram + (typeof pterodactyl.relationships.servers.data[i].attributes.limits.memory === "number" ? pterodactyl.relationships.servers.data[i].attributes.limits.memory : 0);

@@ -8,7 +8,6 @@ const fetch = require('node-fetch');
 const getPteroUser = require('../handlers/getPteroUser.js');
 
 module.exports.load = async (app, db) => {  
-
   app.get("/login", async (req, res) => {
     if (req.query.redirect) req.session.redirect = `/${req.query.redirect}`;
 
@@ -89,22 +88,18 @@ module.exports.load = async (app, db) => {
     if (!userinfo.verified) return res.send("Not verified a Discord account. Please verify the email on your Discord account.");
 
     // Check if whitelist is enabled and if the user is whitelisted
-
     if (settings.oauth2.whitelist.status && !settings.oauth2.whitelist.users.includes(userinfo.id)) 
       return res.send(getTemplate("Whitelisted", "You are not whitelisted. Please contact the administrator for more information.", true));
 
     // Check if blacklist is enabled and if the user is blacklisted
-
     if (settings.oauth2.blacklist.status && settings.oauth2.blacklist.users.includes(userinfo.id)) 
       return res.send(getTemplate("Blacklisted", "You are blacklisted. Please contact the administrator for more information.", true));
 
     // Check if the user is "blacklisted" ip
-
     if (newsettings.oauth2.ip.block.includes(ip)) 
       return res.send(getTemplate("IP Blacklisted", "You could not sign in, because your IP has been blocked from signing in.", true));
     
     // Duplicate account check based on IP
-
     if (newsettings.oauth2.ip["duplicate check"] && ip !== '127.0.0.1') {
       const ipuser = await db.get(`ipuser-${ip}`);
       if (ipuser && ipuser !== userinfo.id) {
@@ -115,7 +110,6 @@ module.exports.load = async (app, db) => {
     }
 
     // J4R system integration
-
     if (newsettings.j4r.enabled) {
       let guildsResponse = await fetch('https://discord.com/api/users/@me/guilds', {
         headers: { "Authorization": `Bearer ${codeinfo.access_token}` }
@@ -128,7 +122,6 @@ module.exports.load = async (app, db) => {
       let coins = await db.get(`coins-${userinfo.id}`) || 0;
 
       // Update J4R statuses
-
       newsettings.j4r.ads.forEach(guild => {
         if (guildsinfo.find(g => g.id === guild.id) && !userj4r.find(g => g.id === guild.id)) {
           userj4r.push({ id: guild.id, coins: guild.coins });
@@ -137,7 +130,6 @@ module.exports.load = async (app, db) => {
       });
 
       // Checking if the user has left any j4r servers
-
       for (const j4r of userj4r) {
         if (!guildsinfo.find(g => g.id === j4r.id)) {
           userj4r = userj4r.filter(g => g.id !== j4r.id);
@@ -150,7 +142,6 @@ module.exports.load = async (app, db) => {
     }
 
     // Join specified guilds
-
     if (newsettings.bot.joinguild.enabled) {
       const guildids = Array.isArray(newsettings.bot.joinguild.guildid) ? newsettings.bot.joinguild.guildid : [newsettings.bot.joinguild.guildid];
       for (let guild of guildids) {
@@ -166,7 +157,6 @@ module.exports.load = async (app, db) => {
     }
 
     // Give a discord role on login
-
     if (newsettings.bot.giverole.enabled) {
       if (typeof newsettings.bot.giverole.guildid === "string" && typeof newsettings.bot.giverole.roleid === "string") {
         await fetch(`https://discord.com/api/guilds/${newsettings.bot.giverole.guildid}/members/${userinfo.id}/roles/${newsettings.bot.giverole.roleid}`, {
@@ -182,7 +172,6 @@ module.exports.load = async (app, db) => {
     }
 
     // Apply role packages
-
     if (newsettings.packages.rolePackages.roles) {
       let memberResponse = await fetch(`https://discord.com/api/v9/guilds/${newsettings.packages.rolePackages.roleServer}/members/${userinfo.id}`, {
         headers: { "Authorization": `Bot ${newsettings.bot.token}` }
@@ -194,7 +183,6 @@ module.exports.load = async (app, db) => {
         let rolePackages = newsettings.packages.rolePackages.roles;
 
         // Check if the current package is included in the role packages
-        
         if (Object.values(rolePackages).includes(currentPackage)) {
           for (const rolePackage in rolePackages) {
             if (rolePackages[rolePackage] === currentPackage && !memberInfo.roles.includes(rolePackage)) {
@@ -204,7 +192,6 @@ module.exports.load = async (app, db) => {
         }
 
         // Update package based on member roles
-
         for (const role of memberInfo.roles) {
           if (rolePackages[role]) {
             await db.set(`package-${userinfo.id}`, rolePackages[role]);
@@ -215,7 +202,6 @@ module.exports.load = async (app, db) => {
     }
 
     // Create Pterodactyl account if not exists
-
     if (!await db.get(`users-${userinfo.id}`)) {
       if (!newsettings.allow.newusers) return res.send("New users cannot signup currently.");
       

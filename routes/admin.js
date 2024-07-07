@@ -7,7 +7,7 @@ const settings = require('../handlers/readSettings').settings();
 
 module.exports.load = async (app, db) => {
 
-async function checkAuthenticated (req, res) {
+async function checkAuthenticated (req, res, next) {
     if (!req.session || !req.session.pterodactyl) return res.redirect("/");
 
     const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
@@ -15,6 +15,8 @@ async function checkAuthenticated (req, res) {
 
     req.session.pterodactyl = cacheAccount.attributes;
     if (!cacheAccount.attributes.root_admin) return res.redirect("/dashboard");
+
+    next();
 };
 
   /**
@@ -27,7 +29,6 @@ async function checkAuthenticated (req, res) {
 
         if (!id) return res.redirect("/admin?err=MISSINGID");
         if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
-
         if (!coins) return res.redirect("/admin?err=MISSINGCOINS");
 
         coins = parseFloat(coins);
@@ -56,7 +57,6 @@ async function checkAuthenticated (req, res) {
 
         if (!id) return res.redirect("/admin?err=MISSINGID");
         if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
-
         if (!coins) return res.redirect("/admin?err=MISSINGCOINS");
 
         let currentcoins = await db.get(`coins-${id}`) || 0;
@@ -226,9 +226,7 @@ async function checkAuthenticated (req, res) {
         let { id, package } = req.query;
 
         if (!id) return res.redirect("/admin?err=MISSINGID");
-
         if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
-
         if (!package) return;
 
         if (!settings.packages.list[package]) return res.redirect("/admin?err=INVALIDPACKAGE");
@@ -402,7 +400,7 @@ async function checkAuthenticated (req, res) {
         if (!(await db.get(`users-${id}`))) return res.send({ status: "invalid id" });
 
         let packagename = await db.get(`package-${id}`);
-        let package = settings.packages.list[packagename ? packagename : settings.packages.default];
+        let package = settings.packages.list[packagename || settings.packages.default];
         if (!package) package = {
             ram: 0,
             disk: 0,
@@ -410,7 +408,7 @@ async function checkAuthenticated (req, res) {
             servers: 0
         };
 
-        package["name"] = packagename;
+        package.name = packagename;
 
         const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
         if (!cacheAccount) return;
@@ -418,14 +416,14 @@ async function checkAuthenticated (req, res) {
         res.send({
             status: "success",
             package: package,
-            extra: await db.get(`extra-${id}`) ? await db.get(`extra-${id}`) : {
+            extra: await db.get(`extra-${id}`) || {
                 ram: 0,
                 disk: 0,
                 cpu: 0,
                 servers: 0
             },
             userinfo: userinfo,
-            coins: settings.coins.enabled ? (await db.get(`coins-${id}`) ? await db.get(`coins-${id}`) : 0) : null
+            coins: settings.coins.enabled ? (await db.get(`coins-${id}`) || 0) : null
         });
     });
 
@@ -438,24 +436,23 @@ async function checkAuthenticated (req, res) {
                 adminjs.suspend(discordid);
             }, 1);
             return;
-        }        
-        indexjs.ratelimits(1);
+        }
+        
+        indexjs.ratelimits(req._parsedUrl.pathname, req.ip, 1);
         const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
         if (!cacheAccount) return;
 
         let packagename = await db.get(`package-${discordid}`);
         let package = settings.packages.list[packagename || settings.packages.default];
 
-        let userRelationShipServers = userinfo.attributes.relationships.servers
+        let userRelationShipServers = userinfo.attributes.relationships.servers;
 
-        let extra =
-            await db.get(`extra-${discordid}`) ||
-            {
-                ram: 0,
-                disk: 0,
-                cpu: 0,
-                servers: 0
-            };
+        let extra = await db.get(`extra-${discordid}`) || {
+            ram: 0,
+            disk: 0,
+            cpu: 0,
+            servers: 0
+        };
 
         let plan = {
             ram: package.ram + extra.ram,
@@ -470,13 +467,14 @@ async function checkAuthenticated (req, res) {
             cpu: 0,
             servers: userRelationShipServers.data.length
         };
+
         for (let i = 0, len = userRelationShipServers.data.length; i < len; i++) {
             current.ram = current.ram + userRelationShipServers.data[i].attributes.limits.memory;
             current.disk = current.disk + userRelationShipServers.data[i].attributes.limits.disk;
             current.cpu = current.cpu + userRelationShipServers.data[i].attributes.limits.cpu;
         };
 
-        indexjs.ratelimits(userRelationShipServers.data.length);
+        indexjs.ratelimits(req._parsedUrl.pathname, req.ip, userRelationShipServers.data.length);
         if (current.ram > plan.ram || current.disk > plan.disk || current.cpu > plan.cpu || current.servers > plan.servers) {
             for (let i = 0, len = userRelationShipServers.data.length; i < len; i++) {
                 let suspendid = userRelationShipServers.data[i].attributes.id;
@@ -490,6 +488,7 @@ async function checkAuthenticated (req, res) {
             }
         } else {
             if (settings.renewals.status) return;
+
             for (let i = 0, len = userRelationShipServers.data.length; i < len; i++) {
                 let suspendid = userRelationShipServers.data[i].attributes.id;
                 await fetch(`${settings.pterodactyl.domain}/api/application/servers/${suspendid}/unsuspend`, {

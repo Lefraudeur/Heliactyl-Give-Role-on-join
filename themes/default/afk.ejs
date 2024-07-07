@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <%- include('./components/head') %>
-    <body>
-      <div class="container-scroller">
+  <body>
+    <div class="container-scroller">
       <!-- partial:partials/_sidebar.html -->
       <%- include('./components/sidebar') %>
-       <!-- partial -->
-       <div class="container-fluid page-body-wrapper">
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_navbar.html -->
         <%- include('./components/topnav') %>
-         <!-- partial -->
-         <div style="background-color: #111319" class="main-panel">
+        <!-- partial -->
+        <div style="background-color: #111319" class="main-panel">
           <div style="background-color: #111319" class="content-wrapper">
 
             <div class="container mx-auto mt-1 text-center">
@@ -18,57 +18,59 @@
               <p class="text-gray">Earn coins by staying on this page.</p>
             </div>
 
-              <div class="row justify-content-center">
-                <div class="col-md-6 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body text-center">
-                      <p>Every <%= settings["afk page"].every !== 1 ? settings["afk page"].every + " seconds" : "second" %>, you will get <%= settings["afk page"].coins %> <%= settings["afk page"].coins === 1 ? "coin" : "coins" %></p>
-                      <p2>This earning session you have earned <code id="sessionEarn">0 coins</code>.</p2>
+            <div class="row justify-content-center">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body text-center">
+                    <p>Every <%= settings["afk page"].every !== 1 ? settings["afk page"].every + " seconds" : "second" %>, you will get <%= settings["afk page"].coins %> <%= settings["afk page"].coins === 1 ? "coin" : "coins" %></p>
+                    <p2>This earning session you have earned <code id="sessionEarn">0 coins</code>.</p2>
 
-                      <script>
-                        let totalCoins = 0;
+                    <script>
+                      let totalCoins = 0;
 
-                        function connect() {
-                            const socket = new WebSocket(`${window.location.href.startsWith("https://") ? "wss" : "ws"}://${window.location.host}/afk/ws`);
+                      function connect() {
+                        const socket = new WebSocket(`${window.location.href.startsWith("https://") ? "wss" : "ws"}://${window.location.host}/afk/ws`);
 
-                            socket.onopen = () => {
-                                console.log("WebSocket connection opened");
-                                setInterval(() => {
-                                  socket.send(JSON.stringify({}));
-                                }, 1000);
-                            };
+                        socket.onopen = () => {
+                          console.log("WebSocket connection opened");
+                        };
 
-                            socket.onmessage = (event) => {
-                                let data = JSON.parse(event.data);
-                                if (data.type === "coin") {
-                                    totalCoins++;
-                                    document.getElementById("sessionEarn").innerText = `${totalCoins} coins`;
-                                }
-                            };
+                        socket.onmessage = (event) => {
+                          let data = JSON.parse(event.data);
+                          if (data.type === "coin") {
+                            totalCoins++;
+                            document.getElementById("sessionEarn").innerText = `${totalCoins} coins`;
+                          }
+                        };
 
-                            socket.onclose = (event) => {
-                                document.getElementById("sessionEarn").innerText = `Connection closed`;
-                                console.log("WebSocket connection closed:", event.reason);
-                            };
-                        }
+                        socket.onclose = (event) => {
+                          document.getElementById("sessionEarn").innerText = `Connection closed`;
+                          if (event.wasClean) {
+                            console.error(`WebSocket connection closed cleanly, code=${event.code}`);
+                          } else {
+                            console.error('WebSocket connection closed abruptly');
+                          }
+                          setTimeout(connect, 5000);
+                        };
+                      }
 
-                        connect();
-                      </script>
+                      connect();
+                    </script>
+                  </div>
                 </div>
-               </div>
               </div>
-             </div>
             </div>
-           <!-- content-wrapper ends -->
-           <%- include('./components/footer') %>
           </div>
-          <!-- main-panel ends -->
+          <!-- content-wrapper ends -->
+          <%- include('./components/footer') %>
         </div>
-        <!-- page-body-wrapper ends -->
+        <!-- main-panel ends -->
       </div>
-      <!-- container-scroller -->
-      <!-- inject:js -->
-      <%- include('./components/scripts') %>
-      <!-- endinject -->
-    </body>
-  </html>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- inject:js -->
+    <%- include('./components/scripts') %>
+    <!-- endinject -->
+  </body>
+</html>

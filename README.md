@@ -14,7 +14,6 @@
 - **Coupons**: Distribute resources and coins.
 - **Servers**: Create, view, and edit servers.
 - **Payments**: Stripe integration for purchases.
-- **Login Queue**: Prevent overload with a queue system.
 - **User System**: Authentication, password regeneration, etc.
 - **Store**: Purchase resources with coins.
 - **Dashboard**: Overview of resources.

@@ -28,8 +28,8 @@ module.exports.load = async function(app, db) {
       	await db.set(`coins-${req.session.userinfo.id}`, ccoins);
 
         res.redirect("/buy?success=SUCCESS");
-      } catch (err) {
-        console.error("Error processing payment:", err);
+      } catch (error) {
+        console.error("Error processing payment:", error);
         res.redirect("/buy?err=PAYMENTPROCESSINGERROR");
       }
   });

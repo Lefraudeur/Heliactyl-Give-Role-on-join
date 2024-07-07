@@ -10,7 +10,6 @@ module.exports.load = async (app, db) => {
 
   /**
    * Checks the authorization and returns the settings if authorized.
-   * Renders the file based on the theme and sends the response.
    */
   async function checkAPI(req, res) {
     if (!newsettings.api.enabled) return res.status().send('Disabled')
@@ -52,7 +51,7 @@ module.exports.load = async (app, db) => {
       cpu: 0,  
       servers: 0  
     };
-    package["name"] = packagename;
+    package.name = packagename;
   
     let pterodactylid = await db.get(`users-${userId}`);
     
@@ -64,9 +63,9 @@ module.exports.load = async (app, db) => {
       }
     });
     if (await userinforeq.statusText === "Not Found") {
-      console.log("[WEBSITE] An error has occurred while attempting to get a user's information");
-      console.log(`- Discord ID: ${userId}`);
-      console.log(`- Pterodactyl Panel ID: ${pterodactylid}`);
+      console.error("[WEBSITE] An error has occurred while attempting to get a user's information");
+      console.error(`- Discord ID: ${userId}`);
+      console.error(`- Pterodactyl Panel ID: ${pterodactylid}`);
       return res.send({ status: "could not find user on panel" });
     }
 
@@ -74,9 +73,9 @@ module.exports.load = async (app, db) => {
   
     res.send({
       status: "success",
-      coins: newsettings.coins.enabled ? (await db.get(`coins-${userId}`) ? await db.get(`coins-${userId}`) : 0) : null,
+      coins: newsettings.coins.enabled ? (await db.get(`coins-${userId}`) || 0) : null,
       package: package,
-      extra: await db.get(`extra-${userId}`) ? await db.get(`extra-${userId}`) : {
+      extra: await db.get(`extra-${userId}`) || {
         ram: 0,
         disk: 0,
         cpu: 0,

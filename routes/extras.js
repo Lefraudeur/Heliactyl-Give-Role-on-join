@@ -18,7 +18,8 @@ module.exports.load = async function(app, db) {
       
       res.redirect("/settings?err=SUCCESS");
     } catch (error) {
-      res.send("An error has occurred while attempting to update your account information and server list.");
+      console.error("An error has occurred while attempting to update your account information and server list:", error);
+      return res.redirect('/dashboard?err=INTERNALERROR')
     }
   });
 
@@ -28,7 +29,7 @@ module.exports.load = async function(app, db) {
       const newsettings = require('../handlers/readSettings').settings(); 
       if (!newsettings.allow.regen) return res.redirect("/settings?err=CANTREGENPASSWORD");
     
-      let newpassword = generateRandomPassword(newsettings.passwordgenerator["length"]);
+      let newpassword = generateRandomPassword(newsettings.passwordgenerator.length);
       req.session.password = newpassword;
   
       await fetch(`${settings.pterodactyl.domain}/api/application/users/${req.session.pterodactyl.id}`, {
@@ -47,7 +48,8 @@ module.exports.load = async function(app, db) {
       });
       res.redirect("/settings");
     } catch (error) {
-      res.send("An error occurred while attempting to regenerate your password.");
+      console.error("An error occurred while attempting to regenerate your password:", error);
+      return res.redirect('/dashboard?err=INTERNALERROR')
     }
   });
 };

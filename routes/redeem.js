@@ -18,12 +18,11 @@ module.exports.load = async function(app, db) {
     let couponInfo = await db.get(`coupon-${code}`);
 
     if (!code) return res.redirect(`/redeem?err=MISSINGCOUPONCODE`);
-
     if (!couponInfo) return res.redirect(`/redeem?err=INVALIDCOUPONCODE`);
 
     await db.delete(`coupon-${code}`);
 
-    let extra = (await db.get(`extra-${req.session.userinfo.id}`)) || {
+    let extra = await db.get(`extra-${req.session.userinfo.id}`) || {
       ram: 0,
       disk: 0,
       cpu: 0,
@@ -40,7 +39,7 @@ module.exports.load = async function(app, db) {
 
     await db.set(`extra-${req.session.userinfo.id}`, extra);
 
-    let userCoins = (await db.get(`coins-${req.session.userinfo.id}`)) ?? 0;
+    let userCoins = await db.get(`coins-${req.session.userinfo.id}`) || 0;
     userCoins += coins;
     await db.set(`coins-${req.session.userinfo.id}`, userCoins);
 

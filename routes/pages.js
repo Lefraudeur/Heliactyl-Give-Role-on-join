@@ -12,12 +12,12 @@ module.exports.load = async function(app, db) {
     if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session.userinfo || !req.session || !req.session.pterodactyl)) return res.redirect("/login");
   
     if (req._parsedUrl.pathname === "/admin") {
-        const renderPage = async (err, str) => {
+        const renderPage = async (error, str) => {
             delete req.session.newaccount;
-            if (!req.session.userinfo || !req.session.pterodactyl || err) {
-                console.log(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
-                console.log(err);
-                return res.render("404.ejs", { err });
+            if (!req.session.userinfo || !req.session.pterodactyl || error) {
+                console.error(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
+                console.error(error);
+                return res.render("404.ejs", { error });
             }
 
             const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
@@ -30,11 +30,11 @@ module.exports.load = async function(app, db) {
                 `./themes/${theme.name}/index.ejs`, 
                 await indexjs.renderdataeval(req),
                 null,
-                (err, str) => {
-                    if (err) {
-                        console.log(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
-                        console.log(err);
-                        return res.render("404.ejs", { err });
+                (error, str) => {
+                    if (error) {
+                        console.error(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
+                        console.error(error);
+                        return res.render("404.ejs", { error });
                     }
                     delete req.session.newaccount;
                     res.send(str);
@@ -53,11 +53,11 @@ module.exports.load = async function(app, db) {
         `./themes/${theme.name}/index.ejs`, 
         await indexjs.renderdataeval(req),
         null,
-        (err, str) => {
-            if (err) {
-                console.log(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
-                console.log(err);
-                return res.render("404.ejs", { err });
+        (error, str) => {
+            if (error) {
+                console.error(`[WEBSITE] An error has occurred on path ${req._parsedUrl.pathname}:`);
+                console.error(error);
+                return res.render("404.ejs", { error });
             }
             delete req.session.newaccount;
             res.send(str);

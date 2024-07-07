@@ -1,5 +1,4 @@
 const settings = require('../handlers/readSettings').settings(); 
-
 const fetch = require("node-fetch");
 
 module.exports = () => {
