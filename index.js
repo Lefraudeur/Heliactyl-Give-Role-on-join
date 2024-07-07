@@ -39,7 +39,7 @@ const app = express();
 require('express-ws')(app);
 
 // Middleware setup
-app.use(cookieParser());
+app.use(cookieParser(settings.website.secret));
 app.use(session({
   secret: settings.website.secret,
   resave: false,
