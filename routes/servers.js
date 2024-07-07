@@ -257,7 +257,9 @@ module.exports.load = async (app, db) => {
         
         log(`modify server`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} modified the server called \`${serverInfoText.attributes.name}\` to have the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\`\`\``);
         
-        req.session.pterodactyl.relationships.servers.data.push(serverInfoText);
+        // G
+        serverDataExceptCurrent.push(serverInfoText);
+        req.session.pterodactyl.relationships.servers.data = serverDataExceptCurrent;
         adminjs.suspend(req.session.userinfo.id);
         
         res.redirect("/servers?err=MODIFYSERVER");
