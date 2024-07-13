@@ -13,7 +13,7 @@ some things can doesn't work if you find tell me
 <br>
 
 ## Credit:
- - Lapsus
+ - Lapsus [HERE](https://github.com/ManucrackYT/LapsusClient)
 
 > [!WARNING]
 >
