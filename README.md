@@ -4,6 +4,7 @@
 
 This theme use fixed-heliactyl 12.8.0 prealpha-3
 For this theme, i disabled removing in session password, this can make an vulnerability
+some things can doesn't work if you find tell me 
 
 ## How install
 
