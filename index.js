@@ -136,7 +136,7 @@ app.all("*", async (req, res) => {
     ejs.renderFile(`./themes/${theme.name}/404.ejs`, data, null,
       async (error, str) => {
         delete req.session.newaccount;
-        delete req.session.password;
+        // delete req.session.password;
         if (!req.session.userinfo || !req.session.pterodactyl || error) {
           if (error) {
             console.error(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`))
@@ -174,7 +174,7 @@ app.all("*", async (req, res) => {
           ejs.renderFile(filePath, data, null,
             (error, str) => {
               delete req.session.newaccount;
-              delete req.session.password;
+              // delete req.session.password;
               if (error) {
                 console.error(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`))
                 console.error(error)
@@ -192,7 +192,7 @@ app.all("*", async (req, res) => {
   ejs.renderFile(filePath, data, null, 
     (error, str) => {
       delete req.session.newaccount;
-      delete req.session.password;
+      // delete req.session.password;
       if (error) {
         console.error(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`))
         console.error(error)
