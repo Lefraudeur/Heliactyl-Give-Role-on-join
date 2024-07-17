@@ -1,7 +1,8 @@
-const indexjs = require("../index.js");
+const indexjs = require("../index");
 const ejs = require("ejs");
 const express = require("express");
-const getPteroUser = require('../handlers/getPteroUser.js');
+const getPteroUser = require('../handlers/getPteroUser');
+const { renderDataEval } = require('../handlers/dataRenderer');
 
 module.exports.load = async function(app, db) {
   app.use('/assets', express.static('./assets'));
@@ -28,7 +29,7 @@ module.exports.load = async function(app, db) {
             
             ejs.renderFile(
                 `./themes/${theme.name}/index.ejs`, 
-                await indexjs.renderdataeval(req),
+                await renderDataEval(req),
                 null,
                 (error, str) => {
                     if (error) {
@@ -43,7 +44,7 @@ module.exports.load = async function(app, db) {
         };
         ejs.renderFile(
             `./themes/${theme.name}/404.ejs`, 
-            await indexjs.renderdataeval(req),
+            await renderDataEval(req),
             null,
             renderPage
         );
@@ -51,7 +52,7 @@ module.exports.load = async function(app, db) {
     }
     ejs.renderFile(
         `./themes/${theme.name}/index.ejs`, 
-        await indexjs.renderdataeval(req),
+        await renderDataEval(req),
         null,
         (error, str) => {
             if (error) {

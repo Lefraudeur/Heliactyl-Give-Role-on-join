@@ -1,10 +1,10 @@
-const adminjs = require("./admin.js");
-const log = require('../handlers/log');
+const adminjs = require("./admin");
+const logToDiscord = require('../handlers/log');
 const settings = require('../handlers/readSettings').settings(); 
 
 module.exports.load = async function(app, db) {
   const buyResource = async (req, res, resourceType, resourceName) => {
-    if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
 
     let newsettings = await enabledCheck(req, res);
     if (!newsettings) return;
@@ -19,7 +19,7 @@ module.exports.load = async function(app, db) {
     if (resourceCap + amount > settings.coins.store.storelimits[resourceType]) {
       const resourceName = resourceType.toUpperCase();
       return res.redirect(`/store?err=MAX${resourceName}EXCEEDED`);
-  }
+    }
 
   // Old code : if (ramcap + amount > settings.storelimits.ram) return res.redirect(failedcallback + "?err=MAXRAMEXCEETED");
     const per = newsettings.coins.store[resourceType].per * amount;
@@ -53,7 +53,10 @@ module.exports.load = async function(app, db) {
 
     adminjs.suspend(req.session.userinfo.id);
 
-    log(`resources purchased`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} bought ${per} ${resourceName} from the store for \`${cost}\` Credits.`);
+    logToDiscord(
+      "resources purchased",
+      `${req.session.userinfo.username}#${req.session.userinfo.discriminator} bought ${per} ${resourceName} from the store for \`${cost}\` Credits.`
+    );
 
     res.redirect("/store?success=SUCCESS");
   };

@@ -1,9 +1,9 @@
 const fetch = require("node-fetch");
-const indexjs = require("../index.js");
-const adminjs = require("./admin.js");
-const log = require("../handlers/log.js");
-const getPteroUser = require('../handlers/getPteroUser.js');
+const indexjs = require("../index");
+const adminjs = require("./admin");
+const logToDiscord = require("../handlers/log");
 const settings = require('../handlers/readSettings').settings();
+const getPteroUser = require('../handlers/getPteroUser');
 
 module.exports.load = async (app, db, next) => {
 
@@ -43,7 +43,10 @@ async function checkAuthenticated (req, res, next) {
             await db.set(`coins-${id}`, coins);
         }
 
-        log(`set coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the coins of the user with the ID \`${id}\` to \`${coins}\`.`)
+        logToDiscord(
+            "set coins",
+            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the coins of the user with the ID \`${id}\` to \`${coins}\`.`
+        );
         res.redirect("/admin?success=SUCCESS");
     });
 
@@ -73,7 +76,10 @@ async function checkAuthenticated (req, res, next) {
             await db.set(`coins-${id}`, coins);
         }
 
-        log(`add coins`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added \`${coins}\` coins to the user with the ID \`${id}\`'s account.`)
+        logToDiscord(
+            "add coins",
+            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added \`${coins}\` coins to the user with the ID \`${id}\`'s account.`
+        );
         res.redirect("/admin?success=SUCCESS");
     });
 
@@ -82,124 +88,76 @@ async function checkAuthenticated (req, res, next) {
    * Endpoint to set additional resources for a user's account.
    */
 
-    app.get("/setresources", checkAuthenticated, async (req, res) => {
-        let { id, cpu, ram, disk, servers  } = req.query;
+  app.get("/setresources", checkAuthenticated, async (req, res) => {
+    let { id, cpu, ram, disk, servers } = req.query;
 
-        if (!id) return res.redirect("/admin?err=MISSINGID");
-        if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID"); 
-        if (!cpu || !ram || !disk || !servers) return res.redirect("/admin?err=MISSINGVARIABLES");
+    if (!id) return res.redirect("/admin?err=MISSINGID");
+    if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
+    if (!cpu || !ram || !disk || !servers) return res.redirect("/admin?err=MISSINGVARIABLES");
 
-        let ramString = ram;
-        let diskString = disk;
-        let cpuString = cpu;
-        let serversString = servers;
-        let currentExtra = await db.get(`extra-${id}`);
-        let extra;
-        if (typeof currentExtra === "object") {
-            extra = currentExtra;
-        } else {
-            extra = {
-                ram: 0,
-                disk: 0,
-                cpu: 0,
-                servers: 0
-            }
-        }
-        if (ramString) {
-            let ram2 = parseFloat(ramString);
-            if (ram2 < 0 || ram2 > 999999999999999) return res.redirect("/admin?err=RAMSIZE");
+    let currentExtra = await db.get(`extra-${id}`) || { ram: 0, disk: 0, cpu: 0, servers: 0 };
 
-            extra.ram = ram2;
-        }
-        if (diskString) {
-            let disk2 = parseFloat(diskString);
-            if (disk2 < 0 || disk2 > 999999999999999) return res.redirect("/admin?err=DISKSIZE");
+    const resources = { ram, disk, cpu, servers };
+    const limits = { ram: 999999999999999, disk: 999999999999999, cpu: 999999999999999, servers: 999999999999999 };
 
-            extra.disk = disk2;
-        }
-        if (cpuString) {
-            let cpu2 = parseFloat(cpuString);
-            if (cpu2 < 0 || cpu2 > 999999999999999) return res.redirect("/admin?err=CPUSIZE");
+    for (let key in resources) {
+        let value = parseFloat(resources[key]);
+        if (isNaN(value) || value < 0 || value > limits[key]) return res.redirect(`/admin?err=${key.toUpperCase()}SIZE`);
+        currentExtra[key] = value;
+    }
 
-            extra.cpu = cpu2;
-        }
-        if (serversString) {
-            let servers2 = parseFloat(serversString);
-            if (servers2 < 0 || servers2 > 999999999999999) return res.redirect("/admin?err=SERVERSIZ");
+    if (Object.values(currentExtra).every(val => val === 0)) {
+        await db.delete(`extra-${id}`);
+    } else {
+        await db.set(`extra-${id}`, currentExtra);
+    }
 
-            extra.servers = servers2;
-        }
-        if (extra.ram === 0 && extra.disk === 0 && extra.cpu === 0 && extra.servers === 0) {
-            await db.delete(`extra-${id}`);
-        } else {
-            await db.set(`extra-${id}`, extra);
-        }
-        adminjs.suspend(id);
-        log(`set resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversString}\nCPU: ${cpuString}%\nMemory: ${ramString} MB\nDisk: ${diskString} MB\`\`\``)
-        res.redirect("/admin?success=SUCCESS");
-    });
+    adminjs.suspend(id);
+    logToDiscord(
+        "set resources",
+        `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the resources of the user with the ID \`${id}\` to:\n\`\`\`servers: ${servers}\nCPU: ${cpu}%\nMemory: ${ram} MB\nDisk: ${disk} MB\`\`\``
+    );
 
-      /**
+    res.redirect("/admin?success=SUCCESS");
+});
+
+  /**
    * GET /addresources
    * Endpoint to add additional resources to a user's account.
    */
 
-    app.get("/addresources", checkAuthenticated, async (req, res) => {
-      let { id, cpu, ram, disk, servers  } = req.query;
+  app.get("/addresources", checkAuthenticated, async (req, res) => {
+    let { id, cpu, ram, disk, servers } = req.query;
 
-      if (!id) return res.redirect("/admin?err=MISSINGID");
-      if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
-      if (!cpu || !ram || !disk || !servers) return res.redirect("/admin?err=MISSINGVARIABLES");
-      
-      let ramString = ram;
-      let diskString = disk;
-      let cpuString = cpu;
-      let serversString = servers;
-      let currentExtra = await db.get(`extra-${id}`);
-      let extra;
-      if (typeof currentExtra === "object") {
-          extra = currentExtra;
-      } else {
-          extra = {
-              ram: 0,
-              disk: 0,
-              cpu: 0,
-              servers: 0
-          }
-      }
-      if (ramString) {
-          let ram2 = parseFloat(ramString);
-          if (ram2 < 0 || ram2 > 999999999999999) return res.redirect("/admin?err=RAMSIZE");
-          
-          extra.ram = extra.ram + ram2;
-      }
-      if (diskString) {
-          let disk2 = parseFloat(diskString);
-          if (disk2 < 0 || disk2 > 999999999999999) return res.redirect("/admin?err=DISKSIZE");
-          
-          extra.disk = extra.disk + disk2;
-      }
-      if (cpuString) {
-          let cpu2 = parseFloat(cpuString);
-          if (cpu2 < 0 || cpu2 > 999999999999999) return res.redirect("/admin?err=CPUSIZE");
-          
-          extra.cpu = extra.cpu + cpu2;
-      }
-      if (serversString) {
-          let servers2 = parseFloat(serversString);
-          if (servers2 < 0 || servers2 > 999999999999999) return res.redirect("/admin?err=SERVERSIZE");
-          
-          extra.servers = extra.servers + servers2;
-      }
-      if (extra.ram === 0 && extra.disk === 0 && extra.cpu === 0 && extra.servers === 0) {
-          await db.delete(`extra-${id}`);
-      } else {
-          await db.set(`extra-${id}`, extra);
-      }
-      adminjs.suspend(id);
-      log(`add resources`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} add the resources of the user with the ID \`${id}\` to:\`\`\`servers: ${serversString}\nCPU: ${cpuString}%\nMemory: ${ramString} MB\nDisk: ${diskString} MB\`\`\``)
-      return res.redirect("/admin?success=SUCCESS");
-    });
+    if (!id) return res.redirect("/admin?err=MISSINGID");
+    if (!(await db.get(`users-${id}`))) return res.redirect("/admin?err=INVALIDID");
+    if (!cpu || !ram || !disk || !servers) return res.redirect("/admin?err=MISSINGVARIABLES");
+
+    let currentExtra = await db.get(`extra-${id}`) || { ram: 0, disk: 0, cpu: 0, servers: 0 };
+
+    const resources = { ram, disk, cpu, servers };
+    const limits = { ram: 999999999999999, disk: 999999999999999, cpu: 999999999999999, servers: 999999999999999 };
+
+    for (let key in resources) {
+        let value = parseFloat(resources[key]);
+        if (isNaN(value) || value < 0 || value > limits[key]) return res.redirect(`/admin?err=${key.toUpperCase()}SIZE`);
+        currentExtra[key] += value;
+    }
+
+    if (Object.values(currentExtra).every(val => val === 0)) {
+        await db.delete(`extra-${id}`);
+    } else {
+        await db.set(`extra-${id}`, currentExtra);
+    }
+
+    adminjs.suspend(id);
+    logToDiscord(
+        "add resources",
+        `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added resources for user ID \`${id}\`:\n\`\`\`servers: ${servers}\nCPU: ${cpu}%\nMemory: ${ram} MB\nDisk: ${disk} MB\`\`\``
+    );
+
+    return res.redirect("/admin?success=SUCCESS");
+});
 
   /**
    * GET /stats
@@ -232,7 +190,10 @@ async function checkAuthenticated (req, res, next) {
         if (!settings.packages.list[package]) return res.redirect("/admin?err=INVALIDPACKAGE");
         await db.set(`package-${id}`, package);
         adminjs.suspend(id);
-        log(`set plan`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the plan of the user with the ID \`${id}\` to \`${package}\`.`)
+        logToDiscord(
+            "set plan",
+            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the plan of the user with the ID \`${id}\` to \`${package}\`.`
+        );
         return res.redirect("/admin?success=SUCCESS");
     });
 
@@ -271,7 +232,10 @@ async function checkAuthenticated (req, res, next) {
             servers: servers
         });
 
-        log(`create coupon`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``)
+        logToDiscord(
+            "create coupon",
+            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``
+        );
         res.redirect(`/admin?code=${code}`)
     });
 
@@ -289,7 +253,10 @@ async function checkAuthenticated (req, res, next) {
 
         await db.delete(`coupon-${code}`);
 
-        log(`revoke coupon`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} revoked the coupon code \`${code}\`.`)
+        logToDiscord(
+            "revoke coupon",
+            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} revoked the coupon code \`${code}\`.`
+        );
         res.redirect("/admin?revokedcode=true");
     });
 
@@ -364,7 +331,10 @@ async function checkAuthenticated (req, res, next) {
             }
         });
 
-        log(`remove account`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the account with the ID \`${id}\`.`)
+        logToDiscord(
+            "remove account",
+            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the account with the ID \`${id}\`.`
+        );
         res.redirect("/login?success=REMOVEACCOUNT");
     });
 
@@ -383,7 +353,10 @@ async function checkAuthenticated (req, res, next) {
         if (!(await db.get(`ip-${id}`))) return res.redirect("/admin?err=NOIP");
         
         let ip = await db.get(`ip-${id}`);
-        log(`view ip`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${id}\`.`)
+        logToDiscord(
+            "view ip",
+            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${id}\`.`
+        );
         return res.redirect(`/admin?success=IP&ip=${ip}`);
     });
 

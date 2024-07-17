@@ -7764,10 +7764,6 @@ h5, .h5 {
 h6, .h6 {
   font-size: 1rem; }
 
-.bborderradius{
-    border-radius: 20px !important; 
-}
-
 .lead {
   font-size: 1.25rem;
   font-weight: 300; }

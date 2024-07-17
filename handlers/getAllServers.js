@@ -3,7 +3,6 @@ const fetch = require("node-fetch");
 
 module.exports = () => {
     return new Promise(async (resolve) => {
-
         const allServers = []
 
         async function getServersOnPage(page) {
@@ -31,6 +30,5 @@ module.exports = () => {
         }
 
         resolve(allServers)
-
     })
 }

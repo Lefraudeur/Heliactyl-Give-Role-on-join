@@ -1,13 +1,13 @@
 const settings = require('../handlers/readSettings').settings(); 
 const adminjs = require("./admin.js");
-const getPteroUser = require("../handlers/getPteroUser.js");
-const log = require("../handlers/log.js");
+const getPteroUser = require('../handlers/getPteroUser');
+const logToDiscord = require("../handlers/log");
 const fetch = require("node-fetch");
 
 module.exports.load = async (app, db) => {
   app.get("/create", async (req, res) => {
       try {
-          if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
+          if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
           if (!req.query.name || !req.query.cpu || !req.query.ram || !req.query.disk || !req.query.egg || !req.query.location) return res.redirect("/servers?err=MISSINGVARIABLE");
 
           const newsettings = require('../handlers/readSettings').settings();
@@ -141,7 +141,10 @@ module.exports.load = async (app, db) => {
           await db.set(`lastrenewal-${serverInfo.attributes.id}`, Date.now()); // c
           await db.set(`createdserver-${req.session.userinfo.id}`, true);
         
-          log('created server', `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created a new server named \`${name}\` with the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\nLocation ID: ${location}\nEgg: ${egg}\`\`\``)
+          logToDiscord(
+            "created server",
+            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created a new server named \`${name}\` with the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\nLocation ID: ${location}\nEgg: ${egg}\`\`\``
+          );
           return res.redirect("/servers?err=CREATEDSERVER");
       } catch (error) {
           console.error("An error occurred:", error);
@@ -151,7 +154,7 @@ module.exports.load = async (app, db) => {
 
     app.get("/modify", async (req, res) => {
       try {
-        if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
+        if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
         
         const newsettings = require('../handlers/readSettings').settings(); 
         if (!newsettings.allow.server.modify) return res.redirect("/servers/modify?err=disabled");
@@ -253,9 +256,12 @@ module.exports.load = async (app, db) => {
         
         if (!serverinfo.ok) return res.redirect(`/servers/edit?id=${serverId}&err=ERRORONMODIFY`);
         
-        let serverInfoText = JSON.parse(await serverinfo.text());
+        let serverInfoText = await serverinfo.json();
         
-        log(`modify server`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} modified the server called \`${serverInfoText.attributes.name}\` to have the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\`\`\``);
+        logToDiscord(
+          "modify server",
+          `${req.session.userinfo.username}#${req.session.userinfo.discriminator} modified the server called \`${serverInfoText.attributes.name}\` to have the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\`\`\``
+        );
         
         // G
         serverDataExceptCurrent.push(serverInfoText);
@@ -270,7 +276,7 @@ module.exports.load = async (app, db) => {
     });
 
   app.get("/delete", async (req, res) => {
-    if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
     if (!req.query.id) return res.send("Missing id.");
   
     const newsettings = require('../handlers/readSettings').settings();
@@ -298,7 +304,10 @@ module.exports.load = async (app, db) => {
     
       adminjs.suspend(req.session.userinfo.id);
     
-      log('deleted server', `${req.session.userinfo.username}#${req.session.userinfo.discriminator} deleted server ${serverName}.`);
+      logToDiscord(
+        "deleted server",
+        `${req.session.userinfo.username}#${req.session.userinfo.discriminator} deleted server ${serverName}.`
+      );
     
       return res.redirect('/servers?err=DELETEDSERVER');
     } catch (error) {

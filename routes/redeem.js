@@ -1,4 +1,4 @@
-const log = require('../handlers/log.js');
+const logToDiscord = require('../handlers/log');
 
     /*
     {
@@ -12,7 +12,7 @@ const log = require('../handlers/log.js');
 
 module.exports.load = async function(app, db) {
   app.get("/coupon_redeem", async (req, res) => {
-    if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
+    if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
 
     let code = req.query.code ? req.query.code.slice(0, 200) : Math.random().toString(36).substring(2, 15);
     let couponInfo = await db.get(`coupon-${code}`);
@@ -43,7 +43,10 @@ module.exports.load = async function(app, db) {
     userCoins += coins;
     await db.set(`coins-${req.session.userinfo.id}`, userCoins);
 
-    log(`coupon redeemed`, `${req.session.userinfo.username}#${req.session.userinfo.discriminator} redeemed the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``);
+    logToDiscord(
+      "coupon redeemed",
+      `${req.session.userinfo.username}#${req.session.userinfo.discriminator} redeemed the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``
+    );
 
     res.redirect(`/redeem?err=SUCCESSCOUPONCODE`);
   });

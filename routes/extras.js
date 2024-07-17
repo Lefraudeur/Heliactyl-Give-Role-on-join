@@ -1,13 +1,13 @@
 const settings = require('../handlers/readSettings').settings(); 
 const fetch = require('node-fetch');
-const getPteroUser = require('../handlers/getPteroUser.js');
+const getPteroUser = require('../handlers/getPteroUser');
 
 module.exports.load = async function(app, db) {
   app.get("/panel", (req, res) => res.redirect(settings.pterodactyl.domain));
 
   app.get("/updateinfo", async (req, res) => {
     try {
-      if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
+      if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
 
       const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
       if (!cacheAccount) return;
@@ -25,7 +25,7 @@ module.exports.load = async function(app, db) {
 
   app.get("/regen", async (req, res) => {
     try {
-      if (!req.session || !req.session.pterodactyl) return res.redirect("/login");
+      if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
       const newsettings = require('../handlers/readSettings').settings(); 
       if (!newsettings.allow.regen) return res.redirect("/settings?err=CANTREGENPASSWORD");
     
@@ -61,4 +61,4 @@ function generateRandomPassword(length) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
-}
+};

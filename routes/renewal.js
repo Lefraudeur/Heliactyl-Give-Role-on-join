@@ -7,11 +7,13 @@ const chalk = require("chalk");
 module.exports.load = async (app, db) => {
 
     app.get(`/api/renewalstatus`, async (req, res) => {
-        if (!settings.renewals.status 
-          || !req.query.id 
-          || !req.session.pterodactyl 
-          || !req.session 
-          || req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0) 
+        if (
+             !settings.renewals.status
+          || !req.query.id
+          || !req.session
+          || !req.session.pterodactyl
+          || !req.session.userinfo
+          || req.session.pterodactyl.relationships.servers.data.filter(server => server.attributes.id == req.query.id).length == 0)
           return res.json({ error: true });
 
         const lastRenewal = await db.get(`lastrenewal-${req.query.id}`); // c
@@ -31,7 +33,7 @@ module.exports.load = async (app, db) => {
     app.get(`/renew`, async (req, res) => {
       if (!settings.renewals.status) return res.redirect("/dashboard?err=RENEWALSDISABLED");
       if (!req.query.id) return res.send("Missing ID.");
-      if (!req.session.pterodactyl) return res.redirect("/login");
+      if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
       
       const server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id == req.query.id);
       if (!server) return res.send(`No server with that ID was found!`);
@@ -48,8 +50,7 @@ module.exports.load = async (app, db) => {
   
       if (currentTime < nextEligibleRenewalTime) return res.redirect("/dashboard?success=NEXTELIGIBLERENEWALTIME");
   
-      let coins = await db.get(`coins-${req.session.userinfo.id}`);
-      coins = coins || 0;
+      let coins = await db.get(`coins-${req.session.userinfo.id}`) || 0;
 
       const renewCost = settings.renewals.cost
   
@@ -103,4 +104,4 @@ function msToDaysAndHours(ms) {
   const pluralHours = hours === 1 ? "" : "s";
 
   return `${days} day${pluralDays} and ${hours} hour${pluralHours}`;
-}
+};

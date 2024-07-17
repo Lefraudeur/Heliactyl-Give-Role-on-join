@@ -2,14 +2,16 @@
 
 const settings = require('../handlers/readSettings').settings();
 const log = require('../handlers/log');
-const vpnCheck = require("../handlers/vpnCheck");
-const getTemplate = require('../handlers/getTemplate.js').template;
+const getTemplate = require('../handlers/getTemplate').template;
 const fetch = require('node-fetch');
-const getPteroUser = require('../handlers/getPteroUser.js');
+const getPteroUser = require('../handlers/getPteroUser');
+const { vpnCheck } = require("../handlers/vpnCheck");
 
 module.exports.load = async (app, db) => {  
   app.get("/login", async (req, res) => {
-    if (req.query.redirect) req.session.redirect = `/${req.query.redirect}`;
+    if (req.query.redirect) {
+      req.session.redirect = `/${req.query.redirect}`;
+    }
 
     res.redirect(
       `https://discord.com/api/oauth2/authorize?client_id=${settings.oauth2.id}&redirect_uri=${encodeURIComponent(settings.oauth2.link + settings.oauth2.callbackpath)}&response_type=code&scope=identify%20email${
@@ -278,4 +280,4 @@ function makeid(length) {
   const charactersLength = characters.length;
   let result = Array.from({ length }, () => characters.charAt(Math.floor(Math.random() * charactersLength))).join('');
   return result;
-}
+};

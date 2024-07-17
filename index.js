@@ -16,20 +16,21 @@ const express = require("express");
 const session = require("express-session");
 
 // Global Buffer
-const globalBuffer = global.Buffer || require('buffer').Buffer;
+const Buffer = global.Buffer || require('buffer').Buffer;
 
 if (!global.btoa) 
-  global.btoa = (str) => globalBuffer.from(str, 'binary').toString('base64');
+  global.btoa = (str) => Buffer.from(str, 'binary').toString('base64');
 
 
 if (!global.atob) 
-  global.atob = (b64Encoded) => globalBuffer.from(b64Encoded, 'base64').toString('binary');
+  global.atob = (b64Encoded) => Buffer.from(b64Encoded, 'base64').toString('binary');
 
 
 // Load settings
 const settings = require('./handlers/readSettings').settings(); 
-const db = require("./handlers/db.js");
-const indexjs = require("./index.js");
+const db = require("./handlers/db");
+const { renderDataEval } = require('./handlers/dataRenderer');
+const indexjs = require("./index");
 const themesettings = {
   pages: {},
   mustbeloggedin: []
@@ -51,27 +52,6 @@ app.use(express.json({
   strict: true,
   type: 'application/json'
 }));
-
-const rateLimitCache = new Map();
-
-module.exports.renderdataeval = async function(req) {
-  const newsettings = require('./handlers/readSettings').settings(); 
-  let theme = indexjs.get(req);
-  const userinfo = req.session.userinfo;
-
-  return {
-    req,
-    settings: newsettings,
-    userinfo: userinfo,
-    packagename: userinfo ? await db.get(`package-${userinfo.id}`) || newsettings.packages.default : null,
-    extraresources: userinfo ? (await db.get(`extra-${userinfo.id}`) || { ram: 0, disk: 0, cpu: 0, servers: 0 }) : null,
-    packages: userinfo ? newsettings.packages.list[await db.get(`package-${userinfo.id}`) || newsettings.packages.default] : null,
-    coins: newsettings.coins.enabled ? (userinfo ? await db.get(`coins-${userinfo.id}`) || 0 : null) : null,
-    pterodactyl: req.session.pterodactyl,
-    theme: theme.name,
-    db
-  };
-};
 
 module.exports.db = db;
 module.exports.app = app;
@@ -98,6 +78,8 @@ const listener = app.listen(settings.website.port, async () => {
 
   console.log(`${chalk.gray("  ")}${chalk.cyan("[Heliactyl]")}${chalk.white(" You can now access the dashboard at ")}${chalk.underline(`${settings.oauth2.link}/`)}`);
 });
+
+const rateLimitCache = new Map();
 
 // Handle rate limiting.
 app.use((req, res, next) => {
@@ -126,18 +108,18 @@ app.all("*", async (req, res) => {
 
   let theme = indexjs.get(req);
 
-  if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session || !req.session.userinfo || !req.session.pterodactyl)) 
+  if (theme.settings.mustbeloggedin.includes(req._parsedUrl.pathname) && (!req.session || !req.session.pterodactyl || !req.session.userinfo)) 
     return res.redirect("/login" + (req._parsedUrl.pathname.slice(0, 1) === "/" ? "?redirect=" + req._parsedUrl.pathname.slice(1) : ""));
 
   const filePath = `./themes/${theme.name}/${theme.settings.pages[req._parsedUrl.pathname.slice(1)] || "404.ejs"}`;
-  const data = await indexjs.renderdataeval(req);
+  const data = await renderDataEval(req);
 
   if (req._parsedUrl.pathname === "/admin") {
     ejs.renderFile(`./themes/${theme.name}/404.ejs`, data, null,
       async (error, str) => {
         delete req.session.newaccount;
         delete req.session.password;
-        if (!req.session.userinfo || !req.session.pterodactyl || error) {
+        if (!req.session || !req.session.pterodactyl || !req.session.userinfo || error) {
           if (error) {
             console.error(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`))
             console.error(error)
@@ -150,7 +132,7 @@ app.all("*", async (req, res) => {
             headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${settings.pterodactyl.key}` }
           });
 
-          if (await cacheAccount.statusText === "Not Found") {
+          if (await cacheAccount.status === 404) {
             if (error) {
               console.error(chalk.red(`[Heliactyl] An error occurred on path ${req._parsedUrl.pathname}:`))
               console.error(error)
@@ -159,7 +141,7 @@ app.all("*", async (req, res) => {
             return res.send(str);
           }
 
-          let cacheAccountInfo = JSON.parse(await cacheAccount.text());
+          let cacheAccountInfo = await cacheAccount.json();
           req.session.pterodactyl = cacheAccountInfo.attributes;
 
           if (!cacheAccountInfo.attributes.root_admin) {
@@ -170,7 +152,7 @@ app.all("*", async (req, res) => {
             }
             return res.send(str);
           }
-
+ 
           ejs.renderFile(filePath, data, null,
             (error, str) => {
               delete req.session.newaccount;
