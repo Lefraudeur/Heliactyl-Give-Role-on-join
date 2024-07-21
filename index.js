@@ -8,14 +8,14 @@
 
 // Load packages.
 const fs = require("fs");
-const fetch = require("node-fetch");
 const chalk = require("chalk");
 const ejs = require("ejs");
+const fetch = require("node-fetch");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const session = require("express-session");
 
-// Global Buffer
+// Global Buffer || Buffer
 const Buffer = global.Buffer || require('buffer').Buffer;
 
 if (!global.btoa) 
@@ -83,8 +83,8 @@ const rateLimitCache = new Map();
 
 // Handle rate limiting.
 app.use((req, res, next) => {
-  if (!settings.ratelimits[req._parsedUrl.pathname]) return next()
-  const rateLimitPath = settings.ratelimits[req._parsedUrl.pathname]
+  if (!settings.ratelimits[req._parsedUrl.pathname]) return next();
+  const rateLimitPath = settings.ratelimits[req._parsedUrl.pathname];
 
   const currentTime = Date.now();
   const rateLimitKey = `${req._parsedUrl.pathname}:${req.ip}`;

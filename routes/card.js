@@ -1,6 +1,7 @@
 const settings = require('../handlers/readSettings').settings(); 
 const stripe = require('stripe')(settings.stripe.key);
 
+// idk if it work
 module.exports.load = async function(app, db) {
   app.get("/buycoins", async (req, res) => {
     try {

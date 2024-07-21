@@ -7,12 +7,8 @@ module.exports.load = async (app, db) => {
   /**
   * Information 
   * A lot of the API information is taken from Heliactyl v14 (heliactyloss).
+  * 'Content-Type': 'application/json'
   */
-
-
-  /**
-   * Need body raw json too work
-   */
 
   /**
    * Middleware to check API authorization

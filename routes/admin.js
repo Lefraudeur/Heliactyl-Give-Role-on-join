@@ -1,11 +1,11 @@
 const fetch = require("node-fetch");
+const getPteroUser = require('../handlers/getPteroUser');
+const logToDiscord = require("../handlers/log");
 const indexjs = require("../index");
 const adminjs = require("./admin");
-const logToDiscord = require("../handlers/log");
 const settings = require('../handlers/readSettings').settings();
-const getPteroUser = require('../handlers/getPteroUser');
 
-module.exports.load = async (app, db, next) => {
+module.exports.load = async (app, db) => {
 
 async function checkAuthenticated (req, res, next) {
     if (!req.session || !req.session.pterodactyl) return res.redirect("/");
@@ -23,7 +23,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /setcoins
    * Endpoint to set the number of coins for a user.
    */
-
     app.get("/setcoins", checkAuthenticated, async (req, res) => {
         let { id, coins } = req.query;
 
@@ -54,7 +53,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /addcoins
    * Endpoint to add coins to a user's account.
    */
-
     app.get("/addcoins", checkAuthenticated, async (req, res) => {
         let { id, coins } = req.query;
 
@@ -87,7 +85,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /setresources
    * Endpoint to set additional resources for a user's account.
    */
-
   app.get("/setresources", checkAuthenticated, async (req, res) => {
     let { id, cpu, ram, disk, servers } = req.query;
 
@@ -125,7 +122,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /addresources
    * Endpoint to add additional resources to a user's account.
    */
-
   app.get("/addresources", checkAuthenticated, async (req, res) => {
     let { id, cpu, ram, disk, servers } = req.query;
 
@@ -161,10 +157,8 @@ async function checkAuthenticated (req, res, next) {
 
   /**
    * GET /stats
-   * Endpoint to 
-   * Test
+   * Endpoint to display the statistiques
    */
-  
   app.get("/stats", checkAuthenticated, async (req, res) => {
     const users = await db.get("users") || [];
 
@@ -179,7 +173,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /setplan
    * Endpoint to set the plan for a user.
    */
-
     app.get("/setplan", checkAuthenticated, async (req, res) => {
         let { id, package } = req.query;
 
@@ -201,7 +194,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /create_coupon
    * Endpoint to create a coupon code.
    */
-
     app.get("/create_coupon", checkAuthenticated, async (req, res) => {
         let {
             cpu = cpu * 100 || 0,
@@ -243,7 +235,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /revoke_coupon
    * Endpoint to revoke a coupon code.
    */
-
     app.get("/revoke_coupon", checkAuthenticated, async (req, res) => {
         let { code } = req.query;
 
@@ -264,21 +255,19 @@ async function checkAuthenticated (req, res, next) {
    * GET /remove_account
    * Endpoint to remove an account.
    */
-
     app.get("/remove_account", checkAuthenticated, async (req, res) => {
         let { id } = req.query;
 
         // This doesn't delete the account and doesn't touch the renewal system.
-
         if (!id) return res.redirect("/dashboard?err=REMOVEACCOUNTMISSINGID");
 
         let pteroid = await db.get(`users-${id}`);
 
         // Remove IP.
-
         let selected_ip = await db.get(`ip-${id}`);
 
         if (selected_ip) {
+            // Never seen before
             let allips = await db.get("ips") || [];
             allips = allips.filter(ip => ip !== selected_ip);
 
@@ -292,7 +281,6 @@ async function checkAuthenticated (req, res, next) {
         }
 
         // Remove user from dashboard.
-
         let userids = await db.get("users") || [];
         userids = userids.filter(user => user !== pteroid);
 
@@ -305,13 +293,11 @@ async function checkAuthenticated (req, res, next) {
         await db.delete(`users-${id}`);
 
         // Remove coins/resources.
-
         await db.delete(`coins-${id}`);
         await db.delete(`extra-${id}`);
         await db.delete(`package-${id}`);
 
         // Remove server and user account
-
         let servers = cacheAccount.attributes.relationships.servers.data;
         for (let server of servers) {
             await fetch(`${settings.pterodactyl.domain}/api/application/servers/${server.id}`, {
@@ -342,7 +328,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /getip
    * Endpoint to retrieve the IP address associated with a user's account.
    */
-
     app.get("/getip", checkAuthenticated, async (req, res) => {
         let { id } = req.query;
 
@@ -364,7 +349,6 @@ async function checkAuthenticated (req, res, next) {
    * GET /userinfo
    * Endpoint to retrieve user information.
    */
-
     app.get("/userinfo", checkAuthenticated, async (req, res) => {
         let { id } = req.query;
 
