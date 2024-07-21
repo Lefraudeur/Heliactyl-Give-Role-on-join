@@ -97,8 +97,7 @@ app.use((req, res, next) => {
 
 // Load routes.
 fs.readdirSync('./routes').filter(file => file.endsWith('.js')).forEach(file => {
-  let routeFile = require(`./routes/${file}`);
-  routeFile.load(app, db);
+  require(`./routes/${file}`).load(app, db);
 });
 
 // Handle all other requests.
