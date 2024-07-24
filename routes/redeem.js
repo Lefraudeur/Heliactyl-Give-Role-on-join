@@ -45,7 +45,7 @@ module.exports.load = async function(app, db) {
 
     logToDiscord(
       "coupon redeemed",
-      `${req.session.userinfo.username}#${req.session.userinfo.discriminator} redeemed the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``
+      `${req.session.userinfo.username} redeemed the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``
     );
 
     res.redirect(`/redeem?err=SUCCESSCOUPONCODE`);

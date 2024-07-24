@@ -44,7 +44,7 @@ async function checkAuthenticated (req, res, next) {
 
         logToDiscord(
             "set coins",
-            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the coins of the user with the ID \`${id}\` to \`${coins}\`.`
+            `${req.session.userinfo.username} set the coins of the user with the ID \`${id}\` to \`${coins}\`.`
         );
         res.redirect("/admin?success=SUCCESS");
     });
@@ -76,7 +76,7 @@ async function checkAuthenticated (req, res, next) {
 
         logToDiscord(
             "add coins",
-            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added \`${coins}\` coins to the user with the ID \`${id}\`'s account.`
+            `${req.session.userinfo.username} added \`${coins}\` coins to the user with the ID \`${id}\`'s account.`
         );
         res.redirect("/admin?success=SUCCESS");
     });
@@ -112,7 +112,7 @@ async function checkAuthenticated (req, res, next) {
     adminjs.suspend(id);
     logToDiscord(
         "set resources",
-        `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the resources of the user with the ID \`${id}\` to:\n\`\`\`servers: ${servers}\nCPU: ${cpu}%\nMemory: ${ram} MB\nDisk: ${disk} MB\`\`\``
+        `${req.session.userinfo.username} set the resources of the user with the ID \`${id}\` to:\n\`\`\`servers: ${servers}\nCPU: ${cpu}%\nMemory: ${ram} MB\nDisk: ${disk} MB\`\`\``
     );
 
     res.redirect("/admin?success=SUCCESS");
@@ -149,7 +149,7 @@ async function checkAuthenticated (req, res, next) {
     adminjs.suspend(id);
     logToDiscord(
         "add resources",
-        `${req.session.userinfo.username}#${req.session.userinfo.discriminator} added resources for user ID \`${id}\`:\n\`\`\`servers: ${servers}\nCPU: ${cpu}%\nMemory: ${ram} MB\nDisk: ${disk} MB\`\`\``
+        `${req.session.userinfo.username} added resources for user ID \`${id}\`:\n\`\`\`servers: ${servers}\nCPU: ${cpu}%\nMemory: ${ram} MB\nDisk: ${disk} MB\`\`\``
     );
 
     return res.redirect("/admin?success=SUCCESS");
@@ -185,7 +185,7 @@ async function checkAuthenticated (req, res, next) {
         adminjs.suspend(id);
         logToDiscord(
             "set plan",
-            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} set the plan of the user with the ID \`${id}\` to \`${package}\`.`
+            `${req.session.userinfo.username} set the plan of the user with the ID \`${id}\` to \`${package}\`.`
         );
         return res.redirect("/admin?success=SUCCESS");
     });
@@ -226,7 +226,7 @@ async function checkAuthenticated (req, res, next) {
 
         logToDiscord(
             "create coupon",
-            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``
+            `${req.session.userinfo.username} created the coupon code \`${code}\` which gives:\`\`\`coins: ${coins}\nMemory: ${ram} MB\nDisk: ${disk} MB\nCPU: ${cpu}%\nServers: ${servers}\`\`\``
         );
         res.redirect(`/admin?code=${code}`)
     });
@@ -246,7 +246,7 @@ async function checkAuthenticated (req, res, next) {
 
         logToDiscord(
             "revoke coupon",
-            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} revoked the coupon code \`${code}\`.`
+            `${req.session.userinfo.username} revoked the coupon code \`${code}\`.`
         );
         res.redirect("/admin?revokedcode=true");
     });
@@ -319,7 +319,7 @@ async function checkAuthenticated (req, res, next) {
 
         logToDiscord(
             "remove account",
-            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} removed the account with the ID \`${id}\`.`
+            `${req.session.userinfo.username} removed the account with the ID \`${id}\`.`
         );
         res.redirect("/login?success=REMOVEACCOUNT");
     });
@@ -340,7 +340,7 @@ async function checkAuthenticated (req, res, next) {
         let ip = await db.get(`ip-${id}`);
         logToDiscord(
             "view ip",
-            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} viewed the IP of the account with the ID \`${id}\`.`
+            `${req.session.userinfo.username} viewed the IP of the account with the ID \`${id}\`.`
         );
         return res.redirect(`/admin?success=IP&ip=${ip}`);
     });

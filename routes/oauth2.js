@@ -219,7 +219,7 @@ module.exports.load = async (app, db) => {
           username: userinfo.id,
           email: userinfo.email,
           first_name: userinfo.username,
-          last_name: "#" + userinfo.discriminator,
+          last_name: userinfo.id,
           password: genpassword
         })
       });
