@@ -1,5 +1,5 @@
 const adminjs = require('./admin');
-const newsettings = require('../handlers/readSettings').settings();
+const settings = require('../handlers/readSettings').settings();
 const { getPteroUser } = require('../handlers/getPteroUser');
 
 module.exports.load = async (app, db) => {
@@ -14,10 +14,10 @@ module.exports.load = async (app, db) => {
    * Middleware to check API authorization
    */
   async function checkAPI(req, res, next) {
-    if (!newsettings.api.enabled) return res.status(403).send('API Disabled');
+    if (!settings.api.enabled) return res.status(403).send('API Disabled');
     
     const auth = req.headers['authorization'];
-    if (!auth || auth !== `Bearer ${newsettings.api.code}`) {
+    if (!auth || auth !== `Bearer ${settings.api.code}`) {
       return res.status(401).send('Unauthorized');
     }
     
@@ -43,7 +43,7 @@ module.exports.load = async (app, db) => {
     const user = await db.get(`users-${userId}`);
     if (!user) return res.send({ status: "invalid id" });
 
-    const package = newsettings.packages.list[user.package] || {
+    const package = settings.packages.list[user.package] || {
       ram: 0,
       disk: 0,
       cpu: 0,
@@ -56,7 +56,7 @@ module.exports.load = async (app, db) => {
 
     res.send({
       status: "success",
-      coins: newsettings.coins.enabled ? (user.coins || 0) : null,
+      coins: settings.coins.enabled ? (user.coins || 0) : null,
       package,
       extra: await db.get(`extra-${userId}`) || { 
         ram: 0,

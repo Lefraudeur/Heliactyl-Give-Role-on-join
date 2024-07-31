@@ -53,13 +53,12 @@ const listener = app.listen(settings.website.port, async () => {
   console.log(`${chalk.cyan("[Heliactyl]")}${chalk.white(" Checking for updates...")}`);
 
   try {
-    const newSettings = require('./handlers/readSettings').settings();
     const response = await fetch('https://api.github.com/repos/OvernodeProjets/Fixed-Heliactyl/releases/latest');
     const { tag_name: latestVersion } = await response.json();
 
-    if (latestVersion !== newSettings.version) {
+    if (latestVersion !== settings.version) {
       console.log(`${chalk.cyan("[Heliactyl]")}${chalk.yellow(" New version available!")}`);
-      console.log(`${chalk.cyan("[Heliactyl]")}${chalk.white(` Current Version: ${newSettings.version}, Latest Version: ${latestVersion}`)}`);
+      console.log(`${chalk.cyan("[Heliactyl]")}${chalk.white(` Current Version: ${settings.version}, Latest Version: ${latestVersion}`)}`);
     } else {
       console.log(`${chalk.cyan("[Heliactyl]")}${chalk.white(" Your application is up-to-date.")}`);
     }

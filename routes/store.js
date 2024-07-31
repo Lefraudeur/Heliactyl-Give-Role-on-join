@@ -6,8 +6,9 @@ module.exports.load = async function(app, db) {
   const buyResource = async (req, res, resourceType, resourceName) => {
     if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
 
-    let newsettings = await enabledCheck(req, res);
-    if (!newsettings) return;
+    if (!settings.coins.store.enabled) {
+      return res.redirect("/dashboard?err=STOREDISABLED");
+    }
 
     const amount = parseInt(req.query.amount);
     if (!amount || isNaN(amount) || amount < 1 || amount > 10) return res.send("Invalid amount");
@@ -22,8 +23,8 @@ module.exports.load = async function(app, db) {
     }
 
   // Old code : if (ramcap + amount > settings.storelimits.ram) return res.redirect(failedcallback + "?err=MAXRAMEXCEETED");
-    const per = newsettings.coins.store[resourceType].per * amount;
-    const cost = newsettings.coins.store[resourceType].cost * amount;
+    const per = settings.coins.store[resourceType].per * amount;
+    const cost = settings.coins.store[resourceType].cost * amount;
 
     if (userCoins < cost) return res.redirect(`/store?err=CANNOTAFFORD`);
 
@@ -65,10 +66,4 @@ module.exports.load = async function(app, db) {
   app.get("/buydisk", async (req, res) => buyResource(req, res, "disk", "Disk"));
   app.get("/buycpu", async (req, res) => buyResource(req, res, "cpu", "CPU"));
   app.get("/buyservers", async (req, res) => buyResource(req, res, "servers", "Servers"));
-
-  async function enabledCheck (req, res) {
-    let newsettings = require('../handlers/readSettings').settings(); 
-    if (newsettings.coins.store.enabled) return newsettings;
-    else return res.redirect("/dashboard?err=STOREDISABLED");
-  }
 };

@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const newsettings = require('../handlers/readSettings').settings();
+const settings = require('../handlers/readSettings').settings();
 const getTemplate = require('../handlers/getTemplate').template;
 
 /**
@@ -28,7 +28,7 @@ async function vpnCheck(key, db, ip, res) {
 
       // Is a VPN/proxy?
       if (ipcache === "yes") {
-        res.send(getTemplate("Detected VPN", `${newsettings.name} detected that you are using a VPN; Please turn it off to continue.`, true));
+        res.send(getTemplate("Detected VPN", `${settings.name} detected that you are using a VPN; Please turn it off to continue.`, true));
         resolve(true);
       } else {
         resolve(false);

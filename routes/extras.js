@@ -26,10 +26,9 @@ module.exports.load = async function(app, db) {
   app.get("/regen", async (req, res) => {
     try {
       if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
-      const newsettings = require('../handlers/readSettings').settings(); 
-      if (!newsettings.allow.regen) return res.redirect("/settings?err=CANTREGENPASSWORD");
+      if (!settings.allow.regen) return res.redirect("/settings?err=CANTREGENPASSWORD");
     
-      let newpassword = generateRandomPassword(newsettings.passwordgenerator.length);
+      let newpassword = generateRandomPassword(settings.passwordgenerator.length);
       req.session.password = newpassword;
   
       await fetch(`${settings.pterodactyl.domain}/api/application/users/${req.session.pterodactyl.id}`, {

@@ -9,10 +9,8 @@ module.exports.load = async (app, db) => {
       try {
           if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
           if (!req.query.name || !req.query.cpu || !req.query.ram || !req.query.disk || !req.query.egg || !req.query.location) return res.redirect("/servers?err=MISSINGVARIABLE");
-
-          const newsettings = require('../handlers/readSettings').settings();
       
-          if (!newsettings.allow.server.create) return res.redirect("/servers/new?err=disabled");
+          if (!settings.allow.server.create) return res.redirect("/servers/new?err=disabled");
       
           const cacheAccount = await getPteroUser(req.session.userinfo.id, db);
           if (!cacheAccount) return;
@@ -26,7 +24,7 @@ module.exports.load = async (app, db) => {
           if (name.length > 191) return res.redirect("/servers?err=BIGSERVERNAME");
       
           const packagename = await db.get(`package-${req.session.userinfo.id}`);
-          const package = newsettings.packages.list[packagename || newsettings.packages.default];
+          const package = settings.packages.list[packagename || settings.packages.default];
           const extra = await db.get(`extra-${req.session.userinfo.id}`) || {
             ram: 0,
             disk: 0,
@@ -46,13 +44,13 @@ module.exports.load = async (app, db) => {
           if (serversData.length >= package.servers + extra.servers) return res.redirect("/servers?err=TOOMUCHSERVERS");
           
           const location = req.query.location;
-          if (!Object.prototype.hasOwnProperty.call(newsettings.locations, location)) return res.redirect("/servers?err=INVALIDLOCATION");
+          if (!Object.prototype.hasOwnProperty.call(settings.locations, location)) return res.redirect("/servers?err=INVALIDLOCATION");
           
-          const requiredpackage = newsettings.locations[location].package;
-          if (requiredpackage && !requiredpackage.includes(packagename || newsettings.packages.default)) return res.redirect("/servers?err=PREMIUMLOCATION");
+          const requiredpackage = settings.locations[location].package;
+          if (requiredpackage && !requiredpackage.includes(packagename || settings.packages.default)) return res.redirect("/servers?err=PREMIUMLOCATION");
           
           const egg = req.query.egg;
-          const egginfo = newsettings.eggs[egg];
+          const egginfo = settings.eggs[egg];
           if (!egginfo) return res.redirect("/servers?err=INVALIDEGG");    
 
           const cpu = parseFloat(req.query.cpu);
@@ -113,15 +111,15 @@ module.exports.load = async (app, db) => {
           // Make sure user has enough coins
           const createdServer = await db.get(`createdserver-${req.session.userinfo.id}`) || false;
           const coins = await db.get(`coins-${req.session.userinfo.id}`) || 0;
-          const cost = newsettings.servercreation.cost;
+          const cost = settings.servercreation.cost;
         
           if (createdServer && coins < cost) return res.redirect("/servers/new?err=TOOLITTLECOINS");
         
-          const serverResponse = await fetch(`${newsettings.pterodactyl.domain}/api/application/servers`, {
+          const serverResponse = await fetch(`${settings.pterodactyl.domain}/api/application/servers`, {
               method: "POST",
               headers: {
                   'Content-Type': 'application/json',
-                  "Authorization": `Bearer ${newsettings.pterodactyl.key}`,
+                  "Authorization": `Bearer ${settings.pterodactyl.key}`,
                   "Accept": "application/json"
               },
               body: JSON.stringify(specs)
@@ -155,9 +153,8 @@ module.exports.load = async (app, db) => {
     app.get("/modify", async (req, res) => {
       try {
         if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
-        
-        const newsettings = require('../handlers/readSettings').settings(); 
-        if (!newsettings.allow.server.modify) return res.redirect("/servers/modify?err=disabled");
+         
+        if (!settings.allow.server.modify) return res.redirect("/servers/modify?err=disabled");
 
         if (!req.query.id) return res.send("Missing server id.");
         
@@ -179,7 +176,7 @@ module.exports.load = async (app, db) => {
         if (isNaN(cpu) || isNaN(ram) || isNaN(disk)) return res.redirect(`/servers/edit?id=${serverId}&err=MISSINGVARIABLE`);
         
         let packagename = await db.get(`package-${req.session.userinfo.id}`);
-        let package = newsettings.packages.list[packagename || newsettings.packages.default];
+        let package = settings.packages.list[packagename || settings.packages.default];
         
         let serverDataExceptCurrent = serverData.filter(server => server.attributes.id.toString() !== serverId);
         
@@ -190,7 +187,7 @@ module.exports.load = async (app, db) => {
           disk2 += server.attributes.limits.disk;
         });
         
-        let egginfo = Object.values(newsettings.eggs).find(egg => egg.info.egg === serverToModify.attributes.egg);
+        let egginfo = Object.values(settings.eggs).find(egg => egg.info.egg === serverToModify.attributes.egg);
         if (!egginfo) return res.redirect(`/servers/edit?id=${serverId}&err=MISSINGEGG`);
         
         let extra = await db.get(`extra-${req.session.userinfo.id}`) || {
@@ -279,9 +276,7 @@ module.exports.load = async (app, db) => {
     if (!req.session || !req.session.pterodactyl || !req.session.userinfo) return res.redirect("/login");
     if (!req.query.id) return res.send("Missing id.");
   
-    const newsettings = require('../handlers/readSettings').settings();
-  
-    if (!newsettings.allow.server.delete) return res.redirect("/servers");
+    if (!settings.allow.server.delete) return res.redirect("/servers");
   
     let server = req.session.pterodactyl.relationships.servers.data.find(server => server.attributes.id == req.query.id);
     if (!server) return res.send("Could not find server with that ID.");

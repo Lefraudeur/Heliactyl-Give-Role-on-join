@@ -1,9 +1,9 @@
-const newsettings = require('../handlers/readSettings').settings();
+const settings = require('../handlers/readSettings').settings();
 let currentlyonpage = {};
 
 module.exports.load = function(app, db) {
   app.ws("/afk/ws", async (ws, req) => {
-    if (!newsettings["afk page"].enabled || !req.session || !req.session.userinfo || !req.session.pterodactyl) return ws.close();
+    if (!settings["afk page"].enabled || !req.session || !req.session.userinfo || !req.session.pterodactyl) return ws.close();
 
     let userId = req.session.userinfo.id;
 
@@ -14,7 +14,7 @@ module.exports.load = function(app, db) {
     let coinLoop = setInterval(async () => {
       try {
         let userCoins = await db.get(`coins-${userId}`) || 0;
-        userCoins += newsettings["afk page"].coins;
+        userCoins += settings["afk page"].coins;
 
         if (userCoins > 999999999999999) {
           ws.close();
@@ -27,7 +27,7 @@ module.exports.load = function(app, db) {
       } catch (error) {
         console.error('Error updating coins:', error);
       }
-    }, newsettings["afk page"].every * 1000);
+    }, settings["afk page"].every * 1000);
 
     ws.on('close', () => {
       clearInterval(coinLoop);
