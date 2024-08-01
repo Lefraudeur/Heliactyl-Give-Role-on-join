@@ -141,7 +141,7 @@ module.exports.load = async (app, db) => {
         
           logToDiscord(
             "created server",
-            `${req.session.userinfo.username}#${req.session.userinfo.discriminator} created a new server named \`${name}\` with the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\nLocation ID: ${location}\nEgg: ${egg}\`\`\``
+            `${req.session.userinfo.username} created a new server named \`${name}\` with the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\nLocation ID: ${location}\nEgg: ${egg}\`\`\``
           );
           return res.redirect("/servers?err=CREATEDSERVER");
       } catch (error) {
@@ -257,7 +257,7 @@ module.exports.load = async (app, db) => {
         
         logToDiscord(
           "modify server",
-          `${req.session.userinfo.username}#${req.session.userinfo.discriminator} modified the server called \`${serverInfoText.attributes.name}\` to have the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\`\`\``
+          `${req.session.userinfo.username} modified the server called \`${serverInfoText.attributes.name}\` to have the following specs:\n\`\`\`Memory: ${ram} MB\nCPU: ${cpu}%\nDisk: ${disk}\`\`\``
         );
         
         // G
@@ -301,7 +301,7 @@ module.exports.load = async (app, db) => {
     
       logToDiscord(
         "deleted server",
-        `${req.session.userinfo.username}#${req.session.userinfo.discriminator} deleted server ${serverName}.`
+        `${req.session.userinfo.username} deleted server ${serverName}.`
       );
     
       return res.redirect('/servers?err=DELETEDSERVER');

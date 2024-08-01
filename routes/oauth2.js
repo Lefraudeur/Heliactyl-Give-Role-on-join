@@ -218,7 +218,7 @@ module.exports.load = async (app, db) => {
           username: userinfo.id,
           email: userinfo.email,
           first_name: userinfo.username,
-          last_name: "#" + userinfo.discriminator,
+          last_name: userinfo.id,
           password: genpassword
         })
       });
@@ -262,7 +262,7 @@ module.exports.load = async (app, db) => {
           return res.send("An error has occurred when attempting to create your account.");
         }
       }
-      log('signup', `${userinfo.username}#${userinfo.discriminator} logged in to the dashboard for the first time!`);
+      log('signup', `${userinfo.username} logged in to the dashboard for the first time!`);
     }
 
     const cacheAccount = await getPteroUser(userinfo.id, db);

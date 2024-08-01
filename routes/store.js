@@ -56,7 +56,7 @@ module.exports.load = async function(app, db) {
 
     logToDiscord(
       "resources purchased",
-      `${req.session.userinfo.username}#${req.session.userinfo.discriminator} bought ${per} ${resourceName} from the store for \`${cost}\` Credits.`
+      `${req.session.userinfo.username} bought ${per} ${resourceName} from the store for \`${cost}\` Credits.`
     );
 
     res.redirect("/store?success=SUCCESS");
