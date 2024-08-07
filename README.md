@@ -1,5 +1,5 @@
 > [!WARNING]
-> Overnode has semi-deprecated Fixed Heliactyl. Overnode is now developing [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium). Warning: **Heliactyl and Fixed Heliactyl may contain security vulnerabilities.** If you are looking for a still updated version of Heliactyl (and by the official team) take a look at [Heliactyl 14](https://github.com/heliactyloss/heliactyl) or [Heliactyl (by Ghostload)](https://github.com/Heliactyl-Project/Heliactyl). 
+> Overnode has semi-deprecated Fixed Heliactyl. Overnode is now developing [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium). Heliactyl is now end of life (EOL), the still-updated forks of Heliactyl are: [Plexactyl](https://github.com/Plexactyl/panel), [Heliactyl (by Ghostload)](https://github.com/Heliactyl-Project/Heliactyl) and Fixed Heliactyl.
 # Fixed Heliactyl • The Modern Client Panel for Pterodactyl
 
 ![Heliactyl](https://github.com/OvernodeProjets/Fixed-Heliactyl/assets/73477238/fe5aaf5c-1c01-4145-b37a-b91b184354b5)
@@ -161,11 +161,3 @@ To stop a currently running Heliactyl instance, use `pm2 stop heliactyl`
 >
 > We cannot force you to keep "Powered by Heliactyl" in the footer, but please consider keeping it. It helps to get more visibility for the project, which is getting better. We won't > provide technical support for installations without the notice in the footer. We may DMCA the website under certain conditions.
 > Please do keep the footer, though.
-
-> [!CAUTION]
->
-> ## Legacy Deprecation Notice
->
-> Heliactyl v6, v7, v8, v9, v10, v11, v13, v15 is now deprecated by the official Heliactyl team.
-> Users have made forks of older Heliactyl version but the Heliactyl team will not give support. 
-> Please update to Heliactyl v12 or use [Heliactyl v14](https://github.com/heliactyloss/heliactyl).
