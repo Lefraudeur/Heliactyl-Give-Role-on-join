@@ -1,11 +1,11 @@
-> [!WARNING]
-> Overnode has semi-deprecated Fixed Heliactyl. Overnode is now developing [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium). Heliactyl is now end of life (EOL), the still-updated forks of Heliactyl are: [Plexactyl](https://github.com/Plexactyl/panel), [Heliactyl (by Ghostload)](https://github.com/Heliactyl-Project/Heliactyl) and Fixed Heliactyl.
+> [!CAUTION]
+> Overnode no longer recommends using Heliactyl, Heliactyl is a piece of old software and as such contains multiple security vulnerabilities.
+> What to do? Use [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium) or [Plexactyl](https://github.com/Plexactyl/panel).<br>
+> Is Fixed Heliactyl still updated? Yes, but not fully, as Heliactyl contains security vulnerabilities, Overnode no longer prioritizes Fixed Heliactyl for support.
 # Fixed Heliactyl • The Modern Client Panel for Pterodactyl
 
 ![Heliactyl](https://github.com/OvernodeProjets/Fixed-Heliactyl/assets/73477238/fe5aaf5c-1c01-4145-b37a-b91b184354b5)
 
-> [!WARNING]
-> Fixed Heliactyl 12.8 and above are not compatible with older files (themes and settings.json files) due to major modifications. For themes: Replace all `settings.api.client` with `settings`. For settings: Reconfigure using YAML. Thank you for understanding.
 ## Features
 
 - **Resource Management**: Create servers, manage resources.
@@ -151,6 +151,11 @@ server {
 To stop a currently running Heliactyl instance, use `pm2 stop heliactyl`
 
 <br>
+
+## For developers:
+Fixed Heliacty l2.8 has major changes in how settings are parsed, instead of them being parsed with the "settings.api.client", we've completely removed that.
+We've provided a guide here on how to make your Heliactyl themes compatible with Fixed Heliactyl.
+To fix the unknown setting issue, replace `settings.api.client` with `settings` in all of your files.
 
 ## Credit:
  - Dashactyl 0.3.1 & 0.4 (0.3.1 Base - 0.4 Database System)
