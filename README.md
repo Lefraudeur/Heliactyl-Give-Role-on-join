@@ -1,6 +1,6 @@
 > [!CAUTION]
 > Overnode no longer recommends using Heliactyl, Heliactyl is a piece of old software and as such contains multiple security vulnerabilities.
-> What to do? Use [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium) or [Plexactyl](https://github.com/Plexactyl/panel).
+> What to do? Use [Fixed Palladium](https://github.com/OvernodeProjets/Fixed-Palladium) or [Plexactyl](https://github.com/Plexactyl/panel).<br>
 > Is Fixed Heliactyl still updated? Yes, but not fully, as Heliactyl contains security vulnerabilities, Overnode no longer prioritizes Fixed Heliactyl for support.
 # Fixed Heliactyl • The Modern Client Panel for Pterodactyl
 
